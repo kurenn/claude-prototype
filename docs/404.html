@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en" data-theme="terminal" data-layout="comfortable" data-persona="new">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>404 · claude-prototype</title>
+  <meta name="description" content="Page not found.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="./css/feedback.css">
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="wrap">
+    <a href="./" class="wordmark"><span class="slash">/</span>prototype</a>
+    <nav aria-label="Primary">
+      <a href="./#install">Install</a>
+      <a href="./#features">What you get</a>
+      <a href="./#output">Output</a>
+      <a href="./#companion">Companion skills</a>
+      <a href="./#principles">Principles</a>
+    </nav>
+    <a class="gh-link" href="https://github.com/kurenn/claude-prototype" target="_blank" rel="noopener">
+      GitHub <span>↗</span>
+    </a>
+  </div>
+</header>
+
+<main class="container">
+  <section class="four-oh-four">
+    <p class="code">HTTP 404 · NOT FOUND</p>
+    <h1>This page isn't part of the skill.</h1>
+    <p>You've landed somewhere that doesn't exist. Common causes: a stale link, a typo, or a URL with a parameter the site doesn't know how to render.</p>
+    <p>
+      <a class="btn btn-primary" href="./">
+        Back to home <span class="chev">→</span>
+      </a>
+      <a class="btn" href="https://github.com/kurenn/claude-prototype" target="_blank" rel="noopener" style="margin-left: var(--s-2)">
+        Check the repo <span class="chev">↗</span>
+      </a>
+    </p>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="footmeta">MIT license · author <a href="https://github.com/kurenn" target="_blank" rel="noopener">@kurenn</a></p>
+  </div>
+</footer>
+
+<!-- Control bar -->
+<div id="proto-controls">
+  <div class="proto-bar">
+    <div class="proto-bar-section">
+      <span class="proto-bar-label">Theme</span>
+      <div class="proto-seg-group">
+        <button class="proto-seg" data-theme-option="terminal" aria-pressed="true">Terminal</button>
+        <button class="proto-seg" data-theme-option="paper" aria-pressed="false">Paper</button>
+        <button class="proto-seg" data-theme-option="mono" aria-pressed="false">Mono</button>
+      </div>
+    </div>
+    <div class="proto-bar-section">
+      <span class="proto-bar-label">Layout</span>
+      <div class="proto-seg-group">
+        <button class="proto-seg" data-layout-option="comfortable" aria-pressed="true">Comfortable</button>
+        <button class="proto-seg" data-layout-option="compact" aria-pressed="false">Compact</button>
+      </div>
+    </div>
+    <div class="proto-bar-section">
+      <button class="proto-seg" data-share>🔗 Share</button>
+      <button class="proto-seg" data-feedback-toggle>💬 Feedback</button>
+    </div>
+  </div>
+</div>
+
+<script src="./js/state.js"></script>
+<script src="./js/theme.js"></script>
+<script src="./js/layout.js"></script>
+<script src="./js/data.js"></script>
+<script src="./js/persona.js"></script>
+<script src="./js/ui.js"></script>
+<script src="./js/app.js"></script>
+<script src="./js/feedback.js"></script>
+</body>
+</html>

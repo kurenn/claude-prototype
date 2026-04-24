@@ -1,0 +1,457 @@
+<!doctype html>
+<html lang="en" data-theme="terminal" data-layout="comfortable" data-persona="new">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>claude-prototype · a Claude Code skill for clickable HTML prototypes</title>
+  <meta name="description" content="A Claude Code skill for building clickable HTML prototypes. Sales demos, stakeholder reviews, design explorations. Zero build step, live feedback loop, design assessment baked in.">
+  <meta property="og:title" content="claude-prototype">
+  <meta property="og:description" content="A Claude Code skill for building clickable HTML prototypes. Zero build step. Live feedback loop. Design assessment baked in.">
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="https://kurenn.github.io/claude-prototype/">
+  <meta name="twitter:card" content="summary">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,500;9..144,600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="./css/styles.css">
+  <link rel="stylesheet" href="./css/feedback.css">
+</head>
+<body>
+
+<header class="site-nav">
+  <div class="wrap">
+    <a href="#top" class="wordmark"><span class="slash">/</span>prototype</a>
+    <nav aria-label="Primary">
+      <a href="#install" data-nav-link data-persona-hide="installed">Install</a>
+      <a href="#features" data-nav-link>What you get</a>
+      <a href="#output" data-nav-link>Output</a>
+      <a href="#companion" data-nav-link>Companion skills</a>
+      <a href="#principles" data-nav-link>Principles</a>
+      <a href="#roadmap" data-nav-link data-persona-show="installed">Roadmap</a>
+    </nav>
+    <a class="gh-link" href="https://github.com/kurenn/claude-prototype" target="_blank" rel="noopener">
+      GitHub <span>↗</span>
+    </a>
+  </div>
+</header>
+
+<main id="top" class="container">
+
+  <!-- ============== HERO ============== -->
+  <section class="hero" data-persona-flash>
+    <p class="eyebrow" data-persona-text="hero.eyebrow">Claude Code skill · MIT · v0.1</p>
+    <h1 data-persona-text="hero.headline">Build clickable HTML prototypes your team can actually review.</h1>
+    <p class="sub" data-persona-text="hero.sub">A Claude Code skill that scaffolds a zero-build-step site with a runtime theme / layout / persona switcher, URL-shareable state, and pin-to-element feedback. For sales demos, stakeholder reviews, and design explorations.</p>
+    <div class="actions">
+      <a class="btn btn-primary" href="#install" data-cta-new>
+        <span data-persona-text="hero.primaryCta">Copy install command</span>
+        <span class="chev">→</span>
+      </a>
+      <a class="btn btn-primary" href="#roadmap" data-cta-installed>
+        <span data-persona-text="hero.primaryCta">Jump to roadmap</span>
+        <span class="chev">→</span>
+      </a>
+      <a class="btn" href="https://github.com/kurenn/claude-prototype" target="_blank" rel="noopener" data-cta-new>
+        <span data-persona-text="hero.secondaryCta">View on GitHub</span>
+        <span class="chev">↗</span>
+      </a>
+      <a class="btn" href="https://github.com/kurenn/claude-prototype/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" data-cta-installed>
+        <span data-persona-text="hero.secondaryCta">Contribute</span>
+        <span class="chev">↗</span>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============== INSTALL ============== -->
+  <section id="install" class="section" data-persona-flash>
+    <p class="section-label" data-persona-text="installBadge">Install</p>
+    <h2>Three ways. Pick one.</h2>
+    <p class="lead" data-persona-text="installIntro">Claude Code loads skills from <code>~/.claude/skills/&lt;name&gt;/</code>. Pick any of three.</p>
+
+    <div class="install-options">
+      <div class="install-opt">
+        <h3>1. Quickest: git clone into the skills dir</h3>
+        <p>Clone directly into Claude Code's skills directory. Restart your session and <code>/prototype</code> is loaded.</p>
+        <pre class="code-block"><code><span class="cmd">git clone https://github.com/kurenn/claude-prototype ~/.claude/skills/prototype</span></code><button class="copy-btn" data-copy aria-label="Copy command"><svg class="copy-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="9" rx="1"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg><svg class="check-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></button></pre>
+      </div>
+
+      <div class="install-opt">
+        <h3>2. Recommended for contributors: ./install.sh</h3>
+        <p>Clone somewhere you will hack on it, then run the install script. Symlink default means edits to your clone flow through to future <code>/prototype</code> invocations with no reinstall.</p>
+        <pre class="code-block"><code><span class="cmd">git clone https://github.com/kurenn/claude-prototype ~/code/claude-prototype</span>
+<span class="cmd">cd ~/code/claude-prototype</span>
+<span class="cmd">./install.sh</span>            <span style="color:rgb(var(--ink3))"># symlinks, live edits</span>
+<span class="cmd">./install.sh copy</span>       <span style="color:rgb(var(--ink3))"># or: independent copy</span></code><button class="copy-btn" data-copy aria-label="Copy command"><svg class="copy-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="9" rx="1"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg><svg class="check-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></button></pre>
+      </div>
+
+      <div class="install-opt">
+        <h3>3. Manual one-liner</h3>
+        <p>Already have a clone somewhere. Symlink it.</p>
+        <pre class="code-block"><code><span class="cmd">ln -s /absolute/path/to/claude-prototype ~/.claude/skills/prototype</span></code><button class="copy-btn" data-copy aria-label="Copy command"><svg class="copy-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="9" rx="1"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg><svg class="check-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></button></pre>
+      </div>
+
+      <div class="install-opt">
+        <h3>Verify</h3>
+        <p>Restart your Claude Code session, then type <code>/prototype</code> or describe a prototype idea. The skill triggers automatically on words like <em>prototype</em>, <em>mockup</em>, <em>demo</em>, <em>pitch page</em>, <em>click-through</em>.</p>
+      </div>
+    </div>
+
+    <details class="install-reinstall install-note">
+      <summary>Reinstall commands</summary>
+      <div class="note-body">
+        <p>You already have <code>/prototype</code> installed. If you want to reinstall or update, the three options are:</p>
+        <pre class="code-block"><code><span class="cmd">cd ~/.claude/skills/prototype &amp;&amp; git pull</span>     <span style="color:rgb(var(--ink3))"># if installed via clone</span>
+<span class="cmd">cd ~/code/claude-prototype &amp;&amp; git pull</span>       <span style="color:rgb(var(--ink3))"># if installed via ./install.sh</span>
+<span class="cmd">rm ~/.claude/skills/prototype</span>                  <span style="color:rgb(var(--ink3))"># uninstall</span></code><button class="copy-btn" data-copy aria-label="Copy command"><svg class="copy-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="9" rx="1"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg><svg class="check-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></button></pre>
+      </div>
+    </details>
+  </section>
+
+  <!-- ============== WHAT YOU GET ============== -->
+  <section id="features" class="section">
+    <p class="section-label">Features</p>
+    <h2>What you get.</h2>
+    <p class="lead">Most AI-generated prototypes look like every other AI-generated prototype. Purple gradients, gradient text, nested cards, lorem ipsum, dead buttons, no lifecycle states. This skill bakes in the opposite.</p>
+
+    <dl class="feature-list">
+
+      <div class="feature-row">
+        <dt>Discovery Q&amp;A<span class="label-detail">before building</span></dt>
+        <dd>
+          <p>Six questions: tone, inspiration, audience, scope, content. Prevents generic "modern SaaS" output.</p>
+          <p><code>prompt-refiner</code> turns the answers into a tight build spec. Auto-installed.</p>
+        </dd>
+      </div>
+
+      <div class="feature-row">
+        <dt>Design shaping<span class="label-detail">via impeccable</span></dt>
+        <dd>
+          <p><code>impeccable teach + shape</code> produces a per-prototype <code>DESIGN.md</code> with tokens. Palette, typography, spacing, motion.</p>
+          <p>After build, <code>audit + detect + critique</code> verify. 25 anti-pattern rules, Nielsen heuristics, UX scoring. Auto-installed.</p>
+        </dd>
+      </div>
+
+      <div class="feature-row">
+        <dt>Always-visible control bar<span class="label-detail">three switchers, two actions</span></dt>
+        <dd>
+          <p><strong>Theme.</strong> 3 per-prototype themes. Design tokens flip at runtime. URL-shareable.</p>
+          <p><strong>Layout.</strong> 2 to 4 per-prototype variants. Grid / Gallery / List, or density, or grid-N. Chosen per product.</p>
+          <p><strong>Persona.</strong> 2 to 4 lifecycle states (new user / active / power, or empty / busy). Content swaps via <code>js/data.js</code>.</p>
+          <p><strong>🔗 Share.</strong> Copies a URL reproducing the exact screen: theme, layout, persona, modal, tab.</p>
+          <p><strong>💬 Feedback.</strong> Always-on pin-to-element commenting. Exports JSON for <code>/prototype apply-feedback</code>.</p>
+        </dd>
+      </div>
+
+      <div class="feature-row">
+        <dt>Interaction states<span class="label-detail">the layer demos die without</span></dt>
+        <dd>
+          <p>Loading spinners, toasts, empty states, 404 page. Declarative via <code>data-loading</code>, <code>data-toast</code>, <code>data-confirm</code> attributes.</p>
+          <p>Skeleton loaders on filter changes and first load.</p>
+        </dd>
+      </div>
+
+      <div class="feature-row">
+        <dt>URL state<span class="label-detail">every screen shareable</span></dt>
+        <dd>
+          <p>Every interactive screen state lives in the URL. Share the URL, reproduce the screen. Opens directly to a modal, a filter result, a tab.</p>
+        </dd>
+      </div>
+
+      <div class="feature-row">
+        <dt>Apply-feedback workflow<span class="label-detail">JSON in, fixes out</span></dt>
+        <dd>
+          <p>Reviewers pin comments. You run <code>/prototype apply-feedback &lt;file&gt;</code>. The skill applies each fix in place, re-runs assessment, archives the JSON.</p>
+        </dd>
+      </div>
+
+      <div class="feature-row">
+        <dt>Variants<span class="label-detail">A/B your pitch</span></dt>
+        <dd>
+          <p><code>/prototype variant "more corporate"</code> forks into <code>variants/&lt;slug&gt;/</code>. Original untouched. Shape, palette, type re-applied for the new vibe.</p>
+        </dd>
+      </div>
+
+      <div class="feature-row">
+        <dt>No-cache dev server<span class="label-detail">ships with every prototype</span></dt>
+        <dd>
+          <p><code>serve.py</code> in every generated folder. Prevents the "my edits aren't showing" browser cache trap.</p>
+        </dd>
+      </div>
+
+      <div class="feature-row">
+        <dt>Zero build step<span class="label-detail">Tailwind CDN, vanilla JS</span></dt>
+        <dd>
+          <p>No webpack, no Vite, no Node. Tailwind via CDN. A handful of small JS files. Runs anywhere a browser opens.</p>
+        </dd>
+      </div>
+
+    </dl>
+  </section>
+
+  <!-- ============== OUTPUT SHAPE ============== -->
+  <section id="output" class="section">
+    <p class="section-label">Output</p>
+    <h2>What a generated prototype looks like.</h2>
+    <p class="lead">One folder in your working directory. Every file readable, every file editable, no build artifact.</p>
+
+    <pre class="file-tree"><code><span class="dir">acme-demo/</span>
+├── index.html
+├── <span class="file">&lt;screen&gt;.html</span>
+├── 404.html
+├── <span class="dir">css/</span>
+│   ├── styles.css       <span class="comment"># theme tokens + control bar + skeleton + empty states</span>
+│   └── feedback.css
+├── <span class="dir">js/</span>
+│   ├── state.js         <span class="comment"># URL state + share + history drawer (Shift+?)</span>
+│   ├── theme.js         <span class="comment"># data-theme switcher</span>
+│   ├── layout.js        <span class="comment"># data-layout switcher</span>
+│   ├── data.js          <span class="comment"># personas + shared content</span>
+│   ├── persona.js       <span class="comment"># data-persona switcher</span>
+│   ├── ui.js            <span class="comment"># loading / toast / skeleton / confirm helpers</span>
+│   ├── app.js           <span class="comment"># page interactions (modals, tabs, filter chips, composer)</span>
+│   └── feedback.js      <span class="comment"># pin-to-element overlay (always on)</span>
+├── <span class="dir">assets/images/</span>
+├── serve.py             <span class="comment"># no-cache dev server</span>
+├── DESIGN.md            <span class="comment"># tokens + rationale</span>
+├── DEMO.md              <span class="comment"># presenter click-through with persona map</span>
+└── README.md            <span class="comment"># how to run, what's fake, iteration commands</span></code></pre>
+
+    <p>Run it:</p>
+
+    <pre class="code-block"><code><span class="cmd">cd acme-demo</span>
+<span class="cmd">python3 serve.py</span>
+<span style="color:rgb(var(--ink3))"># open http://localhost:8000</span></code><button class="copy-btn" data-copy aria-label="Copy command"><svg class="copy-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="9" rx="1"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg><svg class="check-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></button></pre>
+
+    <p>Then click through the control bar at the bottom to toggle theme, layout, and persona. Click 🔗 to copy a URL reproducing the current screen. Click 💬 to pin feedback on any element.</p>
+
+    <p style="margin-top: var(--s-5)"><a class="btn" href="#output" data-open-modal="preview">
+      Preview the control bar <span class="chev">→</span>
+    </a></p>
+
+    <h3 style="margin-top: var(--s-7); font-size: var(--text-base); text-transform: uppercase; letter-spacing: 0.08em; color: rgb(var(--ink3))">Subcommands</h3>
+    <div class="cmd-table">
+      <div class="cmd-row">
+        <p class="cmd-name">/prototype variant "&lt;vibe&gt;"</p>
+        <p class="cmd-desc">Fork the current prototype into <code>variants/&lt;slug&gt;/</code>. Re-shapes tokens, typography, palette for the new vibe. Original untouched.</p>
+      </div>
+      <div class="cmd-row">
+        <p class="cmd-name">/prototype apply-feedback &lt;file&gt;</p>
+        <p class="cmd-desc">Read the pinned-comment JSON, apply each fix in place, re-run assessment, archive under <code>feedback/applied/</code>.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============== COMPANION SKILLS ============== -->
+  <section id="companion" class="section">
+    <p class="section-label">Companion skills</p>
+    <h2>Auto-installed on first use.</h2>
+    <p class="lead"><code>/prototype</code> runs a preflight step on every invocation that ensures these companion skills are available. Missing ones are installed automatically.</p>
+
+    <div class="companion">
+      <div class="comp-row">
+        <p class="comp-name"><a href="https://impeccable.style/" target="_blank" rel="noopener">impeccable</a></p>
+        <p class="comp-desc">Design direction and 3-pass assessment: audit, detect, critique. 23 subcommands. Strongly recommended.</p>
+        <pre class="code-block comp-install"><code><span class="cmd">npx -y skills add pbakaus/impeccable --global --yes</span></code><button class="copy-btn" data-copy aria-label="Copy command"><svg class="copy-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="9" rx="1"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg><svg class="check-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></button></pre>
+      </div>
+      <div class="comp-row">
+        <p class="comp-name"><a href="https://github.com/kurenn/prompt-refiner-skill" target="_blank" rel="noopener">prompt-refiner</a></p>
+        <p class="comp-desc">Turns Q&amp;A answers into a structured build spec.</p>
+        <pre class="code-block comp-install"><code><span class="cmd">git clone https://github.com/kurenn/prompt-refiner-skill ~/.claude/skills/prompt-refiner</span></code><button class="copy-btn" data-copy aria-label="Copy command"><svg class="copy-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="9" rx="1"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg><svg class="check-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></button></pre>
+      </div>
+      <div class="comp-row">
+        <p class="comp-name">claude-in-chrome (MCP)</p>
+        <p class="comp-desc">Screenshot grid across themes and breakpoints. Console error sweep. Configured in Claude Code MCP settings, not auto-installed.</p>
+      </div>
+    </div>
+
+    <p>If auto-install fails (no <code>npx</code>, no network), <code>/prototype</code> falls back to built-in checks and notes it in the final report.</p>
+
+    <p>Run the preflight manually anytime:</p>
+    <pre class="code-block"><code><span class="cmd">bash ~/.claude/skills/prototype/ensure-deps.sh</span>          <span style="color:rgb(var(--ink3))"># prompts before installing</span>
+<span class="cmd">bash ~/.claude/skills/prototype/ensure-deps.sh --yes</span>    <span style="color:rgb(var(--ink3))"># non-interactive</span>
+<span class="cmd">bash ~/.claude/skills/prototype/ensure-deps.sh --check</span>  <span style="color:rgb(var(--ink3))"># report status only</span></code><button class="copy-btn" data-copy aria-label="Copy command"><svg class="copy-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="9" rx="1"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg><svg class="check-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></button></pre>
+  </section>
+
+  <!-- ============== PRINCIPLES ============== -->
+  <section id="principles" class="section">
+    <p class="section-label">Principles</p>
+    <h2>What the skill enforces.</h2>
+    <p class="lead">Rules, not vibes. Every principle corresponds to a check in the build loop.</p>
+
+    <ol class="principles">
+      <li>
+        <strong>Ask before building.</strong>
+        <span class="detail">Discovery Q&amp;A is load-bearing. Prevents generic output.</span>
+      </li>
+      <li>
+        <strong>No lorem ipsum, ever.</strong>
+        <span class="detail">Realistic content matched to the product domain.</span>
+      </li>
+      <li>
+        <strong>Every button goes somewhere.</strong>
+        <span class="detail">Dead buttons in a sales demo kill the pitch.</span>
+      </li>
+      <li>
+        <strong>Always interactive.</strong>
+        <span class="detail">Loading states, toasts, empty states, 404. Skeleton loaders on data-changing interactions.</span>
+      </li>
+      <li>
+        <strong>Control bar never wraps.</strong>
+        <span class="detail"><code>flex-wrap: nowrap</code> is load-bearing. A two-line bar breaks reviewer trust.</span>
+      </li>
+      <li>
+        <strong>Responsive by default.</strong>
+        <span class="detail">Verified at 375, 768, 1440.</span>
+      </li>
+      <li>
+        <strong>No build step.</strong>
+        <span class="detail">Tailwind CDN only. If a prototype needs webpack, it's not a prototype.</span>
+      </li>
+      <li>
+        <strong>Theme-safe colors.</strong>
+        <span class="detail">Every color reference is a CSS var. Flipping themes never breaks layout.</span>
+      </li>
+      <li>
+        <strong>Persona-aware content.</strong>
+        <span class="detail">Names, counts, lists driven from <code>js/data.js</code>. Not hardcoded in HTML.</span>
+      </li>
+      <li>
+        <strong>URL state is shareable.</strong>
+        <span class="detail">Share a URL, reproduce the exact screen: theme, layout, persona, modal, tab.</span>
+      </li>
+      <li>
+        <strong>Scope discipline.</strong>
+        <span class="detail">4 screens asked, 4 screens shipped.</span>
+      </li>
+    </ol>
+  </section>
+
+  <!-- ============== ROADMAP ============== -->
+  <section id="roadmap" class="section">
+    <p class="section-label" data-persona-text="roadmapBadge">See also</p>
+    <h2>Roadmap.</h2>
+    <p class="lead">Planned, not shipped. Open an issue on any of these and it jumps the queue.</p>
+
+    <ul style="list-style: none; padding: 0; margin: var(--s-5) 0; border-top: 1px solid rgb(var(--hairline))">
+      <li style="padding: var(--s-4) 0; border-bottom: 1px solid rgb(var(--hairline)); color: rgb(var(--ink2))">Sample <code>examples/</code> prototypes for common verticals: SaaS, e-commerce, fintech, internal tool.</li>
+      <li style="padding: var(--s-4) 0; border-bottom: 1px solid rgb(var(--hairline)); color: rgb(var(--ink2))">Keyboard shortcuts for theme / layout / persona cycling.</li>
+      <li style="padding: var(--s-4) 0; border-bottom: 1px solid rgb(var(--hairline)); color: rgb(var(--ink2))">Form state persistence (inputs survive reload).</li>
+      <li style="padding: var(--s-4) 0; border-bottom: 1px solid rgb(var(--hairline)); color: rgb(var(--ink2))">QR-code share for live mobile demos.</li>
+      <li style="padding: var(--s-4) 0; border-bottom: 1px solid rgb(var(--hairline)); color: rgb(var(--ink2))">Per-prototype favicon generation.</li>
+    </ul>
+
+    <p>
+      <a class="btn" href="https://github.com/kurenn/claude-prototype/issues" target="_blank" rel="noopener">
+        Open an issue <span class="chev">↗</span>
+      </a>
+      <a class="btn" href="https://github.com/kurenn/claude-prototype/blob/main/CONTRIBUTING.md" target="_blank" rel="noopener" style="margin-left: var(--s-2)">
+        Contributing <span class="chev">↗</span>
+      </a>
+    </p>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <div class="container">
+    <p class="credits">
+      <span>Credits:</span>
+      <a href="https://impeccable.style/" target="_blank" rel="noopener">impeccable</a>
+      <a href="https://github.com/kurenn/prompt-refiner-skill" target="_blank" rel="noopener">prompt-refiner</a>
+      <span>·</span>
+      <a href="https://tailwindcss.com" target="_blank" rel="noopener">Tailwind</a>
+      <a href="https://fonts.google.com" target="_blank" rel="noopener">Google Fonts</a>
+    </p>
+    <p class="footmeta">
+      MIT license &nbsp;·&nbsp; author <a href="https://github.com/kurenn" target="_blank" rel="noopener">@kurenn</a> &nbsp;·&nbsp; built with <code>/prototype</code>
+    </p>
+  </div>
+</footer>
+
+<!-- ============== MODAL: preview the control bar ============== -->
+<div data-modal="preview" aria-hidden="true" role="dialog" aria-labelledby="preview-title">
+  <div class="modal-card">
+    <div class="modal-head">
+      <h3 id="preview-title">Preview: generated control bar</h3>
+      <button class="modal-close" data-close-modal aria-label="Close">✕</button>
+    </div>
+
+    <p>Every generated prototype ships with this bar pinned to the bottom-center of every screen. Three switchers, two actions, zero click-to-reveal.</p>
+
+    <div class="mock-bar">
+      <p class="mock-label">Control bar (mock)</p>
+      <div class="mock-row">
+        <span style="color: rgb(var(--ink3))">THEME</span>
+        <span class="mock-seg">Ivory</span>
+        <span>Obsidian</span>
+        <span>Plaza</span>
+        <span class="mock-divider"></span>
+        <span style="color: rgb(var(--ink3))">LAYOUT</span>
+        <span class="mock-seg">Grid</span>
+        <span>List</span>
+        <span class="mock-divider"></span>
+        <span style="color: rgb(var(--ink3))">PERSONA</span>
+        <span class="mock-seg">New</span>
+        <span>Active</span>
+        <span class="mock-divider"></span>
+        <span>🔗 Share</span>
+        <span>💬 Feedback</span>
+      </div>
+      <p style="margin-top: var(--s-3); font-size: var(--text-xs); color: rgb(var(--ink3))">Names are per-prototype. The skill picks layouts and personas from your product's real vocabulary (Grid/Gallery/List for photo marketplaces, Compact/Comfortable/Spacious for dashboards, etc.).</p>
+    </div>
+
+    <p style="margin-top: var(--s-5)"><strong>Run locally:</strong></p>
+    <pre class="code-block"><code><span class="cmd">cd acme-demo</span>
+<span class="cmd">python3 serve.py</span></code><button class="copy-btn" data-copy aria-label="Copy command"><svg class="copy-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="5" y="5" width="8" height="9" rx="1"/><path d="M3 11V3a1 1 0 0 1 1-1h7"/></svg><svg class="check-icon" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 8 7 12 13 4"/></svg></button></pre>
+
+    <p style="font-size: var(--text-sm); color: rgb(var(--ink2)); margin-top: var(--s-4); margin-bottom: 0">
+      <code>serve.py</code> disables browser caching so your edits show up on reload. For production (GitHub Pages, Vercel, Netlify), just push the folder: everything is static.
+    </p>
+  </div>
+</div>
+
+<!-- ============== CONTROL BAR ============== -->
+<div id="proto-controls">
+  <div class="proto-bar">
+    <div class="proto-bar-section">
+      <span class="proto-bar-label">Theme</span>
+      <div class="proto-seg-group">
+        <button class="proto-seg" data-theme-option="terminal" aria-pressed="true">Terminal</button>
+        <button class="proto-seg" data-theme-option="paper" aria-pressed="false">Paper</button>
+        <button class="proto-seg" data-theme-option="mono" aria-pressed="false">Mono</button>
+      </div>
+    </div>
+    <div class="proto-bar-section">
+      <span class="proto-bar-label">Layout</span>
+      <div class="proto-seg-group">
+        <button class="proto-seg" data-layout-option="comfortable" aria-pressed="true">Comfortable</button>
+        <button class="proto-seg" data-layout-option="compact" aria-pressed="false">Compact</button>
+      </div>
+    </div>
+    <div class="proto-bar-section">
+      <span class="proto-bar-label">Persona</span>
+      <div class="proto-seg-group">
+        <button class="proto-seg" data-persona-option="new" aria-pressed="true">New</button>
+        <button class="proto-seg" data-persona-option="installed" aria-pressed="false">Installed</button>
+      </div>
+    </div>
+    <div class="proto-bar-section">
+      <button class="proto-seg" data-share>🔗 Share</button>
+      <button class="proto-seg" data-feedback-toggle>💬 Feedback</button>
+    </div>
+  </div>
+  <p class="proto-hint">Shift + ? · recent screens</p>
+</div>
+
+<script src="./js/state.js"></script>
+<script src="./js/theme.js"></script>
+<script src="./js/layout.js"></script>
+<script src="./js/data.js"></script>
+<script src="./js/persona.js"></script>
+<script src="./js/ui.js"></script>
+<script src="./js/app.js"></script>
+<script src="./js/feedback.js"></script>
+</body>
+</html>
