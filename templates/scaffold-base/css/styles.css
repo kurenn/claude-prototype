@@ -1,0 +1,286 @@
+/*
+ * Design tokens per theme.
+ * Every color = CSS var (RGB channels, space-separated, no commas) so Tailwind's
+ * `<alpha-value>` works: bg-accent/50, text-ink/70, etc.
+ * Flip themes by changing [data-theme] on <html>.
+ */
+
+html[data-theme="studio"] {
+  --surface:  252 252 250;
+  --elevated: 255 255 255;
+  --accent:    20  20  20;
+  --muted:    120 120 120;
+  --ink:       15  15  15;
+  --ink2:      90  90  90;
+  --radius: 12px;
+}
+
+html[data-theme="terminal"] {
+  --surface:   10  12  16;
+  --elevated:  18  22  30;
+  --accent:    80 255 180;
+  --muted:     80  95 115;
+  --ink:      220 230 240;
+  --ink2:     150 170 190;
+  --radius: 2px;
+}
+
+html[data-theme="mono"] {
+  --surface:  255 255 255;
+  --elevated: 245 245 245;
+  --accent:    30  30  30;
+  --muted:    180 180 180;
+  --ink:       20  20  20;
+  --ink2:     110 110 110;
+  --radius: 0;
+}
+
+/* Smooth theme transitions */
+html { transition: background-color .3s ease; }
+body { transition: background-color .3s ease, color .3s ease; }
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  * { animation: none !important; transition: none !important; }
+}
+
+/* Reveal-on-scroll (applied by app.js via IntersectionObserver) */
+.reveal {
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity .6s ease, transform .6s ease;
+}
+.reveal.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Toast (state.js + ui.js use this) */
+.proto-toast {
+  position: fixed;
+  bottom: 5rem;
+  left: 50%;
+  transform: translate(-50%, 8px);
+  z-index: 50;
+  padding: .55rem 1rem;
+  border-radius: 999px;
+  background: rgb(var(--ink));
+  color: rgb(var(--surface));
+  border: 1px solid rgb(var(--ink));
+  font-size: .8rem;
+  opacity: 0;
+  transition: opacity .2s ease, transform .2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+  max-width: 90vw;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.proto-toast.visible { opacity: 1; transform: translate(-50%, 0); }
+.proto-toast.is-error   { background: rgb(190 60 60); border-color: rgb(190 60 60); color: rgb(255 248 245); }
+.proto-toast.is-success { background: rgb(40 120 80); border-color: rgb(40 120 80); color: rgb(245 255 250); }
+
+/* Loading button (ui.js toggles .is-loading) */
+.is-loading { opacity: .75; cursor: wait; }
+.is-loading::after {
+  content: "";
+  display: inline-block;
+  width: .7em; height: .7em;
+  margin-left: .4em;
+  border: 1.5px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 999px;
+  vertical-align: -.1em;
+  animation: proto-spin .6s linear infinite;
+}
+@keyframes proto-spin { to { transform: rotate(360deg); } }
+
+/* Persona show/hide — beats Tailwind display utilities like `.flex` */
+.proto-hidden { display: none !important; }
+
+/* Skeleton loaders — placeholder silhouettes during fake loads */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    rgb(var(--muted) / .18) 25%,
+    rgb(var(--muted) / .32) 50%,
+    rgb(var(--muted) / .18) 75%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.4s ease-in-out infinite;
+  border-radius: var(--radius);
+  color: transparent;
+  user-select: none;
+  display: block;
+}
+@keyframes skeleton-shimmer {
+  0%   { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+.skeleton.is-text    { height: .8em;  margin: .35em 0; border-radius: 3px; }
+.skeleton.is-text-lg { height: 1.2em; margin: .35em 0; border-radius: 3px; }
+.skeleton.is-block   { aspect-ratio: 5 / 4; width: 100%; }
+.skeleton.is-circle  { border-radius: 999px; aspect-ratio: 1 / 1; }
+.skeleton-item { pointer-events: none; }
+
+/* Empty state wrapper */
+.empty-state {
+  padding: 3rem 1.5rem;
+  text-align: center;
+  border: 1px dashed rgb(var(--muted) / .4);
+  border-radius: var(--radius);
+  color: rgb(var(--ink2));
+}
+.empty-state h3 {
+  color: rgb(var(--ink));
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 500;
+  font-size: 1.25rem;
+  margin-bottom: .5rem;
+}
+.empty-state p { margin: 0 auto; max-width: 32rem; }
+.empty-state .actions { margin-top: 1.25rem; display: inline-flex; gap: .5rem; }
+
+/* Visible control bar — all options shown inline, no click-to-reveal.
+   Positioned bottom-center so it's discoverable and doesn't fight sidebars. */
+#proto-controls {
+  position: fixed;
+  bottom: .9rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem;
+  pointer-events: none;
+}
+#proto-controls > .proto-bar {
+  display: flex;
+  flex-wrap: nowrap;                /* never wrap — graceful scroll instead */
+  align-items: center;
+  gap: .5rem;
+  padding: .35rem .5rem;
+  border-radius: 999px;
+  background: rgb(var(--elevated) / .95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgb(var(--muted) / .3);
+  box-shadow: 0 8px 24px rgb(0 0 0 / .15);
+  font-size: .72rem;
+  color: rgb(var(--ink2));
+  pointer-events: auto;
+  max-width: calc(100vw - 2rem);
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+#proto-controls > .proto-bar::-webkit-scrollbar { display: none; }
+#proto-controls .proto-bar-section {
+  display: flex;
+  align-items: center;
+  gap: .4rem;
+  padding: 0 .25rem;
+  flex-shrink: 0;
+}
+#proto-controls .proto-bar-section + .proto-bar-section {
+  border-left: 1px solid rgb(var(--muted) / .3);
+  padding-left: .6rem;
+}
+#proto-controls .proto-bar-label {
+  color: rgb(var(--ink2));
+  white-space: nowrap;
+  font-size: .68rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+}
+/* Hide uppercase section labels on medium-width screens to keep single-line. */
+@media (max-width: 960px) {
+  #proto-controls .proto-bar-label { display: none; }
+}
+#proto-controls .proto-hint {
+  font-size: .65rem;
+  color: rgb(var(--ink2));
+  opacity: .7;
+  text-align: center;
+  pointer-events: none;
+  padding: .15rem .6rem;
+  border-radius: 999px;
+  background: rgb(var(--elevated) / .85);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+@media (max-width: 960px) {
+  #proto-controls .proto-hint { display: none; }
+}
+
+/* Segmented control: group + options */
+.proto-seg-group {
+  display: inline-flex;
+  background: rgb(var(--muted) / .2);
+  border-radius: 999px;
+  padding: 2px;
+  gap: 1px;
+}
+.proto-seg {
+  padding: .3rem .7rem;
+  border-radius: 999px;
+  font-size: .7rem;
+  color: rgb(var(--ink2));
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  transition: background .15s ease, color .15s ease;
+  font: inherit;
+  white-space: nowrap;
+  line-height: 1;
+}
+.proto-seg:hover {
+  color: rgb(var(--ink));
+  background: rgb(var(--muted) / .15);
+}
+.proto-seg[aria-pressed="true"] {
+  background: rgb(var(--ink));
+  color: rgb(var(--surface));
+  font-weight: 500;
+}
+
+/* Layout system — `.proto-grid` responds to data-layout on <html>.
+   Mobile: always 1 col. Tablet: 2. Desktop: 2 or 3 depending on layout. */
+.proto-grid {
+  display: grid;
+  gap: 1.25rem;
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+@media (min-width: 640px) {
+  .proto-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  html[data-layout="2col"] .proto-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  html[data-layout="3col"] .proto-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
+
+/* Mobile — with nowrap + overflow-x auto, bar scrolls horizontally.
+   Stays single-row for consistency across all viewports. */
+
+/* History drawer (Shift+?) */
+.proto-history {
+  position: fixed;
+  bottom: 5rem;
+  right: 1rem;
+  z-index: 45;
+  width: min(22rem, calc(100vw - 2rem));
+  max-height: 60vh;
+  overflow: auto;
+  padding: 1rem;
+  border-radius: 12px;
+  background: rgb(var(--elevated));
+  border: 1px solid rgb(var(--muted) / .2);
+  box-shadow: 0 10px 30px rgb(0 0 0 / .15);
+  display: none;
+}
+.proto-history.visible { display: block; }
+.proto-history h3 { font-weight: 600; margin-bottom: .5rem; }
+.proto-history ol { font-size: .85rem; color: rgb(var(--ink2)); }
+.proto-history li { padding: .25rem 0; }
+.proto-history a { color: rgb(var(--ink)); text-decoration: none; }
+.proto-history a:hover { color: rgb(var(--accent)); }

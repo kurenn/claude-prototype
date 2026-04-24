@@ -1,0 +1,65 @@
+# {{PRODUCT_NAME}} — Demo Walkthrough
+
+A click-through narrative for presenting this prototype. Follow top-to-bottom; each step is a screen or interaction you can show live.
+
+**Tip:** Click the 🔗 button in the floating control pill to copy a URL to the exact screen you're on, including any open modal or selected tab.
+
+---
+
+## Setup
+
+```
+cd {{SLUG}}
+python3 -m http.server 8000
+# or: npx serve .
+```
+
+Open http://localhost:8000 in the browser. Default theme is **{{DEFAULT_THEME}}**. Cycle through themes with the theme button in the bottom-right floating pill.
+
+Available themes: {{THEMES_LIST}}
+
+---
+
+## The story
+
+### 1. {{SCREEN_1_NAME}}
+**URL:** `index.html`
+
+{{SCREEN_1_NARRATIVE}}
+
+*Talking point:* {{SCREEN_1_TALKING_POINT}}
+
+**Action:** Click {{SCREEN_1_CTA}} → moves to {{SCREEN_2_NAME}}.
+
+---
+
+### 2. {{SCREEN_2_NAME}}
+**URL:** `{{SCREEN_2_FILE}}`
+
+{{SCREEN_2_NARRATIVE}}
+
+*Talking point:* {{SCREEN_2_TALKING_POINT}}
+
+**Action:** {{SCREEN_2_ACTION}}.
+
+---
+
+<!-- repeat for each screen in the flow -->
+
+---
+
+## Live tweaks during the demo
+
+Because everything is plain HTML + CSS vars, you can tweak things live in devtools:
+
+- **Swap theme** — button in the floating pill, or `html[data-theme="<name>"]`.
+- **Change accent color** — edit `--accent` in the active `html[data-theme]` block of `css/styles.css`.
+- **Edit copy** — every `<h1>`, `<p>`, button label is just text in the HTML.
+
+## What's fake vs real
+
+{{REAL_VS_FAKE_NOTES}}
+
+## Known gaps
+
+{{KNOWN_GAPS}}

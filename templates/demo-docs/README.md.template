@@ -1,0 +1,80 @@
+# {{PRODUCT_NAME}} — Prototype
+
+> {{ONE_LINE_PITCH}}
+
+A clickable prototype. Plain HTML, Tailwind via CDN, a few vanilla JS files. No build step. Runs anywhere a browser opens.
+
+## Run it
+
+Pick any one:
+
+```
+# Recommended — bundled no-cache dev server
+python3 serve.py
+# then open http://localhost:8000
+
+# Alternatives
+python3 -m http.server 8000     # standard, but caches aggressively
+npx serve .                     # Node alternative
+# or open index.html directly in your browser
+```
+
+**Why `serve.py`:** plain `python3 -m http.server` lets the browser cache CSS/JS, which makes edits look like they don't apply until a hard refresh (Cmd+Shift+R). `serve.py` sends `Cache-Control: no-store` so every reload fetches fresh files.
+
+## Features
+
+- **{{SCREEN_COUNT}} screens** — see `DEMO.md` for the click-through story.
+- **{{THEME_COUNT}} themes** — {{THEMES_LIST}}. Toggle via the 🎨 button bottom-right.
+- **Shareable URLs** — click 🔗 to copy a URL reproducing the exact screen + state (theme, modal, tab).
+- **Feedback mode** — append `?feedback=1` to any URL. A 💬 button appears. Click it, then click any element to pin a comment. Export JSON when done.
+- **Recent screens** — press `Shift + ?` to open the recently-viewed drawer.
+
+## File layout
+
+```
+{{SLUG}}/
+├── index.html
+├── <screens>.html
+├── css/
+│   ├── styles.css       ← design tokens per theme
+│   └── feedback.css
+├── js/
+│   ├── theme.js         ← theme switcher
+│   ├── state.js         ← URL state hydration + share button
+│   ├── app.js           ← page-specific interactions
+│   └── feedback.js      ← feedback overlay
+├── DESIGN.md            ← tokens + rationale
+├── DEMO.md              ← presenter walkthrough
+└── README.md            ← this file
+```
+
+## What's fake
+
+{{REAL_VS_FAKE_NOTES}}
+
+## Iterate
+
+- **Apply feedback** — export JSON from the feedback panel, then run in Claude Code:
+  ```
+  /prototype apply-feedback feedback-<timestamp>.json
+  ```
+- **Explore a variant** — fork into an alternative direction:
+  ```
+  /prototype variant "more corporate"
+  ```
+
+## Deploy (optional)
+
+Drop this folder on any static host — Vercel, Netlify, GitHub Pages, S3. No build required.
+
+```
+# Vercel
+npx vercel --prod
+
+# Netlify
+npx netlify deploy --prod --dir=.
+```
+
+---
+
+Built with [claude-prototype](https://github.com/kurenn/claude-prototype). Design assessment powered by [impeccable](https://impeccable.style/) when installed.

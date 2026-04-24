@@ -1,0 +1,204 @@
+/*
+ * Feedback overlay styles — self-contained, no Tailwind required.
+ * Uses the same CSS vars as the scaffold so it inherits theme.
+ */
+
+body.proto-fb-active { cursor: crosshair !important; }
+body.proto-fb-active * { cursor: crosshair !important; }
+
+/* Numbered pin on commented elements */
+.proto-fb-pin {
+  position: absolute;
+  z-index: 9998;
+  width: 24px;
+  height: 24px;
+  border-radius: 999px;
+  background: rgb(var(--accent));
+  color: rgb(var(--surface));
+  font-size: 12px;
+  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid rgb(var(--surface));
+  box-shadow: 0 2px 8px rgb(0 0 0 / .2);
+  cursor: pointer;
+  padding: 0;
+}
+.proto-fb-pin:hover { transform: scale(1.1); }
+
+/* Popover (appears at click point) */
+.proto-fb-popover {
+  position: fixed;
+  z-index: 10000;
+  width: 280px;
+  background: rgb(var(--elevated));
+  color: rgb(var(--ink));
+  border: 1px solid rgb(var(--muted) / .3);
+  border-radius: 10px;
+  box-shadow: 0 10px 40px rgb(0 0 0 / .2);
+}
+.proto-fb-popover-body { padding: .75rem; display: grid; gap: .5rem; }
+.proto-fb-types {
+  display: flex;
+  gap: .5rem;
+  font-size: .8rem;
+  color: rgb(var(--ink2));
+}
+.proto-fb-types label { display: inline-flex; gap: .25rem; align-items: center; }
+.proto-fb-popover textarea {
+  width: 100%;
+  border: 1px solid rgb(var(--muted) / .3);
+  border-radius: 6px;
+  padding: .5rem;
+  font: inherit;
+  color: inherit;
+  background: rgb(var(--surface));
+  resize: vertical;
+  min-height: 70px;
+}
+.proto-fb-popover-actions { display: flex; gap: .5rem; justify-content: flex-end; }
+.proto-fb-popover button {
+  font: inherit;
+  font-size: .8rem;
+  padding: .35rem .75rem;
+  border-radius: 6px;
+  border: 1px solid rgb(var(--muted) / .3);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.proto-fb-popover button.proto-fb-primary {
+  background: rgb(var(--accent));
+  color: rgb(var(--surface));
+  border-color: transparent;
+}
+
+/* Side panel */
+.proto-fb-panel {
+  position: fixed;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: min(22rem, 90vw);
+  background: rgb(var(--elevated));
+  color: rgb(var(--ink));
+  border-left: 1px solid rgb(var(--muted) / .2);
+  box-shadow: -10px 0 40px rgb(0 0 0 / .1);
+  z-index: 9999;
+  display: none;
+  flex-direction: column;
+  font-size: .85rem;
+}
+.proto-fb-panel.visible { display: flex; }
+.proto-fb-panel header {
+  display: flex; align-items: center; gap: .5rem;
+  padding: .75rem 1rem;
+  border-bottom: 1px solid rgb(var(--muted) / .2);
+}
+.proto-fb-panel header strong { font-size: 1rem; }
+.proto-fb-count {
+  font-size: .7rem;
+  background: rgb(var(--muted) / .2);
+  border-radius: 999px;
+  padding: 2px 8px;
+}
+.proto-fb-panel header button[data-fb-panel-close] {
+  margin-left: auto;
+  background: transparent;
+  border: 0;
+  font-size: 1.2rem;
+  cursor: pointer;
+  color: inherit;
+}
+.proto-fb-panel-body {
+  flex: 1;
+  overflow: auto;
+  padding: .5rem 1rem;
+}
+.proto-fb-panel-body h4 {
+  font-size: .7rem;
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  color: rgb(var(--ink2));
+  margin: 1rem 0 .5rem;
+}
+.proto-fb-empty { color: rgb(var(--ink2)); padding: 1rem 0; }
+.proto-fb-hint {
+  padding: .5rem .75rem;
+  background: rgb(var(--accent) / .1);
+  border-radius: 6px;
+  margin-bottom: .5rem;
+  font-size: .8rem;
+}
+
+.proto-fb-panel ul { list-style: none; padding: 0; margin: 0; display: grid; gap: .5rem; }
+.proto-fb-item {
+  padding: .6rem .75rem;
+  border: 1px solid rgb(var(--muted) / .2);
+  border-radius: 8px;
+  background: rgb(var(--surface));
+}
+.proto-fb-item.proto-fb-type-bug      { border-left: 3px solid #e64545; }
+.proto-fb-item.proto-fb-type-change   { border-left: 3px solid rgb(var(--accent)); }
+.proto-fb-item.proto-fb-type-question { border-left: 3px solid #e0a020; }
+
+.proto-fb-meta {
+  display: flex; align-items: center; gap: .5rem;
+  font-size: .7rem;
+  color: rgb(var(--ink2));
+  margin-bottom: .25rem;
+}
+.proto-fb-badge {
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-weight: 600;
+  background: rgb(var(--muted) / .2);
+  padding: 1px 6px;
+  border-radius: 4px;
+}
+.proto-fb-meta button[data-fb-del] {
+  margin-left: auto;
+  background: transparent; border: 0;
+  color: inherit; cursor: pointer;
+  font-size: 1rem;
+}
+.proto-fb-item p { margin: 0 0 .25rem; }
+.proto-fb-item small {
+  display: block;
+  color: rgb(var(--ink2));
+  font-family: ui-monospace, monospace;
+  font-size: .7rem;
+  margin-bottom: .25rem;
+  word-break: break-all;
+}
+.proto-fb-item a { color: rgb(var(--accent)); font-size: .75rem; text-decoration: none; }
+
+.proto-fb-panel footer {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: .4rem;
+  padding: .75rem 1rem;
+  border-top: 1px solid rgb(var(--muted) / .2);
+}
+.proto-fb-panel footer button {
+  font: inherit;
+  font-size: .75rem;
+  padding: .4rem .6rem;
+  border-radius: 6px;
+  border: 1px solid rgb(var(--muted) / .3);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.proto-fb-panel footer button[data-fb-mode] {
+  grid-column: span 2;
+  background: rgb(var(--accent));
+  color: rgb(var(--surface));
+  border-color: transparent;
+}
+.proto-fb-panel footer button.is-on {
+  background: rgb(var(--ink));
+}
+.proto-fb-panel footer button.proto-fb-danger { color: #e64545; }
+.proto-fb-panel footer button:disabled { opacity: .4; cursor: not-allowed; }

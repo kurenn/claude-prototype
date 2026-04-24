@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-theme="studio" data-layout="3col" data-persona="default">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Not found · {{PRODUCT_NAME}}</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family={{HEADING_FONT}}:wght@500;700&family={{BODY_FONT}}:wght@400;500&display=swap" rel="stylesheet" />
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = { theme: { extend: {
+      colors: {
+        surface:  'rgb(var(--surface)  / <alpha-value>)',
+        elevated: 'rgb(var(--elevated) / <alpha-value>)',
+        accent:   'rgb(var(--accent)   / <alpha-value>)',
+        muted:    'rgb(var(--muted)    / <alpha-value>)',
+        ink:      'rgb(var(--ink)      / <alpha-value>)',
+        ink2:     'rgb(var(--ink2)     / <alpha-value>)',
+      },
+      fontFamily: { heading: ['{{HEADING_FONT}}','serif'], body: ['{{BODY_FONT}}','system-ui','sans-serif'] },
+      borderRadius: { proto: 'var(--radius)' },
+    }}};
+  </script>
+  <link rel="stylesheet" href="css/styles.css" />
+  <link rel="stylesheet" href="css/feedback.css" />
+</head>
+<body class="bg-surface text-ink font-body antialiased min-h-screen flex flex-col items-center justify-center p-6">
+
+  <main class="text-center max-w-md">
+    <p class="text-sm tracking-wide text-ink2 uppercase mb-4">404</p>
+    <h1 class="font-heading text-4xl md:text-5xl font-medium tracking-tight mb-3">Nothing here.</h1>
+    <p class="text-ink2 mb-8">The page you're looking for doesn't exist — or never did. Could be a dead link in the prototype.</p>
+    <div class="flex gap-2 justify-center">
+      <a href="index.html" class="rounded-proto bg-ink text-surface px-4 py-2 text-sm font-medium">Back home</a>
+      <a href="javascript:history.back()" class="rounded-proto border border-muted/40 px-4 py-2 text-sm">Go back</a>
+    </div>
+  </main>
+
+  <script src="js/state.js"></script>
+  <script src="js/theme.js"></script>
+</body>
+</html>
