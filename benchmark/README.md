@@ -16,18 +16,31 @@ dropping dimension 1. You need both numbers to prove that.
 
 ## Dimension 1 — output quality
 
-`score-output.sh` runs ~40 objective, automatable checks against a generated prototype
-folder, derived from SKILL.md's non-negotiable constraints and `checks/builtin-lint.md`:
-structure (all eight JS files, serve.py, docs), the control bar (present on every page,
-segmented, `flex-wrap:nowrap`), three-dimensional switching (theme/layout/persona),
-interaction states (loading, toast, empty, skeleton), anti-slop content (no lorem, no
-placeholder names, no purple gradients), no build tooling, alt text, and a dead-link
-soft signal. It prints a weighted score out of 100 and exits non-zero below the
-threshold (default 80).
+`score-output.sh` runs objective, automatable checks against a generated prototype
+folder in **two tiers**, reporting a subtotal for each plus a combined total:
 
-This is a **regression floor**, not a substitute for impeccable or human taste. It
-catches the mechanical failures — a missing `layout.js`, a control bar that wraps, lorem
-ipsum that slipped in — which are exactly the things a refactor can silently break.
+- **Tier 1 — regression floor** ("did we break the basics?"). Present/absent checks
+  derived from SKILL.md's constraints and `checks/builtin-lint.md`: all eight JS files,
+  serve.py, docs; the control bar (present on every page, segmented, `flex-wrap:nowrap`);
+  three-dimensional switching wired; interaction states (loading, toast, empty, skeleton);
+  anti-slop content (no lorem, no placeholder names, no purple gradients); no build tooling;
+  alt text; dead-link signal. A competent run **saturates this near 100%** — that's by
+  design. Its job is to catch the mechanical failures a refactor breaks quietly: a missing
+  `layout.js`, a wrapped bar, lorem ipsum that slipped in.
+
+- **Tier 2 — depth / integrity** ("is it actually wired correctly?"). Cross-file
+  consistency checks that do **not** saturate, because subtle mismatches are easy to ship:
+  every theme/layout/persona name matched across `*.js` + `styles.css` + control-bar
+  buttons (a typo here silently breaks the toggle); layouts actually customized (not the
+  `layout-a`/`layout-b` placeholder); script load order correct on every screen; modals
+  carry `role=dialog` + `aria-modal`; `:focus-visible` defined; at least one non-default
+  persona. This tier is the **discriminating signal** between skill versions — a rushed
+  build that leaves placeholder layouts or mismatches names loses Tier 2 points while
+  still passing Tier 1.
+
+It prints both subtotals + a combined total out of ~168 and exits non-zero below the
+threshold (default 80%). Not a substitute for impeccable or human taste — it's the
+automatable floor + integrity layer you can track across skill changes.
 
 ### Run it
 
