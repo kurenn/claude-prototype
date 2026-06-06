@@ -118,7 +118,7 @@ kills a demo. Baseline checklist:
 - **Empty state** — every list/grid has an `.empty-state` wrapper for when the persona's list is empty: headline + one-line explainer + primary action ("Browse vendors", "Create your first…"). Ship at least the primary collection view's empty state on each side.
 - **Error state / 404** — `404.html` ships with the scaffold. Link at least one "broken" affordance to it. Form validation errors render inline under the field, not as dismissable alerts.
 - **Form state persistence** — multi-step inputs save to localStorage and restore on reload. Cheap win; makes the demo feel alive across refreshes.
-- **Skeleton loaders** — any list/grid that changes on user action (filter chips, pagination, persona switch, page load) briefly swaps to placeholder silhouettes. Mark the container `data-skeleton-on-filter` (auto-wires to filter events) or call `UI.fakeLoad(container, 650, { count: 6 })`. The `.skeleton` class + shimmer ships in styles.css; shape with `.is-text` / `.is-text-lg` / `.is-block` / `.is-circle`.
+- **Skeleton loaders** — any list/grid that changes on user action (filter chips, pagination, persona switch, page load) briefly swaps to placeholder silhouettes. Mark a container `data-skeleton-on-load` (auto-wires on page load; tune with `data-skeleton-count` / `data-skeleton-duration`), and for filter/pagination/persona changes call `UI.fakeLoad(container, 650, { count: 6 })` from the relevant handler in `app.js`. The `.skeleton` class + shimmer ships in styles.css; shape with `.is-text` / `.is-text-lg` / `.is-block` / `.is-circle`.
 
 ### Layout system
 

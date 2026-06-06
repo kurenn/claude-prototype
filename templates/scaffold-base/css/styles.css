@@ -133,7 +133,7 @@ body { transition: background-color .3s ease, color .3s ease; }
 }
 .empty-state h3 {
   color: rgb(var(--ink));
-  font-family: 'Fraunces', Georgia, serif;
+  font-family: inherit;   /* use the prototype's heading font, not a hardcoded one */
   font-weight: 500;
   font-size: 1.25rem;
   margin-bottom: .5rem;

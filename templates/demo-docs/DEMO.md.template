@@ -14,7 +14,7 @@ python3 -m http.server 8000
 # or: npx serve .
 ```
 
-Open http://localhost:8000 in the browser. Default theme is **{{DEFAULT_THEME}}**. Cycle through themes with the theme button in the bottom-right floating pill.
+Open http://localhost:8000 in the browser. Default theme is **{{DEFAULT_THEME}}**. Switch themes from the segmented control bar at bottom-center (every option is shown at once).
 
 Available themes: {{THEMES_LIST}}
 
@@ -52,7 +52,7 @@ Available themes: {{THEMES_LIST}}
 
 Because everything is plain HTML + CSS vars, you can tweak things live in devtools:
 
-- **Swap theme** — button in the floating pill, or `html[data-theme="<name>"]`.
+- **Swap theme** — segmented control at bottom-center, or `html[data-theme="<name>"]`.
 - **Change accent color** — edit `--accent` in the active `html[data-theme]` block of `css/styles.css`.
 - **Edit copy** — every `<h1>`, `<p>`, button label is just text in the HTML.
 
