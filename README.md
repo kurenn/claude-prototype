@@ -152,7 +152,12 @@ Then click through the control bar at the bottom to toggle theme, layout, and pe
 
 ```
 claude-prototype/
-├── SKILL.md                       # the skill definition Claude reads
+├── SKILL.md                       # the skill router Claude reads on trigger
+├── reference/                     # phase detail, loaded on demand (progressive disclosure)
+│   ├── discovery.md               # steps 1–4: mode, Q&A, spec, design shaping
+│   ├── build.md                   # steps 5–6: scaffold, control bar, data, screens
+│   ├── assess.md                  # steps 7–8: assessment + browser QA
+│   └── subcommands.md             # variant + apply-feedback
 ├── install.sh                     # symlink or copy install
 ├── ensure-deps.sh                 # auto-installs impeccable + prompt-refiner
 ├── templates/
@@ -161,7 +166,7 @@ claude-prototype/
 │   └── demo-docs/                 # DEMO.md + README.md templates
 ├── checks/
 │   └── builtin-lint.md            # fallback rules when impeccable absent
-├── examples/                      # sample prototypes built with the skill
+├── benchmark/                     # objective output + context-cost benchmark
 ├── CONTRIBUTING.md
 ├── LICENSE                        # MIT
 └── README.md
