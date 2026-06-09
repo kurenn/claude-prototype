@@ -57,7 +57,8 @@
     <section class="max-w-2xl">
       <h1 class="font-heading text-5xl font-bold tracking-tight leading-tight">{{HERO_HEADLINE}}</h1>
       <p class="mt-6 text-lg text-ink2 leading-relaxed">{{HERO_SUB}}</p>
-      <div class="mt-8 flex gap-3">
+      <!-- Action rows wrap (flex-wrap) so they never overflow the viewport at 390px. -->
+      <div class="mt-8 flex flex-wrap gap-3">
         <a href="#" class="rounded-proto bg-accent text-surface px-5 py-3 font-medium">Primary action</a>
         <a href="#" class="rounded-proto border border-muted/30 px-5 py-3 font-medium">Secondary</a>
       </div>

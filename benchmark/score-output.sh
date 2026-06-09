@@ -188,6 +188,23 @@ fi
 
 check 4 "focus-visible styles defined" "$(grep_present ':focus-visible')" "keyboard a11y"
 
+# Wide tables must scroll inside a wrapper, not push the page wider than a phone.
+# Proxy: every page with a <table> carries ≥ as many overflow-x wrappers as tables.
+tbl_ok=1; tbl_total=0
+while IFS= read -r p; do
+  [ -z "$p" ] && continue
+  t=$(grep -ocE '<table' "$p" 2>/dev/null); t=${t:-0}
+  [ "$t" -eq 0 ] && continue
+  tbl_total=$((tbl_total+t))
+  w=$(grep -oE 'proto-table-wrap|overflow-x-auto|overflow-auto' "$p" 2>/dev/null | wc -l | tr -d ' ')
+  [ "${w:-0}" -ge "$t" ] || tbl_ok=0
+done < <(html_pages)
+if [ "$tbl_total" -eq 0 ]; then
+  check 3 "tables wrapped for mobile scroll" 1 "no tables — n/a"
+else
+  check 3 "tables wrapped for mobile scroll" "$tbl_ok" "$tbl_total table(s), each in an overflow-x wrapper"
+fi
+
 # Distinct personas with content (≥2 → at least one non-default state exists)
 multi_persona=0; [ "${pcount:-0}" -ge 2 ] && multi_persona=1
 check 3 "≥2 personas (incl. a non-default state)" "$multi_persona" "${pcount:-0} found"
