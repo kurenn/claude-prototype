@@ -100,10 +100,14 @@ nothing alike (one can even ship a layout defect grep can't see). Tier 3 closes 
 **rendering the prototype and judging the pixels**. Full protocol in `design-judge.md`.
 
 ```bash
-benchmark/render.sh <prototype-dir>          # → <dir>/.shots/*.png (desktop + mobile)
+benchmark/render.sh <prototype-dir>          # → <dir>/.shots/*.png (desktop + tablet)
+benchmark/check-overflow.sh <prototype-dir>  # objective: no horizontal overflow at true 390px
 # then stage two builds into neutral A/ and B/ dirs and run a blind pairwise judge
 # (see design-judge.md) — never tell the judge which side is baseline vs candidate.
 ```
+
+> Screenshots are faithful only at ≥500px (Chrome headless clamps narrower windows). For
+> phone-width overflow, trust `check-overflow.sh` (true 390px viewport), not a `-w390` shot.
 
 - `render.sh` — headless-Chrome screenshots of every screen at desktop + mobile widths.
   No npm deps; Chrome must be installed (`$CHROME` to override the path).
@@ -136,7 +140,8 @@ output quality is a regression regardless of how lean it made the skill.
 
 - `score-output.sh` — objective output-quality scorer (run on a generated prototype dir).
 - `context-cost.sh` — trigger-time vs full token cost vs baseline.
-- `render.sh` — render a prototype dir to desktop + mobile screenshots (Tier 3).
+- `render.sh` — render a prototype dir to desktop + tablet screenshots (Tier 3).
+- `check-overflow.sh` — objective horizontal-overflow guard at a true 390px viewport (exits non-zero on overflow).
 - `design-judge.md` — blind pairwise design-quality rubric (Tier 3).
 - `baseline.json` — pre-refactor trigger-time cost, for the comparison.
 - `briefs/` — three fixed briefs (SaaS dashboard, marketplace, fintech) to generate from.
