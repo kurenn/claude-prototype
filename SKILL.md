@@ -110,6 +110,16 @@ These are load-bearing — they're what separates this from generic AI output.
 - **One question per turn** during discovery — conversational, not a form.
 - **No hardcoded paths or user names** — this is open source.
 
+### Never ship without (check on every screen before assess)
+
+These three are kept here in the always-loaded router on purpose: blind design review
+repeatedly caught them being dropped when their detail lived only in `reference/`. The
+how-to is still in `reference/build.md` / `reference/assess.md` — but the rule lives here.
+
+- **No horizontal scroll at 390px — including toolbars.** Not just tables (`.proto-table-wrap`): search bars, filter-chip rows, and header action clusters must wrap (`.proto-actions` / `flex-wrap`) so no primary action lands off-screen. A clipped "Approve"/"Book" button is a blocker.
+- **Color restraint — one accent, no gradient fills.** No multi-hue card faces, no purple/violet-on-black, no gradient text. Generic gradients are the #1 "AI-generated" tell and read as off-brand on a serious product.
+- **a11y floor.** `:focus-visible` rings defined (Tailwind's reset drops them); every modal carries `role="dialog"` + `aria-modal`.
+
 ## References
 - Phase detail: `reference/discovery.md` · `reference/build.md` · `reference/assess.md` · `reference/subcommands.md`
 - Scaffold templates: `templates/scaffold-base/` (control-bar markup + script order live here)
