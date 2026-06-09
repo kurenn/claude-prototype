@@ -24,9 +24,9 @@ npx serve .                     # Node alternative
 ## Features
 
 - **{{SCREEN_COUNT}} screens** — see `DEMO.md` for the click-through story.
-- **{{THEME_COUNT}} themes** — {{THEMES_LIST}}. Toggle via the 🎨 button bottom-right.
-- **Shareable URLs** — click 🔗 to copy a URL reproducing the exact screen + state (theme, modal, tab).
-- **Feedback mode** — append `?feedback=1` to any URL. A 💬 button appears. Click it, then click any element to pin a comment. Export JSON when done.
+- **{{THEME_COUNT}} themes** — {{THEMES_LIST}}. Switch from the segmented control bar at bottom-center (all options shown).
+- **Shareable URLs** — click 🔗 in the control bar to copy a URL reproducing the exact screen + state (theme, layout, persona, modal, tab).
+- **Feedback** — the 💬 button in the control bar is always on. Click it, then click any element to pin a comment. Export JSON when done.
 - **Recent screens** — press `Shift + ?` to open the recently-viewed drawer.
 
 ## File layout

@@ -1,0 +1,8 @@
+{
+  "_comment": "Pre-progressive-disclosure baseline, captured before the SKILL.md split. Trigger-time cost = what loads into context every time the skill fires. Lower is better; output quality must not drop to get there.",
+  "captured": "2026-06-05",
+  "trigger_time_chars": 30513,
+  "trigger_time_tokens_est": 7628,
+  "trigger_time_lines": 445,
+  "note": "Everything was inline in SKILL.md. context-cost.sh compares the current trigger-time cost against this."
+}
