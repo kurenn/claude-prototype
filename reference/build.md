@@ -8,6 +8,10 @@ How to lay down the scaffold from `templates/` and build out each screen. Read
 Create the prototype folder (default `$(pwd)/<slug>/`) and populate it from
 `templates/scaffold-base/` + `templates/feedback-overlay/`.
 
+First, write the two context files from the spec (discovery.md Step 4): **`PRODUCT.md`**
+and **`DESIGN.md`** at the folder root. PRODUCT.md is required — Step 7's impeccable audit
+silently falls back to builtin-lint without it. Don't run `impeccable teach`; write it yourself.
+
 **Copy literally, no edits** (product-agnostic platform code):
 - `scaffold-base/js/state.js` → `js/state.js` — URL state utility.
 - `scaffold-base/js/ui.js` → `js/ui.js` — interaction helpers (loading button, toast, declarative `[data-loading]` / `[data-toast]` / `[data-confirm]`).
@@ -48,6 +52,7 @@ Create the prototype folder (default `$(pwd)/<slug>/`) and populate it from
 │   └── feedback.js         # pin-to-element overlay (always on)
 ├── assets/images/          # placeholder images
 ├── serve.py                # no-cache dev server
+├── PRODUCT.md               # impeccable context (users, tone, register) — required for Step 7 audit
 ├── DESIGN.md
 ├── DEMO.md
 └── README.md

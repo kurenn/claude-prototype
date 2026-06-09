@@ -69,16 +69,49 @@ Rules of thumb:
 - **Make the differences real.** Switching must visibly change rendering, not nudge padding by 4px.
 - **Pick from inspiration.** Linear shared → density. Airbnb shared → grid/gallery/list.
 
-## Step 4: Design shaping
+## Step 4: Design shaping — write PRODUCT.md + DESIGN.md
 
-If impeccable is loaded, run `impeccable teach` then `impeccable shape` with the spec +
-inspiration to produce a per-prototype `DESIGN.md` (palette, typography, spacing, motion).
+Both files live **in the prototype folder** (write them during scaffold, Step 5, once the
+folder exists), not globally. Each prototype has its own. You have everything you need from
+the spec — write them directly. **Do not run `impeccable teach`**: it's an interactive Q&A
+that stalls Quick mode. Writing PRODUCT.md yourself satisfies impeccable's required setup
+gate (see Step 7), so the audit can run without it asking to set up context.
 
-Otherwise generate `DESIGN.md` inline with these defaults:
+### PRODUCT.md (required by impeccable — without it, Step 7's audit silently falls back)
+
+Short but real (>200 chars, no `[TODO]` placeholders). From the spec:
+
+```markdown
+# <Product name>
+
+register: product   # "product" for app UI / dashboards / tools; "brand" for landing/pitch pages
+
+## Product purpose
+<one-line pitch + what it does>
+
+## Users
+<who uses it, their context, what they need — from the audience answer>
+
+## Brand & tone
+<the 3–5 tone adjectives, made concrete: voice, density, formality>
+
+## Anti-references
+<what it must NOT look like — e.g. "not a consumer toy", "no generic dark-SaaS purple">
+
+## Strategic principles
+<2–3 bullets on what good looks like for this product>
+```
+
+Pick `register` honestly: most prototypes (dashboards, app shells, tools) are **product**;
+a sales pitch page or marketing landing is **brand**. It changes which impeccable reference
+(brand vs product) the audit applies.
+
+### DESIGN.md (palette, typography, spacing, motion)
+
+Generate inline with these defaults (or run `$impeccable shape "<spec>"` if impeccable is
+loaded — it now finds PRODUCT.md and won't trigger `teach`):
 - **Color** — one accent, one neutral ramp (9 steps), one surface. Each theme remaps the ramp.
 - **Typography** — one heading + one body font (Google Fonts). Scale: 12 / 14 / 16 / 20 / 24 / 32 / 48.
 - **Spacing** — 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64.
 - **Radius** — 0 / 4 / 8 / 16 across the theme moods.
 - **Motion** — 150ms ease-out default; reveal-on-scroll only where it earns attention.
-
-`DESIGN.md` lives in the prototype folder, not globally. Each prototype has its own.

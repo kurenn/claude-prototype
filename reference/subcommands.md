@@ -19,7 +19,7 @@ Fork the current prototype into a sibling folder to explore an alternative direc
    - **type: "bug"** — locate the element via `selector`, fix the broken interaction. Verify by navigating to `shareable_url` and reproducing.
    - **type: "change"** — apply the visual / layout / copy change.
    - **type: "question"** — write an inline answer in `feedback-responses.md` (no code change).
-4. After all comments applied, re-run impeccable audit + builtin lint.
+4. After all comments applied, re-assess (Step 7): `impeccable audit .` if present (PRODUCT.md/DESIGN.md ship in the folder, so the gate is satisfied), else builtin-lint.
 5. Re-screenshot affected screens (if chrome available).
 6. Archive the applied JSON to `feedback/applied/<timestamp>.json` with a per-comment summary.
 7. Atomic commit: *"apply feedback batch YYYY-MM-DD: N items"*.
