@@ -59,6 +59,23 @@ Create the prototype folder (default `$(pwd)/<slug>/`) and populate it from
 - The visible control bar (below) — not a click-to-reveal pill.
 - Scripts loaded in this order at the end of `<body>`: `state.js` → `theme.js` → `layout.js` → `data.js` → `persona.js` → `ui.js` → `app.js` → `feedback.js`. Data loads before persona (persona reads it); ui before app (app may call `UI.toast`).
 
+### No horizontal overflow at 390px
+
+The page must not scroll sideways on a phone — a clipped primary button or an
+off-screen amount column reads as broken. The scaffold reserves space for the fixed
+control bar (`body { padding-bottom }`) and ships two utilities; use them:
+- **Tables:** wrap every `<table>` in `<div class="proto-table-wrap">` so the table scrolls
+  inside its card instead of pushing the whole page wider. (Tailwind `overflow-x-auto` works too.)
+- **Toolbar / filter / header-action rows:** give the flex container `class="proto-actions"`
+  (or Tailwind `flex flex-wrap`) so button clusters wrap to a second line rather than overflowing.
+- **Stat / KPI strips:** use `proto-grid` or `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` — never a
+  fixed multi-column row that can't reflow.
+- **App-shell layouts** that scroll an inner `<main>` instead of the page: mirror the control-bar
+  `padding-bottom` on that scroll container, or the last row hides under the bar.
+
+Verify: at a 390px viewport, nothing clips off the right edge and the page has no horizontal
+scrollbar. `benchmark/render.sh` captures a `-w390` shot of every screen for this check.
+
 ### Visible control bar
 
 The exact markup ships in `templates/scaffold-base/index.html` (the `#proto-controls`

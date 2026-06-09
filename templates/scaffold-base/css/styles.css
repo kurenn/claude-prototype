@@ -155,6 +155,11 @@ body { transition: background-color .3s ease, color .3s ease; }
   gap: .25rem;
   pointer-events: none;
 }
+/* Reserve space so the fixed control bar never occludes the last row of content.
+   App-shell layouts that scroll an inner <main> (instead of the page) should mirror
+   this padding-bottom on that scroll container. */
+body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
+
 #proto-controls > .proto-bar {
   display: flex;
   flex-wrap: nowrap;                /* never wrap — graceful scroll instead */
@@ -243,6 +248,15 @@ body { transition: background-color .3s ease, color .3s ease; }
   color: rgb(var(--surface));
   font-weight: 500;
 }
+
+/* Wide content (data tables especially) scrolls inside this wrapper instead of
+   pushing the whole page wider than the viewport. Wrap every <table> in one. */
+.proto-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.proto-table-wrap > table { min-width: max-content; }
+
+/* Action / filter / toolbar rows: wrap to the next line on narrow screens rather
+   than overflowing horizontally. Apply to header button clusters and filter chips. */
+.proto-actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
 
 /* Layout system — `.proto-grid` responds to data-layout on <html>.
    Mobile: always 1 col. Tablet: 2. Desktop: 2 or 3 depending on layout. */
