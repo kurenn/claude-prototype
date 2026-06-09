@@ -43,9 +43,17 @@
     while (el && el.nodeType === 1 && el !== document.body) {
       let sel = el.tagName.toLowerCase();
       if (el.id) { path.unshift('#' + CSS.escape(el.id)); break; }
-      const dataAttr = Array.from(el.attributes).find(a => a.name.startsWith('data-') && a.name !== 'data-theme');
-      if (dataAttr) {
-        sel += `[${dataAttr.name}="${CSS.escape(dataAttr.value)}"]`;
+      // Prefer a STABLE identifying data-* attr. Skip behavioral / volatile hooks —
+      // control-bar toggles, loading/toast/confirm, feedback internals — because they're
+      // non-unique (e.g. every button has data-loading) or keyed on copy that changes,
+      // so apply-feedback would relocate the wrong element (or none) later.
+      const SKIP = /^data-(theme|layout|persona|loading|toast|confirm|share|feedback|fb-|skeleton)/;
+      const idAttr = Array.from(el.attributes).find(
+        a => a.name.startsWith('data-') && !SKIP.test(a.name) && a.value
+      );
+      if (idAttr) {
+        // Escape only what breaks a quoted attribute-selector string: backslash and quote.
+        sel += `[${idAttr.name}="${idAttr.value.replace(/["\\]/g, '\\$&')}"]`;
       } else {
         const parent = el.parentElement;
         if (parent) {
