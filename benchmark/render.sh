@@ -10,20 +10,31 @@
 # Env overrides:
 #   CHROME   path to a Chrome/Chromium binary (auto-detected on macOS by default)
 #   PORT     local server port (default 8973)
-#   WIDTHS   space-separated viewport widths (default "1440 390")
+#   WIDTHS   space-separated viewport widths (default "1440 768")
 #
 # Notes:
 #   - Captures the above-the-fold viewport (window-size), which is what a viewer
 #     sees first — deliberately not full-page, since first impression is the signal.
 #   - 404.html is skipped (not a design surface).
 #   - No npm deps. Chrome must be installed.
+#
+#   *** FIDELITY LIMIT — READ THIS ***
+#   Chrome --headless=new clamps the layout viewport to a ~500px MINIMUM width. Asking
+#   for --window-size=390 lays the page out at 500px and captures the left 390px of it,
+#   which FALSELY looks like horizontal overflow. So these screenshots are faithful only
+#   at widths >= 500. Do NOT judge phone-width (390) overflow from render.sh output — use
+#   the true-viewport iframe probe in design-judge.md ("Measuring real mobile overflow").
 set -euo pipefail
 
 DIR="${1:?usage: render.sh <prototype-dir> [out-dir]}"
 [ -d "$DIR" ] || { echo "no such dir: $DIR" >&2; exit 1; }
 OUT="${2:-$DIR/.shots}"
 PORT="${PORT:-8973}"
-WIDTHS="${WIDTHS:-1440 390}"
+WIDTHS="${WIDTHS:-1440 768}"
+
+for w in $WIDTHS; do
+  [ "$w" -lt 500 ] && echo "WARN: width ${w} < 500 — Chrome headless floor is ~500px; this shot will be CLIPPED, not a faithful ${w}px layout. See design-judge.md." >&2
+done
 
 CHROME="${CHROME:-/Applications/Google Chrome.app/Contents/MacOS/Google Chrome}"
 if [ ! -x "$CHROME" ]; then
