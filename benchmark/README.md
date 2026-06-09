@@ -92,6 +92,31 @@ point). If you grow `SKILL.md`, trigger-time cost rises and the script shows it.
 
 ---
 
+## Dimension 3 — design quality (rendered)
+
+Dimensions 1–2 never look at the rendered page, so they're blind to *taste* — hierarchy,
+spacing, color discipline, polish, AI-slop. Two prototypes can both score ~168/168 and look
+nothing alike (one can even ship a layout defect grep can't see). Tier 3 closes that gap by
+**rendering the prototype and judging the pixels**. Full protocol in `design-judge.md`.
+
+```bash
+benchmark/render.sh <prototype-dir>          # → <dir>/.shots/*.png (desktop + mobile)
+# then stage two builds into neutral A/ and B/ dirs and run a blind pairwise judge
+# (see design-judge.md) — never tell the judge which side is baseline vs candidate.
+```
+
+- `render.sh` — headless-Chrome screenshots of every screen at desktop + mobile widths.
+  No npm deps; Chrome must be installed (`$CHROME` to override the path).
+- `design-judge.md` — the blind pairwise rubric (10 lenses, randomized A/B, win-rate).
+- A **tie is the success condition** for a context-cost refactor: it means relocating
+  guidance into `reference/` didn't hurt the output a judge can see. This is the regression
+  test for progressive disclosure's one real risk — detail in `reference/` getting skipped.
+
+Taste is noisy: n=1/brief shows direction, not proof. For a real claim, render 2–3 builds
+per side per brief and compare win-rate. Record runs in `results/` (gitignored).
+
+---
+
 ## What "improving" means here
 
 | You changed… | Output quality should… | Trigger-time cost should… |
@@ -111,5 +136,8 @@ output quality is a regression regardless of how lean it made the skill.
 
 - `score-output.sh` — objective output-quality scorer (run on a generated prototype dir).
 - `context-cost.sh` — trigger-time vs full token cost vs baseline.
+- `render.sh` — render a prototype dir to desktop + mobile screenshots (Tier 3).
+- `design-judge.md` — blind pairwise design-quality rubric (Tier 3).
 - `baseline.json` — pre-refactor trigger-time cost, for the comparison.
 - `briefs/` — three fixed briefs (SaaS dashboard, marketplace, fintech) to generate from.
+- `results/` — gitignored scratch for recorded A/B runs.

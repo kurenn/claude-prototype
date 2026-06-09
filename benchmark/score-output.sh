@@ -108,9 +108,13 @@ imgnoalt=$(grep -rEho '<img[^>]*>' "$DIR" --include='*.html' 2>/dev/null | grep 
 imgalt_ok=1; [ "${imgnoalt:-0}" -gt 0 ] && imgalt_ok=0
 check 3 "all <img> have alt" "$imgalt_ok" "${imgnoalt:-0} missing"
 
-bare=$(grep -rho 'href="#"' "$DIR" --include='*.html' 2>/dev/null | wc -l | tr -d ' ')
+# Dead ends = href="#" with NO click handler. A href="#" that carries a
+# data-toast / data-confirm / data-modal / onclick is a wired demo stub, not a dead end.
+bare=$(grep -rhoE '<a [^>]*href="#"[^>]*>' "$DIR" --include='*.html' 2>/dev/null \
+  | grep -vE 'data-(toast|confirm|modal|persona|layout|theme)|onclick|data-action' \
+  | wc -l | tr -d ' ')
 dead_ok=1; [ "${bare:-0}" -gt 5 ] && dead_ok=0
-check 3 "few bare href=\"#\" dead links" "$dead_ok" "${bare:-0} found (>5 = likely dead ends)"
+check 3 "few unwired href=\"#\" dead links" "$dead_ok" "${bare:-0} found (>5 = likely dead ends)"
 
 # ════════════════════════ TIER 2 — depth / integrity ════════════════════════
 TIER=2
@@ -164,7 +168,9 @@ order_ok=1; checked=0
 while IFS= read -r p; do
   [ -z "$p" ] && continue; [ "$(basename "$p")" = "404.html" ] && continue
   checked=$((checked+1))
-  seq=$(grep -oE 'js/(state|theme|layout|data|persona|ui|app|feedback)\.js' "$p" | sed -E 's#js/##; s#\.js##' | tr '\n' ' ' | sed 's/ $//')
+  # Only real <script src="js/X.js"> tags — not incidental js/x.js mentions in
+  # inline-script bodies or comments (those would inflate the sequence).
+  seq=$(grep -oE 'src="js/(state|theme|layout|data|persona|ui|app|feedback)\.js"' "$p" | sed -E 's#src="js/##; s#\.js"##' | tr '\n' ' ' | sed 's/ $//')
   [ "$seq" = "$order" ] || order_ok=0
 done < <(html_pages)
 [ "$checked" -eq 0 ] && order_ok=0
