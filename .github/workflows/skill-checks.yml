@@ -1,0 +1,63 @@
+name: skill-checks
+
+# Guards that run without a browser or a live Claude run. The browser-dependent
+# guards (render.sh, check-overflow.sh, score-output.sh) need a *generated* prototype,
+# so they stay local/manual — see benchmark/README.md.
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Context-cost regression guard
+        # The progressive-disclosure win is ~2230 trigger-time tokens vs ~7628 pre-split.
+        # Fail if SKILL.md bloats back past the ceiling.
+        run: |
+          CEILING=2600
+          json=$(bash benchmark/context-cost.sh --json)
+          echo "$json"
+          tokens=$(printf '%s' "$json" | python3 -c "import json,sys; print(json.load(sys.stdin)['trigger_time_tokens'])")
+          echo "trigger-time tokens: $tokens (ceiling $CEILING)"
+          if [ "$tokens" -gt "$CEILING" ]; then
+            echo "::error::SKILL.md trigger-time cost $tokens exceeds ceiling $CEILING — keep detail in reference/."
+            exit 1
+          fi
+
+      - name: Shellcheck benchmark scripts
+        run: shellcheck -S warning benchmark/*.sh ensure-deps.sh
+
+      - name: Syntax-check scaffold JS (copied into every prototype)
+        run: |
+          for j in templates/scaffold-base/js/*.js templates/feedback-overlay/feedback.js; do
+            node --check "$j" && echo "ok: $j"
+          done
+
+      - name: Syntax-check serve.py
+        run: python3 -m py_compile templates/scaffold-base/serve.py
+
+      - name: SKILL.md frontmatter sanity
+        run: |
+          python3 - <<'PY'
+          import sys, re
+          src = open("SKILL.md", encoding="utf-8").read()
+          m = re.match(r"^---\n(.*?)\n---\n", src, re.S)
+          if not m:
+              print("::error::SKILL.md is missing YAML frontmatter"); sys.exit(1)
+          fm = m.group(1)
+          name = re.search(r"^name:\s*(.+)$", fm, re.M)
+          desc = re.search(r"^description:\s*(.+)$", fm, re.M)
+          if not name or not name.group(1).strip():
+              print("::error::SKILL.md frontmatter missing 'name'"); sys.exit(1)
+          if not desc or not desc.group(1).strip():
+              print("::error::SKILL.md frontmatter missing 'description'"); sys.exit(1)
+          dlen = len(desc.group(1).strip())
+          if dlen > 1024:
+              print(f"::error::SKILL.md description is {dlen} chars (>1024 — trim for the trigger menu)"); sys.exit(1)
+          print(f"frontmatter ok — name={name.group(1).strip()!r}, description {dlen} chars")
+          PY
