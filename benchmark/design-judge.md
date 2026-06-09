@@ -31,7 +31,34 @@ benchmark/render.sh <baseline-proto-dir>   # → <dir>/.shots/*.png
 benchmark/render.sh <candidate-proto-dir>
 ```
 
-Each produces desktop (`-w1440`) and mobile (`-w390`) screenshots of every screen.
+Each produces desktop (`-w1440`) and tablet (`-w768`) screenshots of every screen — both
+faithful, because they're ≥ Chrome headless's ~500px layout-viewport floor.
+
+> **Do not judge phone-width (390px) overflow from `render.sh`.** Chrome `--headless=new`
+> lays any sub-500px window out at 500px and captures the left slice, which *looks* clipped
+> even when the page is perfectly fine at a real 390px. This produced false "mobile overflow"
+> verdicts in an early run. Measure phone overflow the real way ↓.
+
+### 1b. Measuring real mobile overflow (true 390px)
+
+Embed the screen in a same-origin iframe sized to a real 390px and read its layout — this
+gets a genuine 390 CSS-px viewport (verified: `innerWidth=390`), unlike a clamped window.
+
+```bash
+# Drop this probe in the prototype dir (same origin → it can read the iframe), one per screen.
+cat > <proto-dir>/_probe.html <<'HTML'
+<!doctype html><meta charset=utf8><style>body{margin:0;font:30px monospace;padding:16px}
+#f{width:390px;height:260px;border:1px solid #ccc;display:block}</style>
+<div id=o>measuring…</div><iframe id=f src="approvals.html"></iframe>
+<script>f.onload=function(){var d=f.contentDocument,w=f.contentWindow;
+o.textContent="innerW="+w.innerWidth+" scrollW="+d.documentElement.scrollWidth+
+" "+(d.documentElement.scrollWidth>w.innerWidth?"OVERFLOW":"OK")}</script>
+HTML
+benchmark/render.sh <proto-dir>   # render the probe page; read the text off the .shots PNG
+```
+
+`scrollW > innerW` → real horizontal overflow at 390px. `scrollW <= innerW` → fine, even if
+a `-w390` window-size screenshot looked clipped. Swap `src=` per screen. Delete `_probe.html` after.
 
 ### 2. Anonymize + randomize (critical for blindness)
 
@@ -57,6 +84,10 @@ with a one-sentence justification grounded in what's visible:
 | **Cohesion** | Screens feel like one product; themes/layouts hold together |
 | **Layout integrity** | Nothing occluded, clipped, overlapping, or wrapping badly — including the fixed control bar over page content |
 | **Gut check** | "Would I put this in front of a stakeholder as-is?" |
+
+> **Clipping caveat:** judge "clipped at the right edge" only on **≥768px** shots, or via the
+> true-390 probe (§1b). A sub-500px `render.sh` screenshot that looks clipped is almost always
+> the headless-clamp artifact, **not** a real defect — confirm with the probe before scoring it.
 
 ### 4. Aggregate
 
