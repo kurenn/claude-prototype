@@ -41,8 +41,17 @@ faithful, because they're ≥ Chrome headless's ~500px layout-viewport floor.
 
 ### 1b. Measuring real mobile overflow (true 390px)
 
-Embed the screen in a same-origin iframe sized to a real 390px and read its layout — this
-gets a genuine 390 CSS-px viewport (verified: `innerWidth=390`), unlike a clamped window.
+**Automated:** `benchmark/check-overflow.sh <proto-dir> [width]` does exactly this and exits
+non-zero on any overflow — run it in CI / before judging:
+```bash
+benchmark/check-overflow.sh <proto-dir> 390
+#   ✓ index.html  fits (scrollW 375 ≤ innerW 390)
+#   ✗ cards.html  OVERFLOWS (scrollW 700 > innerW 390)   → exit 1
+```
+
+Under the hood (and the manual version if you want one screen): embed the screen in a
+same-origin iframe sized to a real 390px and read its layout — a genuine 390 CSS-px
+viewport (verified: `innerWidth=390`), unlike a clamped window.
 
 ```bash
 # Drop this probe in the prototype dir (same origin → it can read the iframe), one per screen.
