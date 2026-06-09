@@ -1,118 +1,134 @@
+<div align="center">
+
 # claude-prototype
 
-> A Claude Code skill for building clickable HTML prototypes — sales demos, stakeholder reviews, design explorations — with zero build step, a live feedback loop, and design assessment baked in.
+**Clickable HTML prototypes for sales demos, stakeholder reviews, and design exploration — straight from a Claude Code prompt.**
 
-**Repo:** https://github.com/kurenn/claude-prototype
+Zero build step. A live pin-to-element feedback loop. Real design assessment baked in.
 
-Invoke with `/prototype` in any Claude Code session. Answer 6 questions. Get a folder of plain HTML, Tailwind (via CDN), and a handful of vanilla JS files that run with `python3 serve.py` — no build, no Node, no framework.
+[![skill-checks](https://github.com/kurenn/claude-prototype/actions/workflows/skill-checks.yml/badge.svg)](https://github.com/kurenn/claude-prototype/actions/workflows/skill-checks.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+![Claude Code skill](https://img.shields.io/badge/Claude%20Code-skill-d97757)
+![Build step](https://img.shields.io/badge/build%20step-none-success)
 
-## What you get
+</div>
 
-Most AI-generated prototypes look like every other AI-generated prototype: purple gradients, gradient text, nested cards, lorem ipsum, dead buttons, no lifecycle states. This skill bakes in the opposite:
-
-- **Discovery Q&A** before building — tone, inspiration, audience, scope, content. No generic "modern SaaS" output.
-- **prompt-refiner** turns the answers into a tight build spec (auto-installed).
-- **impeccable teach + shape** produces a per-prototype `DESIGN.md` with tokens, then **audit + detect + critique** verify after build (auto-installed).
-- **Always-visible control bar** with three runtime switchers and two actions:
-  - **Theme** — 3 per-prototype themes (design tokens flip at runtime, URL-shareable)
-  - **Layout** — 2–4 per-prototype layout variants (Grid / Gallery / List, or density, or grid-N, chosen per product)
-  - **Persona** — 2–4 lifecycle states (new user / active / power, or empty / busy) with data-driven content swap
-  - **🔗 Share** — copies a URL reproducing the exact screen (theme + layout + persona + modal + tab)
-  - **💬 Feedback** — always-on pin-to-element commenting, exports JSON
-- **Interaction states** — loading spinners, toasts, empty states, 404 page. Declarative via `data-loading`, `data-toast`, `data-confirm` attributes. Skeleton loaders on filter changes + first load.
-- **URL state** — every interactive screen state lives in the URL. Share the URL, reproduce the screen.
-- **Apply-feedback workflow** — `/prototype apply-feedback <file>` reads the pinned-comment JSON and applies each fix in place.
-- **Variants** — `/prototype variant "more corporate"` forks into `variants/<slug>/` so you can A/B-pitch.
-- **No-cache dev server** — `serve.py` ships with every prototype; prevents the "my edits aren't showing" browser cache trap.
-- **Zero build step** — Tailwind via CDN, vanilla JS. Runs anywhere a browser opens.
-
-## Install
-
-Claude Code loads skills from `~/.claude/skills/<name>/`. Pick any of three:
-
-### 1. Quickest — `git clone` into the skills dir
+---
 
 ```
+You:    /prototype
+Claude: Quick or Discovery?  →  a few questions  →  builds a folder
+You:    cd acme-demo && python3 serve.py
+        # a real, clickable, themeable, shareable prototype at localhost:8000
+```
+
+Output is plain **HTML + Tailwind (CDN) + a handful of vanilla JS files**. No webpack, no Node, no framework. It runs anywhere a browser opens, and deploys to any static host as-is.
+
+<details>
+<summary><b>Contents</b></summary>
+
+- [Why it's different](#why-its-different)
+- [Quickstart](#quickstart)
+- [The signature: an always-visible control bar](#the-signature-an-always-visible-control-bar)
+- [How it works](#how-it-works)
+- [Usage](#usage)
+- [Anatomy of a generated prototype](#anatomy-of-a-generated-prototype)
+- [The quality system](#the-quality-system)
+- [Companion skills](#companion-skills)
+- [Repo layout](#repo-layout)
+- [Principles the skill enforces](#principles-the-skill-enforces)
+
+</details>
+
+## Why it's different
+
+Most AI-generated prototypes look like every other one: purple gradients, gradient text, nested cards, lorem ipsum, dead buttons, no lifecycle states. This skill is built to do the opposite — and it *checks itself* before handing the work back.
+
+| Generic AI output | What this skill ships |
+|---|---|
+| "Modern SaaS" with no questions asked | A short **discovery Q&A** (tone, inspiration, audience, scope) drives real, domain-matched content |
+| Lorem ipsum, "John Doe", `Example Corp` | Realistic copy and data, persona-driven from `js/data.js` |
+| Dead `href="#"` buttons | Every button, modal, tab, and filter actually works |
+| One static screen | **Theme · Layout · Persona** switchers + interaction states (loading, toast, empty, skeleton, 404) |
+| No way to give feedback | **Pin-to-element commenting** that exports JSON you can apply with one command |
+| "Looks done" but unaudited | An **impeccable** `audit` + `critique` pass (or a built-in linter fallback) before handoff |
+
+## Quickstart
+
+**Install** — Claude Code loads skills from `~/.claude/skills/<name>/`:
+
+```bash
 git clone https://github.com/kurenn/claude-prototype ~/.claude/skills/prototype
 ```
 
-### 2. Recommended for contributors — `./install.sh`
+> Hacking on the skill? Clone anywhere and run `./install.sh` to symlink it (edits go live with no reinstall), or `./install.sh copy` for an independent copy.
 
-Clone somewhere you'll hack on it, then run the install script:
-
-```
-git clone https://github.com/kurenn/claude-prototype ~/code/claude-prototype
-cd ~/code/claude-prototype
-./install.sh            # symlinks — edits to your clone flow through instantly
-# or: ./install.sh copy — independent copy, re-run to sync
-```
-
-The symlink default means `SKILL.md` edits in your working copy are live for future `/prototype` invocations with no reinstall step. Best for development.
-
-### 3. Manual one-liner
-
-```
-ln -s /absolute/path/to/claude-prototype ~/.claude/skills/prototype
-```
-
-### Verify
-
-Restart your Claude Code session (or run `/help`), then type `/prototype` or describe a prototype idea. The skill's description triggers automatically on "prototype", "mockup", "demo", "pitch page", "click-through".
-
-To uninstall:
-```
-rm ~/.claude/skills/prototype
-```
-
-## Companion skills — auto-installed on first use
-
-`/prototype` runs a preflight step (`ensure-deps.sh`) on every invocation that ensures these companion skills are available. Missing ones are installed automatically:
-
-| Skill | What it adds | Auto-install command |
-|---|---|---|
-| [impeccable](https://impeccable.style/) | Design direction + 3-pass assessment (audit / detect / critique) — 23 subcommands | `npx -y skills add pbakaus/impeccable --global --yes` |
-| [prompt-refiner](https://github.com/kurenn/prompt-refiner-skill) | Q&A answers → structured build spec | `git clone https://github.com/kurenn/prompt-refiner-skill ~/.claude/skills/prompt-refiner` |
-| claude-in-chrome (MCP) | Screenshot grid across themes + breakpoints, console error check | Not auto-installed — configured in Claude Code MCP settings |
-
-If auto-install fails (no `npx`, no network, etc.), `/prototype` falls back to built-in checks (see `checks/builtin-lint.md`) and notes it in the final report.
-
-You can also run the preflight manually anytime:
-
-```
-bash ~/.claude/skills/prototype/ensure-deps.sh          # prompts before installing
-bash ~/.claude/skills/prototype/ensure-deps.sh --yes    # non-interactive
-bash ~/.claude/skills/prototype/ensure-deps.sh --check  # report status only
-```
-
-## Usage
-
-### Build a prototype
+**Build** — start a new Claude Code session and type:
 
 ```
 /prototype
 ```
 
-Answer the Q&A (or say "quick" to skip it). Output is a new folder in your working directory with all screens, docs, and a `serve.py` ready to run.
+Answer the questions (or say *"quick"* to skip them). You get a new folder in your working directory with every screen, the docs, and a `serve.py` ready to run:
 
-### Fork a variant
+```bash
+cd acme-demo
+python3 serve.py        # → http://localhost:8000
+```
 
+The skill triggers automatically on **"prototype", "mockup", "demo", "pitch page", "sales demo",** or **"click-through"** — you don't have to type the slash command.
+
+## The signature: an always-visible control bar
+
+Every prototype ships a single, always-visible bar at the bottom — not a hidden settings pill. Reviewers judge the options they can *see*:
+
+```
+┌──────────────────────────────────────────────────────────────────────────┐
+│  THEME  Slate · Obsidian · Paper   │   LAYOUT  Grid · List   │  🔗   💬   │
+│  PERSONA  New · Active · Power                                            │
+└──────────────────────────────────────────────────────────────────────────┘
+```
+
+- **Theme** — 3 per-prototype themes; design tokens flip at runtime, URL-shareable.
+- **Layout** — 2–4 variants chosen for *this* product (Grid/Gallery/List, density, grid-N…).
+- **Persona** — 2–4 lifecycle states (new / active / power, or empty / busy) that swap the data, not just the chrome.
+- **🔗 Share** — copies a URL reproducing the exact screen (theme + layout + persona + open modal + active tab).
+- **💬 Feedback** — always-on; click any element to pin a comment, then export JSON.
+
+It never wraps to a second line (`flex-wrap: nowrap` is load-bearing — a broken-looking bar costs you the reviewer's trust), and stays unobtrusive on every screen.
+
+## How it works
+
+`/prototype` runs four phases. The skill uses **progressive disclosure** — `SKILL.md` is a lean router; each phase's detail loads from `reference/` only when reached.
+
+```
+0. Preflight  →  ensure impeccable + prompt-refiner are installed
+1. Discover   →  Quick-or-Discovery, Q&A, refine spec, write PRODUCT.md + DESIGN.md
+2. Build      →  scaffold from templates, wire control bar + data + interaction states, build each screen
+3. Assess     →  impeccable audit + critique (or built-in lint), fix findings, browser QA
+4. Ship       →  DEMO.md + README.md handoff, run command, optional deploy
+```
+
+## Usage
+
+**Build a prototype**
+```
+/prototype
+```
+
+**Fork a variant** — explore a different direction without touching the original:
 ```
 /prototype variant "editorial, serif-forward, less corporate"
 ```
+Creates `variants/<slug>/` with the new vibe re-applied across tokens, typography, and palette.
 
-Creates `variants/<slug>/` with the new vibe re-applied across tokens, typography, and palette. Original untouched.
-
-### Apply pinned feedback
-
-Someone reviewed your prototype with the 💬 Feedback button, pinned comments to elements, and exported a JSON. Drop that file in the prototype folder:
-
+**Apply pinned feedback** — a reviewer used the 💬 button and exported a JSON; drop it in the folder:
 ```
 /prototype apply-feedback feedback-2026-04-24.json
 ```
+Each comment is applied in place, the prototype is re-assessed, and the JSON is archived under `feedback/applied/`.
 
-Claude applies each comment in place, re-runs assessment, and archives the JSON under `feedback/applied/`.
-
-## What a generated prototype looks like
+## Anatomy of a generated prototype
 
 ```
 acme-demo/
@@ -120,86 +136,96 @@ acme-demo/
 ├── <screen>.html
 ├── 404.html
 ├── css/
-│   ├── styles.css       # theme tokens + control bar + skeleton + empty states
+│   ├── styles.css       # theme tokens · control bar · skeletons · empty states
 │   └── feedback.css
 ├── js/
 │   ├── state.js         # URL state + share + history drawer (Shift+?)
 │   ├── theme.js         # data-theme switcher
 │   ├── layout.js        # data-layout switcher
-│   ├── data.js          # personas + shared content
+│   ├── data.js          # personas + shared content (single source of truth)
 │   ├── persona.js       # data-persona switcher
 │   ├── ui.js            # loading / toast / skeleton / confirm helpers
-│   ├── app.js           # page interactions (modals, tabs, filter chips, composer)
+│   ├── app.js           # page interactions (modals, tabs, filters, composer)
 │   └── feedback.js      # pin-to-element overlay (always on)
 ├── assets/images/
-├── serve.py             # no-cache dev server
+├── serve.py             # no-cache dev server (kills the "my edits aren't showing" trap)
+├── PRODUCT.md           # users · tone · register — context for the design audit
 ├── DESIGN.md            # tokens + rationale
-├── DEMO.md              # presenter click-through with persona map
-└── README.md            # how to run, what's fake, iteration commands
+├── DEMO.md              # presenter click-through with a persona map
+└── README.md            # how to run · what's fake vs real · iteration commands
 ```
 
-Run it:
+Deploy it anywhere static — Vercel, Netlify, GitHub Pages, S3 — no build required.
 
-```
-cd acme-demo
-python3 serve.py
-# open http://localhost:8000
-```
+## The quality system
 
-Then click through the control bar at the bottom to toggle theme, layout, and persona. Click 🔗 to copy a URL reproducing the current screen. Click 💬 to pin feedback on any element.
+The skill doesn't just generate; it's backed by a benchmark so changes to *the skill itself* can be proven to help, not just differ. Three independent dimensions:
+
+| Dimension | Tool | Catches |
+|---|---|---|
+| **Output quality** | `benchmark/score-output.sh` | Missing files, unwired switchers, slop content, cross-file name mismatches, placeholder layouts |
+| **Mobile overflow** | `benchmark/check-overflow.sh` | Real horizontal overflow at a true 390 px viewport (a clipped primary button = blocker) |
+| **Design taste** | `benchmark/render.sh` + `design-judge.md` | Hierarchy, spacing, color discipline, AI-slop — via blind pairwise review of rendered screenshots |
+| **Context cost** | `benchmark/context-cost.sh` | Trigger-time token bloat in `SKILL.md` |
+
+A **GitHub Action** ([`skill-checks.yml`](.github/workflows/skill-checks.yml)) runs the browser-free guards on every PR: context-cost ceiling, shellcheck, JS/Python syntax of the scaffold, and `SKILL.md` frontmatter sanity. See [`benchmark/README.md`](benchmark/README.md) for the full methodology.
+
+## Companion skills
+
+`/prototype` runs a preflight (`ensure-deps.sh`) that makes these available — auto-installing what's missing:
+
+| Skill | What it adds | Auto-install |
+|---|---|---|
+| [impeccable](https://impeccable.style/) | Design direction + assessment (`audit` + `critique`) | `npx -y skills add pbakaus/impeccable --global --yes` |
+| [prompt-refiner](https://github.com/kurenn/prompt-refiner-skill) | Q&A answers → structured build spec | `git clone … ~/.claude/skills/prompt-refiner` |
+| claude-in-chrome (MCP) | Screenshot grid + console-error QA | Configured in Claude Code MCP settings |
+
+If auto-install fails (no `npx`, no network), `/prototype` falls back to [`checks/builtin-lint.md`](checks/builtin-lint.md) and says so in its report. Run the preflight manually anytime:
+
+```bash
+bash ~/.claude/skills/prototype/ensure-deps.sh --check    # report status only
+bash ~/.claude/skills/prototype/ensure-deps.sh --yes      # install non-interactively
+```
 
 ## Repo layout
 
 ```
 claude-prototype/
-├── SKILL.md                       # the skill router Claude reads on trigger
-├── reference/                     # phase detail, loaded on demand (progressive disclosure)
-│   ├── discovery.md               # steps 1–4: mode, Q&A, spec, design shaping
-│   ├── build.md                   # steps 5–6: scaffold, control bar, data, screens
-│   ├── assess.md                  # steps 7–8: assessment + browser QA
-│   └── subcommands.md             # variant + apply-feedback
-├── install.sh                     # symlink or copy install
-├── ensure-deps.sh                 # auto-installs impeccable + prompt-refiner
-├── templates/
-│   ├── scaffold-base/             # starter HTML/CSS/JS + serve.py + 404
-│   ├── feedback-overlay/          # feedback.js + feedback.css
-│   └── demo-docs/                 # DEMO.md + README.md templates
-├── checks/
-│   └── builtin-lint.md            # fallback rules when impeccable absent
-├── benchmark/                     # objective output + context-cost benchmark
-├── CONTRIBUTING.md
-├── LICENSE                        # MIT
-└── README.md
+├── SKILL.md              # the lean router Claude reads on trigger
+├── reference/            # phase detail, loaded on demand (progressive disclosure)
+│   ├── discovery.md      #   1: mode · Q&A · spec · PRODUCT.md + DESIGN.md
+│   ├── build.md          #   2: scaffold · control bar · data · screens
+│   ├── assess.md         #   3: impeccable audit/critique · browser QA
+│   └── subcommands.md    #   variant + apply-feedback
+├── templates/            # scaffold-base · feedback-overlay · demo-docs
+├── checks/builtin-lint.md# fallback assessment when impeccable is absent
+├── benchmark/            # output · overflow · design · context-cost guards
+├── .github/workflows/    # CI: skill-checks.yml
+├── install.sh · ensure-deps.sh
+└── CONTRIBUTING.md · LICENSE
 ```
 
 ## Principles the skill enforces
 
-- **Ask before building.** Discovery Q&A is load-bearing — prevents generic output.
+- **Ask before building.** The discovery Q&A is load-bearing — it's what prevents generic output.
 - **No lorem ipsum, ever.** Realistic content matched to the product domain.
-- **Every button goes somewhere.** Dead buttons in a sales demo kill the pitch.
-- **Always interactive.** Loading states, toasts, empty states, 404. Skeleton loaders on data-changing interactions.
-- **Control bar never wraps.** `flex-wrap: nowrap` is load-bearing — a two-line bar breaks reviewer trust.
-- **Responsive by default.** Verified at 375 / 768 / 1440.
-- **No build step.** Tailwind CDN only. If a prototype needs webpack, it's not a prototype.
-- **Theme-safe colors.** Every color reference is a CSS var — flipping themes never breaks layout.
-- **Persona-aware content.** Names, counts, lists driven from `js/data.js`, not hardcoded in HTML.
-- **URL state is shareable.** Share a URL, reproduce the exact screen (theme + layout + persona + modal + tab).
+- **Every button goes somewhere.** A dead button in a sales demo kills the pitch.
+- **Always interactive.** Loading, toasts, empty states, 404 — and skeletons on data-changing actions.
+- **The control bar never wraps.** A two-line bar reads as broken and breaks reviewer trust.
+- **No horizontal scroll at 390 px** — including toolbars, not just tables. A clipped action reads as broken.
+- **Color restraint.** One accent, no gradient fills, no purple-on-black — the #1 "AI made this" tell.
+- **Theme-safe colors.** Every color is a CSS var; flipping themes never breaks layout.
+- **Persona-aware content.** Names, counts, and lists come from `js/data.js`, never hardcoded.
+- **Shareable URL state.** Share a URL, reproduce the exact screen.
 - **Scope discipline.** 4 screens asked → 4 screens shipped.
+- **No build step.** Tailwind CDN only. If it needs webpack, it isn't a prototype.
 
-## Roadmap
+## Contributing
 
-- Sample `examples/` prototypes for common verticals (SaaS, e-commerce, fintech, internal tool).
-- Keyboard shortcuts for theme / layout / persona cycling.
-- Form state persistence (inputs survive reload).
-- QR-code share for live mobile demos.
-- Per-prototype favicon generation.
+Issues and PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). CI runs the skill-checks suite on every PR; `benchmark/README.md` explains how to prove an output-quality change before merging.
 
-## Credits
+## Credits & license
 
-- [impeccable](https://impeccable.style/) — the design assessment skill this flow integrates with. Strongly recommended.
-- [prompt-refiner](https://github.com/kurenn/prompt-refiner-skill) — the Q&A → spec refiner.
-- Vanilla JS, Tailwind CDN, Google Fonts — nothing else.
-
-## License
+Built on [impeccable](https://impeccable.style/) (design assessment) and [prompt-refiner](https://github.com/kurenn/prompt-refiner-skill) (Q&A → spec). Vanilla JS, Tailwind CDN, Google Fonts — nothing else.
 
 MIT — see [LICENSE](LICENSE).
