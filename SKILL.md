@@ -59,7 +59,7 @@ skill list (in `<system-reminder>` messages) and deferred-tool list (loadable vi
 | Skill / tool | Used for | Fallback (only if auto-install failed) |
 |---|---|---|
 | `prompt-refiner` (skill) | Q&A answers → tight build spec | Synthesize the spec inline |
-| `impeccable` (with `audit` / `detect` / `critique`) | Deep design assessment | `checks/builtin-lint.md` |
+| `impeccable` (`audit` + `critique`; needs `PRODUCT.md`) | Deep design assessment | `checks/builtin-lint.md` |
 | `teach-impeccable` (setup only) | Design direction (`DESIGN.md`) | Generate `DESIGN.md` inline |
 | `mcp__claude-in-chrome__*` (deferred MCP tools) | Screenshot + console QA | Local-server instructions + manual checklist |
 

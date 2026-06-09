@@ -5,22 +5,34 @@ Quality gate before handoff. Find issues, fix them, re-verify.
 ## Step 7: Assess
 
 **Detection:** look for `impeccable` in the available-skills list. `teach-impeccable`
-alone (one-time setup) does NOT count — this step needs full impeccable with the
-`audit` / `detect` / `critique` subcommands.
+alone (one-time setup) does NOT count — this step needs full impeccable.
 
-If `impeccable` is present, run in order:
-- `impeccable audit` — overall pass against design tokens + Nielsen heuristics.
-- `impeccable detect` — 25 anti-pattern rules (purple gradients, gradient text, nested cards, etc.).
-- `impeccable critique` — UX critique with scored dimensions.
+**Precondition (this is what makes impeccable actually run vs. silently fall back):**
+impeccable's setup is non-optional — it requires `PRODUCT.md` at the prototype root and
+loads context before any command. Step 4 already wrote `PRODUCT.md` + `DESIGN.md` into the
+folder, so the gate is satisfied. Verify from the prototype folder:
+```bash
+node ~/.agents/skills/impeccable/scripts/load-context.mjs   # expect "hasProduct": true
+```
+If `hasProduct` is false, impeccable will try to run its interactive `teach` and you'll end
+up on the fallback — write `PRODUCT.md` first (see discovery.md Step 4), don't run `teach`.
+
+If `impeccable` is present, run its real commands (invoke the `impeccable` skill with the
+command as the first word, or `$impeccable <command>` if pinned). impeccable auto-loads
+PRODUCT.md/DESIGN.md — don't pass them manually:
+- `audit .` — technical quality checks (a11y, contrast, performance, responsive) **incl.
+  anti-pattern detection** (purple/gradient slop, nested cards, etc.). *(There is no
+  separate `detect` command — it's folded into `audit`.)*
+- `critique .` — UX design review with heuristic scoring across dimensions.
 
 Collect findings, fix them, re-run until clean. Commit each fix batch atomically.
 
-If `impeccable` is absent, run the built-in checker in `checks/builtin-lint.md` (20
-rules: purple gradients, gradient text, low contrast, dead buttons/links, 375px
-overflow, console errors, missing alt text, nested cards, lorem ipsum, placeholder
-names, scope/screen count, build tooling, theme integrity, URL round-trip, etc.).
-Produce `LINT.md`, fix all errors, re-verify. Note in the output: *"For deeper design
-assessment, install impeccable: https://impeccable.style/"*.
+If `impeccable` is genuinely absent (auto-install failed — no npx/Node/network), run the
+built-in checker in `checks/builtin-lint.md` (20 rules: purple gradients, gradient text,
+low contrast, dead buttons/links, 375px overflow, console errors, missing alt text, nested
+cards, lorem ipsum, placeholder names, scope/screen count, build tooling, theme integrity,
+URL round-trip, etc.). Produce `LINT.md`, fix all errors, re-verify. Note in the output:
+*"For deeper design assessment, install impeccable: https://impeccable.style/"*.
 
 ## Step 8: Browser QA
 
