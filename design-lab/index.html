@@ -27,7 +27,7 @@
     --ink:#EAE8DC; --ink-2:#A7B0A7; --ink-3:#7F887F;
     --hairline:#2C3A33; --accent:#8FA9E8; --accent-soft:#20304C;
     --good:#83B190; --warn:#D0A06A;
-    --shadow:0 1px 2px rgb(0 0 0 / .3), 0 12px 30px rgb(0 0 0 / .3);
+    --shadow:0 1px 2px rgb(0 0 0 / .28);  /* dark elevates via surface, not a heavy drop shadow */
   }
   * { box-sizing:border-box; }
   body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-ui); line-height:1.55; -webkit-font-smoothing:antialiased; }
@@ -311,7 +311,7 @@
   <section id="typography">
     <p class="eyebrow">Audit 01 — decided ▸ pick a pairing per tone</p>
     <h2>Typography &amp; fonts</h2>
-    <p class="lead">One vetted display + body (+ mono when data-heavy) per tone preset — all Google Fonts, all off the reject list. Type your product name into <b>Sample</b> above to test each pairing with real words, flip the theme to check light-on-dark, and press <b>Use this</b> to record the pick.</p>
+    <p class="lead">One vetted display + body (+ mono when data-heavy) per tone preset — all Google Fonts, all off the reject list. Type your product name into <b>Sample</b> above to test each pairing with real words, flip the theme to check light-on-dark, and press <b>Use this</b> to note your favorite locally.</p>
     <ul class="rules">
       <li><b>Ratio</b> 1.25 major third · 16 / 20 / 25 / 31 / 39 / 49</li>
       <li><b>Fixed rem</b> for UI · fluid <b>clamp()</b> for the hero only</li>
@@ -376,7 +376,7 @@
       </article>
     </div>
 
-    <div class="picks-box" id="picks"><span class="empty">No picks yet — press <b>Use this</b> on the pairings you want the skill to default to per tone. Choices persist in this browser.</span></div>
+    <div class="picks-box" id="picks"><span class="empty">No picks yet — press <b>Use this</b> to note your favorite pairing per tone (a local note; the skill's menu lives in reference/type-pairings.md). Choices persist in this browser.</span></div>
 
     <h3 style="margin-top:2.2rem;font-size:1.05rem;">The committed scale — 1.25 major third</h3>
     <p class="lead" style="margin-bottom:1rem;">Replaces the crammed <code>12 / 14 / 16 / 20 / 24 / 32 / 48</code>. Fewer sizes, more contrast; the low end is thinned so hierarchy reads.</p>
@@ -407,9 +407,9 @@
 
   <!-- ============ FUTURE AUDITS (placeholders) ============ -->
   <section id="color">
-    <p class="eyebrow">Audit 02 — in progress ▸ tint every neutral, commit to a strategy</p>
+    <p class="eyebrow">Audit 02 — shipped ✓ ▸ tint every neutral, commit to a strategy</p>
     <h2>Color</h2>
-    <p class="lead">The scaffold ships flat, untinted grays today (<code>--muted: 120 120 120</code>) — the "dead gray" tell both doctrines ban. The fix: derive neutrals in <b>OKLCH</b> and tint them toward the palette's hue, commit to <b>one accent</b>, and pick a <b>strategy</b>. Drag the hue below to feel the difference.</p>
+    <p class="lead">The scaffold used to ship flat, untinted grays (<code>--muted: 120 120 120</code>) — the "dead gray" tell both doctrines ban; it now ships tinted OKLCH neutrals. The rule: derive neutrals in <b>OKLCH</b> and tint them toward the palette's hue, commit to <b>one accent</b>, and pick a <b>strategy</b>. Drag the hue below to feel the difference.</p>
     <ul class="rules">
       <li><b>OKLCH</b> neutrals tinted 0.005–0.015 toward the hue</li>
       <li><b>Never</b> #000 / #fff / chroma-0 gray</li>
@@ -496,9 +496,9 @@
   </section>
 
   <section id="motion">
-    <p class="eyebrow">Audit 03 — in progress ▸ ease-out, never linear or bounce</p>
+    <p class="eyebrow">Audit 03 — shipped ✓ ▸ ease-out, never linear or bounce</p>
     <h2>Motion &amp; scrolling</h2>
-    <p class="lead">Motion is felt, not read — so these are live. The scaffold uses the browser-default <code>ease</code> curve everywhere today; the fix is a small set of ease-out tokens, transform/opacity only, and a reduced-motion fallback. (If your OS has reduce-motion on, these demos correctly sit still.)</p>
+    <p class="lead">Motion is felt, not read — so these are live. The scaffold used to use the browser-default <code>ease</code> curve everywhere; it now ships a small set of ease-out tokens, transform/opacity only, and a reduced-motion fallback. (If your OS has reduce-motion on, these demos correctly sit still.)</p>
     <ul class="rules">
       <li><b>Never</b> <code>ease</code> / linear / bounce</li>
       <li><b>Ease-out</b> quart or expo — real objects decelerate</li>
@@ -544,7 +544,7 @@
   </section>
 
   <section id="spacing">
-    <p class="eyebrow">Audit 04 — in progress ▸ rhythm, not uniform padding</p>
+    <p class="eyebrow">Audit 04 — shipped ✓ ▸ rhythm, not uniform padding</p>
     <h2>Spacing &amp; rhythm</h2>
     <p class="lead">Spacing carries structure. One 4pt scale, laid out with <code>gap</code> not margins, and — the part most AI layouts miss — <b>rhythm</b>: tight within a group, generous between groups. Uniform padding everywhere reads as monotone.</p>
     <ul class="rules">
@@ -610,7 +610,7 @@
     <div class="callout"><b>Where this lands:</b> ship <code>--space-*</code> tokens in <code>styles.css</code>; add the rhythm rule (tight-in-group / generous-between) + the squint test to <code>build.md</code> Step 6 and <code>discovery.md</code> Step 4 Spacing.</div>
   </section>
   <section id="depth">
-    <p class="eyebrow">Audit 05 — in progress ▸ subtle, and dark elevates with surface</p>
+    <p class="eyebrow">Audit 05 — shipped ✓ ▸ subtle, and dark elevates with surface</p>
     <h2>Depth &amp; elevation</h2>
     <p class="lead">Depth is a whisper. A subtle, consistent shadow scale in light; in dark, elevation comes from <b>lighter surfaces</b>, not shadow (shadows vanish on dark). Plus a semantic z-index scale so nothing fights with <code>9999</code>. <em>Flip the ◐ theme to watch the shadow row switch to surface-contrast.</em></p>
     <ul class="rules">
@@ -650,7 +650,7 @@
     <div class="callout"><b>Where this lands:</b> ship <code>--shadow-sm/md/lg</code> + <code>--z-*</code> tokens + <code>--elevated-2</code> per theme in <code>styles.css</code>; give <code>.card</code> a subtle default shadow (light) that becomes surface-contrast in dark; note dark-elevates-with-surface in <code>discovery.md</code> Step 4.</div>
   </section>
   <section id="interaction">
-    <p class="eyebrow">Audit 06 — in progress ▸ every element, all eight states</p>
+    <p class="eyebrow">Audit 06 — shipped ✓ ▸ every element, all eight states</p>
     <h2>Interaction &amp; micro-states</h2>
     <p class="lead">A button isn't one thing — it's eight. The scaffold already nails loading / toast / empty / skeleton via <code>ui.js</code>; the gaps are a global <code>:focus-visible</code> ring, an <code>:active</code> press, and a hover-intent guard. Tab through the demos and click the live button.</p>
     <ul class="rules">
@@ -694,7 +694,7 @@
     <div class="callout"><b>Where this lands:</b> ship a global <code>:focus-visible</code> ring, an <code>:active</code> press, and a <code>@media (hover:hover)</code> hover guard in <code>styles.css</code>; add the 8-states checklist + validate-on-blur / undo-over-confirm to <code>build.md</code>. Loading / toast / empty / skeleton already ship via <code>ui.js</code>.</div>
   </section>
   <section id="imagery">
-    <p class="eyebrow">Audit 07 — in progress ▸ inline SVG icons, tasteful placeholders</p>
+    <p class="eyebrow">Audit 07 — shipped ✓ ▸ inline SVG icons, tasteful placeholders</p>
     <h2>Imagery &amp; icons</h2>
     <p class="lead">The judge caught both marketplace builds using flat color-block "photos" — a real gap for a photo-forward product. Fix: inline SVG icons at one consistent stroke, and placeholder treatments that look considered rather than broken. All zero-dep.</p>
     <ul class="rules">
@@ -773,7 +773,7 @@
   function renderPicks() {
     var box = document.getElementById('picks');
     var tones = Object.keys(picks).filter(function (t) { return picks[t]; });
-    if (!tones.length) { box.innerHTML = '<span class="empty">No picks yet — press <b>Use this</b> on the pairings you want the skill to default to per tone. Choices persist in this browser.</span>'; return; }
+    if (!tones.length) { box.innerHTML = '<span class="empty">No picks yet — press <b>Use this</b> to note your favorite pairing per tone (a local note; the skill's menu lives in reference/type-pairings.md). Choices persist in this browser.</span>'; return; }
     box.innerHTML = '<b>Your picks so far:</b> ' + tones.map(function (t) { return t + ' → ' + picks[t]; }).join('  ·  ');
   }
   document.querySelectorAll('.spec').forEach(function (card) {
@@ -851,6 +851,23 @@
     email.addEventListener('input', function () {
       if (emailField.classList.contains('invalid')) emailField.classList.remove('invalid');
     });
+  }
+
+  // Nav-chip scrollspy
+  var chipMap = {};
+  document.querySelectorAll('nav.navchips a').forEach(function (a) { chipMap[a.getAttribute('href').slice(1)] = a; });
+  var secs = document.querySelectorAll('section[id]');
+  if ('IntersectionObserver' in window && secs.length) {
+    var spy = new IntersectionObserver(function (entries) {
+      entries.forEach(function (e) {
+        if (!e.isIntersecting) return;
+        var c = chipMap[e.target.id];
+        if (!c) return;
+        Object.keys(chipMap).forEach(function (k) { chipMap[k].classList.remove('active'); });
+        c.classList.add('active');
+      });
+    }, { rootMargin: '-20% 0px -70% 0px' });
+    secs.forEach(function (s) { spy.observe(s); });
   }
 })();
 </script>
