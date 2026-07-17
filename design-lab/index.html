@@ -1,0 +1,461 @@
+<!doctype html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Prototype Design Lab</title>
+<meta name="description" content="A growing set of design decisions for the /prototype skill. Audit #1: Typography." />
+
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<!-- Candidate pairings + the reject-list faces, loaded so specimens render in their real type. -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;700&family=Public+Sans:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Newsreader:wght@400;500&family=DM+Sans:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700&family=Work+Sans:wght@400;500&family=Syne:wght@600;700;800&family=Archivo:wght@400;500;700&family=Space+Mono:wght@400;700&family=Manrope:wght@300;400;500;700;800&family=Inter:wght@400;600&family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&family=Lato:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+
+<style>
+  :root {
+    --bg:#F4F5F2; --surface:#FBFBF9; --surface-2:#EAECE6;
+    --ink:#1C231F; --ink-2:#525B54; --ink-3:#767E77;
+    --hairline:#DCE0D9; --accent:#3E5DAF; --accent-soft:#E5EAF6;
+    --good:#3B7A55; --warn:#9A5B2B;
+    --shadow:0 1px 2px rgb(20 30 24 / .05), 0 10px 28px rgb(20 30 24 / .07);
+    --disp-size: 2.6rem;
+    --font-ui: ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+    --font-mono-ui: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  }
+  html[data-theme="dark"] {
+    --bg:#14201B; --surface:#1A2620; --surface-2:#22302A;
+    --ink:#EAE8DC; --ink-2:#A7B0A7; --ink-3:#7F887F;
+    --hairline:#2C3A33; --accent:#8FA9E8; --accent-soft:#20304C;
+    --good:#83B190; --warn:#D0A06A;
+    --shadow:0 1px 2px rgb(0 0 0 / .3), 0 12px 30px rgb(0 0 0 / .3);
+  }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--bg); color:var(--ink); font-family:var(--font-ui); line-height:1.55; -webkit-font-smoothing:antialiased; }
+  h1,h2,h3 { text-wrap:balance; }
+  p { text-wrap:pretty; }
+  a { color:var(--accent); }
+  .wrap { max-width:74rem; margin:0 auto; padding:0 clamp(1rem,4vw,2.5rem); }
+
+  /* ---- Header + sticky control bar ---- */
+  header.top { border-bottom:1px solid var(--hairline); }
+  .top .wrap { padding-top:2.4rem; padding-bottom:1.4rem; }
+  .kicker { font-family:var(--font-mono-ui); font-size:.72rem; letter-spacing:.18em; text-transform:uppercase; color:var(--accent); margin:0 0 .8rem; }
+  h1 { font-size:clamp(1.9rem,1.4rem+2vw,2.7rem); letter-spacing:-.02em; margin:0 0 .5rem; font-weight:700; }
+  .sub { color:var(--ink-2); max-width:56ch; margin:0; font-size:1.02rem; }
+
+  .bar { position:sticky; top:0; z-index:20; background:color-mix(in srgb, var(--bg) 88%, transparent); backdrop-filter:blur(8px); border-bottom:1px solid var(--hairline); }
+  .bar .wrap { display:flex; flex-wrap:wrap; align-items:center; gap:.6rem 1.1rem; padding:.7rem clamp(1rem,4vw,2.5rem); }
+  .navchips { display:flex; flex-wrap:wrap; gap:.35rem; }
+  .chip { font-size:.8rem; padding:.32rem .7rem; border-radius:999px; border:1px solid var(--hairline); background:var(--surface); color:var(--ink-2); text-decoration:none; white-space:nowrap; }
+  .chip.active { background:var(--ink); color:var(--bg); border-color:var(--ink); font-weight:600; }
+  .chip.soon { opacity:.55; }
+  .chip.soon::after { content:" · soon"; color:var(--ink-3); font-size:.72em; }
+  .spacer { flex:1 1 auto; }
+  .ctrl { display:flex; align-items:center; gap:.4rem; font-size:.8rem; color:var(--ink-2); }
+  .ctrl input[type="text"] { font:inherit; font-size:.82rem; padding:.35rem .6rem; border:1px solid var(--hairline); border-radius:7px; background:var(--surface); color:var(--ink); width:min(15rem,40vw); }
+  .ctrl input[type="range"] { accent-color:var(--accent); }
+  .btn { font:inherit; font-size:.8rem; padding:.35rem .7rem; border:1px solid var(--hairline); border-radius:7px; background:var(--surface); color:var(--ink); cursor:pointer; }
+  .btn:hover { border-color:var(--ink-3); }
+  :focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:3px; }
+
+  section { padding:clamp(2rem,5vw,3.4rem) 0; border-top:1px solid var(--hairline); }
+  section:first-of-type { border-top:0; }
+  .eyebrow { font-family:var(--font-mono-ui); font-size:.72rem; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); margin:0 0 .6rem; }
+  h2 { font-size:1.5rem; letter-spacing:-.01em; margin:0 0 .5rem; font-weight:700; }
+  .lead { color:var(--ink-2); max-width:64ch; margin:0 0 1.6rem; }
+  .rules { display:flex; flex-wrap:wrap; gap:.5rem; margin:0 0 1.8rem; padding:0; list-style:none; }
+  .rules li { font-size:.8rem; background:var(--surface-2); color:var(--ink-2); padding:.3rem .65rem; border-radius:6px; }
+  .rules li b { color:var(--ink); font-weight:600; }
+
+  /* ---- Specimen grid ---- */
+  .grid { display:grid; gap:1.1rem; grid-template-columns:1fr; }
+  @media (min-width:56rem){ .grid { grid-template-columns:1fr 1fr; } }
+  .spec { border:1px solid var(--hairline); border-radius:12px; background:var(--surface); box-shadow:var(--shadow); padding:1.4rem 1.5rem 1.5rem; position:relative; transition:border-color .15s, box-shadow .15s; }
+  .spec.picked { border-color:var(--good); box-shadow:0 0 0 1px var(--good), var(--shadow); }
+  .spec-head { display:flex; align-items:baseline; justify-content:space-between; gap:1rem; margin-bottom:1rem; }
+  .tone { font-family:var(--font-mono-ui); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); }
+  .pick { font:inherit; font-size:.74rem; padding:.26rem .6rem; border-radius:999px; border:1px solid var(--hairline); background:transparent; color:var(--ink-2); cursor:pointer; white-space:nowrap; }
+  .spec.picked .pick { background:var(--good); border-color:var(--good); color:#fff; }
+  .spec.picked .pick::before { content:"✓ "; }
+
+  .spec-eyebrow { font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin:0 0 .5rem; }
+  .spec-display { font-size:var(--disp-size); line-height:1.05; letter-spacing:-.02em; margin:0 0 .1rem; font-weight:600; }
+  .spec-body { color:var(--ink-2); font-size:1rem; line-height:1.55; margin:.8rem 0 0; max-width:52ch; }
+  .spec-data { font-size:.9rem; margin:1rem 0 0; color:var(--ink); font-variant-numeric:tabular-nums; letter-spacing:.01em; }
+  .spec-names { display:flex; flex-wrap:wrap; gap:.4rem 1rem; margin-top:1.2rem; padding-top:.9rem; border-top:1px solid var(--hairline); font-size:.78rem; color:var(--ink-3); }
+  .spec-names b { color:var(--ink-2); font-weight:600; }
+  .spec-alt { font-size:.76rem; color:var(--ink-3); margin-top:.6rem; }
+
+  /* role fonts per tone */
+  .t-technical { --disp:'Space Grotesk'; --body:'IBM Plex Sans'; --mono:'JetBrains Mono'; }
+  .t-corporate { --disp:'Plus Jakarta Sans'; --body:'Public Sans'; --mono:var(--font-mono-ui); }
+  .t-editorial { --disp:'Instrument Serif'; --body:'Newsreader'; --mono:var(--font-mono-ui); }
+  .t-playful   { --disp:'Bricolage Grotesque'; --body:'Work Sans'; --mono:var(--font-mono-ui); }
+  .t-bold      { --disp:'Syne'; --body:'Archivo'; --mono:'Space Mono'; }
+  .t-minimal   { --disp:'Manrope'; --body:'Manrope'; --mono:var(--font-mono-ui); }
+  .spec .spec-display { font-family:var(--disp), serif; }
+  .spec .spec-body    { font-family:var(--body), sans-serif; }
+  .spec .spec-eyebrow, .spec .spec-data { font-family:var(--mono), monospace; }
+  .t-editorial .spec-display { font-weight:400; letter-spacing:-.01em; }
+  .t-minimal .spec-display { font-weight:500; }
+
+  /* ---- Scale ladder ---- */
+  .ladder { border:1px solid var(--hairline); border-radius:12px; background:var(--surface); overflow:hidden; }
+  .rung { display:flex; align-items:baseline; gap:1rem; padding:.55rem 1.2rem; border-top:1px solid var(--hairline); }
+  .rung:first-child { border-top:0; }
+  .rung .lbl { font-family:var(--font-mono-ui); font-size:.72rem; color:var(--ink-3); width:8.5rem; flex:none; }
+  .rung .txt { color:var(--ink); font-family:'Public Sans', var(--font-ui); letter-spacing:-.01em; line-height:1.1; }
+
+  /* ---- Reject list ---- */
+  .reject { display:grid; gap:.6rem; grid-template-columns:1fr; margin-top:1rem; }
+  @media (min-width:44rem){ .reject { grid-template-columns:1fr 1fr; } }
+  .rej { display:flex; align-items:baseline; gap:.8rem; padding:.7rem .9rem; border:1px dashed var(--hairline); border-radius:9px; color:var(--ink-3); }
+  .rej .rname { font-size:1.15rem; color:var(--ink-2); text-decoration:line-through; text-decoration-color:var(--warn); text-decoration-thickness:1px; flex:none; width:9rem; }
+  .rej .why { font-size:.82rem; }
+
+  .picks-box { margin-top:1.4rem; padding:1rem 1.2rem; border-radius:10px; background:var(--accent-soft); border:1px solid color-mix(in srgb,var(--accent) 30%, var(--hairline)); font-size:.9rem; }
+  .picks-box b { color:var(--ink); }
+  .picks-box .empty { color:var(--ink-2); }
+
+  .soon-note { color:var(--ink-3); font-size:.92rem; max-width:56ch; }
+  .callout { margin-top:1.4rem; padding:1rem 1.2rem; border-left:3px solid var(--accent); background:var(--surface-2); border-radius:0 8px 8px 0; font-size:.9rem; color:var(--ink-2); }
+  .callout b { color:var(--ink); }
+  footer { border-top:1px solid var(--hairline); }
+  footer .wrap { padding:1.8rem 0 3rem; color:var(--ink-3); font-size:.82rem; }
+  /* ---- Color audit ---- */
+  .demo { border:1px solid var(--hairline); border-radius:12px; background:var(--surface); padding:1.3rem 1.4rem; box-shadow:var(--shadow); }
+  .ramp { display:flex; flex-direction:column; gap:.9rem; }
+  .ramp-line { display:flex; align-items:center; gap:1rem; }
+  .ramp-line .cap { width:11rem; flex:none; font-size:.82rem; color:var(--ink-2); }
+  .ramp-line .cap b { color:var(--ink); }
+  .swatches { display:flex; flex:1; border-radius:8px; overflow:hidden; border:1px solid var(--hairline); min-width:0; }
+  .swatches span { flex:1; height:2.6rem; }
+  .hue-ctrl { display:flex; align-items:center; gap:.6rem; margin-top:1.1rem; font-size:.85rem; color:var(--ink-2); flex-wrap:wrap; }
+  .hue-ctrl input[type=range]{ flex:1; min-width:11rem; accent-color:var(--accent); }
+  .hue-preset { font:inherit; font-size:.76rem; padding:.25rem .6rem; border-radius:999px; border:1px solid var(--hairline); background:var(--surface); color:var(--ink-2); cursor:pointer; }
+  .hue-preset:hover { border-color:var(--ink-3); color:var(--ink); }
+  .mini-note{ font-size:.82rem; color:var(--ink-3); margin-top:.8rem; max-width:60ch; }
+  .commit-grid{ display:grid; gap:.8rem; grid-template-columns:repeat(2,1fr); margin-top:1.1rem; }
+  @media(min-width:52rem){ .commit-grid{ grid-template-columns:repeat(4,1fr);} }
+  .commit{ border:1px solid var(--hairline); border-radius:10px; overflow:hidden; background:var(--surface); }
+  .commit .bar{ height:3.6rem; display:flex; }
+  .commit .bar i{ display:block; height:100%; }
+  .commit .cm{ padding:.55rem .75rem; }
+  .commit .cm b{ display:block; font-size:.84rem; }
+  .commit .cm span{ font-size:.75rem; color:var(--ink-3); }
+  .slop-grid{ display:grid; gap:.8rem; grid-template-columns:1fr; margin-top:1rem; }
+  @media(min-width:44rem){ .slop-grid{ grid-template-columns:repeat(2,1fr);} }
+  .slop{ border:1px solid var(--hairline); border-radius:10px; overflow:hidden; position:relative; }
+  .slop .face{ height:6rem; display:flex; align-items:center; justify-content:center; font-size:1.5rem; font-weight:600; }
+  .slop .tag{ padding:.55rem .8rem; font-size:.8rem; color:var(--ink-2); background:var(--surface); border-top:1px solid var(--hairline); }
+  .slop .tag b{ color:var(--warn); }
+  .slop .x{ position:absolute; top:.5rem; right:.6rem; width:1.4rem; height:1.4rem; border-radius:999px; background:var(--warn); color:#fff; display:flex; align-items:center; justify-content:center; font-size:.85rem; }
+  .pal-grid{ display:grid; gap:1rem; grid-template-columns:1fr; margin-top:1.1rem; }
+  @media(min-width:56rem){ .pal-grid{ grid-template-columns:1fr 1fr; } }
+  .pal{ border:1px solid var(--hairline); border-radius:12px; overflow:hidden; background:var(--surface); box-shadow:var(--shadow); }
+  .pal .swz{ display:flex; height:2.4rem; }
+  .pal .swz i{ flex:1; }
+  .pal .pm{ padding:.7rem .9rem 1rem; }
+  .pal .pm .tone{ font-family:var(--font-mono-ui); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); }
+  .pal .pm .mood{ font-size:.86rem; color:var(--ink-2); margin:.3rem 0 0; }
+
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important;} }
+</style>
+</head>
+<body>
+
+<header class="top">
+  <div class="wrap">
+    <p class="kicker">Prototype · Design Lab</p>
+    <h1>Design decisions, audited one at a time</h1>
+    <p class="sub">A living workbench for the <code>/prototype</code> skill. Each audit researches one dimension, renders the options in situ, and captures the pick. We grow it section by section.</p>
+  </div>
+</header>
+
+<div class="bar">
+  <div class="wrap">
+    <nav class="navchips" aria-label="Audits">
+      <a class="chip active" href="#typography">1 · Typography</a>
+      <a class="chip" href="#color">2 · Color</a>
+      <a class="chip soon" href="#motion">3 · Motion</a>
+      <a class="chip soon" href="#spacing">4 · Spacing</a>
+      <a class="chip soon" href="#depth">5 · Depth</a>
+      <a class="chip soon" href="#interaction">6 · Interaction</a>
+      <a class="chip soon" href="#imagery">7 · Imagery</a>
+    </nav>
+    <span class="spacer"></span>
+    <label class="ctrl">Sample <input id="sample" type="text" value="Ship it by Friday" aria-label="Specimen sample text" /></label>
+    <label class="ctrl">Size <input id="size" type="range" min="1.6" max="4" step="0.05" value="2.6" aria-label="Display size" /></label>
+    <button class="btn" id="theme" aria-label="Toggle light or dark">◐ Theme</button>
+  </div>
+</div>
+
+<main class="wrap">
+
+  <!-- ============ AUDIT 1 — TYPOGRAPHY ============ -->
+  <section id="typography">
+    <p class="eyebrow">Audit 01 — decided ▸ pick a pairing per tone</p>
+    <h2>Typography &amp; fonts</h2>
+    <p class="lead">One vetted display + body (+ mono when data-heavy) per tone preset — all Google Fonts, all off the reject list. Type your product name into <b>Sample</b> above to test each pairing with real words, flip the theme to check light-on-dark, and press <b>Use this</b> to record the pick.</p>
+    <ul class="rules">
+      <li><b>Ratio</b> 1.25 major third · 16 / 20 / 25 / 31 / 39 / 49</li>
+      <li><b>Fixed rem</b> for UI · fluid <b>clamp()</b> for the hero only</li>
+      <li><b>Polish baked in</b> tabular-nums · text-wrap balance/pretty · optical-sizing · eyebrow tracking</li>
+      <li><b>≤ 2–3 families</b>; one family in weights often beats two</li>
+    </ul>
+
+    <div class="grid" id="specimens">
+      <article class="spec t-technical" data-tone="technical">
+        <div class="spec-head"><span class="tone">technical · dev tools, dashboards</span><button class="pick">Use this</button></div>
+        <p class="spec-eyebrow">Product analytics</p>
+        <p class="spec-display">Ship it by Friday</p>
+        <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
+        <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
+        <div class="spec-names"><span>Display <b>Space Grotesk</b></span><span>Body <b>IBM Plex Sans</b></span><span>Mono <b>JetBrains Mono</b></span></div>
+      </article>
+
+      <article class="spec t-corporate" data-tone="corporate">
+        <div class="spec-head"><span class="tone">corporate · trustworthy B2B</span><button class="pick">Use this</button></div>
+        <p class="spec-eyebrow">Product analytics</p>
+        <p class="spec-display">Ship it by Friday</p>
+        <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
+        <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
+        <div class="spec-names"><span>Display <b>Plus Jakarta Sans</b></span><span>Body <b>Public Sans</b></span></div>
+      </article>
+
+      <article class="spec t-editorial" data-tone="editorial">
+        <div class="spec-head"><span class="tone">editorial · magazine, brand</span><button class="pick">Use this</button></div>
+        <p class="spec-eyebrow">Product analytics</p>
+        <p class="spec-display">Ship it by Friday</p>
+        <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
+        <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
+        <div class="spec-names"><span>Display <b>Instrument Serif</b></span><span>Body <b>Newsreader</b></span></div>
+        <p class="spec-alt">Less-reflex alt: <b>Fraunces</b> + <b>DM Sans</b> (Fraunces is the expressive serif everyone reaches for right now).</p>
+      </article>
+
+      <article class="spec t-playful" data-tone="playful">
+        <div class="spec-head"><span class="tone">playful · friendly, contemporary</span><button class="pick">Use this</button></div>
+        <p class="spec-eyebrow">Product analytics</p>
+        <p class="spec-display">Ship it by Friday</p>
+        <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
+        <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
+        <div class="spec-names"><span>Display <b>Bricolage Grotesque</b></span><span>Body <b>Work Sans</b></span></div>
+      </article>
+
+      <article class="spec t-bold" data-tone="bold-experimental">
+        <div class="spec-head"><span class="tone">bold-experimental · high contrast</span><button class="pick">Use this</button></div>
+        <p class="spec-eyebrow">Product analytics</p>
+        <p class="spec-display">Ship it by Friday</p>
+        <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
+        <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
+        <div class="spec-names"><span>Display <b>Syne</b></span><span>Body <b>Archivo</b></span><span>Mono <b>Space Mono</b></span></div>
+      </article>
+
+      <article class="spec t-minimal" data-tone="minimal">
+        <div class="spec-head"><span class="tone">minimal · quiet, Swiss</span><button class="pick">Use this</button></div>
+        <p class="spec-eyebrow">Product analytics</p>
+        <p class="spec-display">Ship it by Friday</p>
+        <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
+        <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
+        <div class="spec-names"><span>Display <b>Manrope</b> (700)</span><span>Body <b>Manrope</b> (400) — one family, weights only</span></div>
+      </article>
+    </div>
+
+    <div class="picks-box" id="picks"><span class="empty">No picks yet — press <b>Use this</b> on the pairings you want the skill to default to per tone. Choices persist in this browser.</span></div>
+
+    <h3 style="margin-top:2.2rem;font-size:1.05rem;">The committed scale — 1.25 major third</h3>
+    <p class="lead" style="margin-bottom:1rem;">Replaces the crammed <code>12 / 14 / 16 / 20 / 24 / 32 / 48</code>. Fewer sizes, more contrast; the low end is thinned so hierarchy reads.</p>
+    <div class="ladder">
+      <div class="rung"><span class="lbl">display · clamp</span><span class="txt" style="font-size:3.05rem;font-weight:700;">Aa Ship it by Friday</span></div>
+      <div class="rung"><span class="lbl">49px · h1</span><span class="txt" style="font-size:3.05rem;font-weight:700;">Overview</span></div>
+      <div class="rung"><span class="lbl">39px · h2</span><span class="txt" style="font-size:2.44rem;font-weight:600;">Events explorer</span></div>
+      <div class="rung"><span class="lbl">31px · h3</span><span class="txt" style="font-size:1.95rem;font-weight:600;">Weekly active users</span></div>
+      <div class="rung"><span class="lbl">25px · h4 / lead</span><span class="txt" style="font-size:1.56rem;">Filter by segment</span></div>
+      <div class="rung"><span class="lbl">20px · subhead</span><span class="txt" style="font-size:1.25rem;">Recent activity</span></div>
+      <div class="rung"><span class="lbl">16px · body</span><span class="txt" style="font-size:1rem;">Every button works, the numbers are plausible.</span></div>
+      <div class="rung"><span class="lbl">14px · meta</span><span class="txt" style="font-size:.875rem;color:var(--ink-2);">Updated 2 minutes ago</span></div>
+    </div>
+
+    <h3 style="margin-top:2.2rem;font-size:1.05rem;">The reflex-reject list</h3>
+    <p class="lead" style="margin-bottom:.6rem;">Rendered in their own faces so the "invisible default" look is obvious. Fine for docs; wrong for distinctive product.</p>
+    <div class="reject">
+      <div class="rej"><span class="rname" style="font-family:'Inter';">Inter</span><span class="why">The default of 2023–25. Signals "an AI/dev made this."</span></div>
+      <div class="rej"><span class="rname" style="font-family:'Roboto';">Roboto</span><span class="why">Android-generic; no point of view.</span></div>
+      <div class="rej"><span class="rname" style="font-family:'Open Sans';">Open Sans</span><span class="why">Everywhere since 2012; invisible.</span></div>
+      <div class="rej"><span class="rname" style="font-family:'Lato';">Lato</span><span class="why">Template-builder default.</span></div>
+      <div class="rej"><span class="rname" style="font-family:'Montserrat';">Montserrat</span><span class="why">Overused geometric; "modern" by reflex.</span></div>
+      <div class="rej"><span class="rname" style="font-family:var(--font-mono-ui);">Mono-as-costume</span><span class="why">Mono is for numbers/code, not lazy "developer vibes."</span></div>
+    </div>
+
+    <div class="callout"><b>Where this lands in the skill:</b> the pairing table → <code>reference/discovery.md</code> Step 4 (+ optional <code>reference/type-pairings.md</code>); the scale tokens + polish rules → <code>templates/scaffold-base/css/styles.css</code> (floor, inherited by every build).</div>
+  </section>
+
+  <!-- ============ FUTURE AUDITS (placeholders) ============ -->
+  <section id="color">
+    <p class="eyebrow">Audit 02 — in progress ▸ tint every neutral, commit to a strategy</p>
+    <h2>Color</h2>
+    <p class="lead">The scaffold ships flat, untinted grays today (<code>--muted: 120 120 120</code>) — the "dead gray" tell both doctrines ban. The fix: derive neutrals in <b>OKLCH</b> and tint them toward the palette's hue, commit to <b>one accent</b>, and pick a <b>strategy</b>. Drag the hue below to feel the difference.</p>
+    <ul class="rules">
+      <li><b>OKLCH</b> neutrals tinted 0.005–0.015 toward the hue</li>
+      <li><b>Never</b> #000 / #fff / chroma-0 gray</li>
+      <li><b>One accent</b> ≤ 10% (restrained)</li>
+      <li><b>Dark</b> = lighter surfaces, not shadow; desaturate the accent</li>
+      <li><b>Category-reflex check</b> — not guessable from the domain</li>
+    </ul>
+
+    <div class="demo" id="tintdemo" style="--hue:150;">
+      <div class="ramp">
+        <div class="ramp-line"><span class="cap"><b>Flat</b> · chroma 0 — dead</span><span class="swatches">
+          <span style="background:oklch(98% 0 0)"></span><span style="background:oklch(95% 0 0)"></span><span style="background:oklch(90% 0 0)"></span><span style="background:oklch(83% 0 0)"></span><span style="background:oklch(72% 0 0)"></span><span style="background:oklch(60% 0 0)"></span><span style="background:oklch(48% 0 0)"></span><span style="background:oklch(38% 0 0)"></span><span style="background:oklch(27% 0 0)"></span><span style="background:oklch(17% 0 0)"></span>
+        </span></div>
+        <div class="ramp-line"><span class="cap"><b>Tinted</b> · chroma .013 → hue</span><span class="swatches">
+          <span style="background:oklch(98% .013 var(--hue))"></span><span style="background:oklch(95% .013 var(--hue))"></span><span style="background:oklch(90% .014 var(--hue))"></span><span style="background:oklch(83% .015 var(--hue))"></span><span style="background:oklch(72% .015 var(--hue))"></span><span style="background:oklch(60% .015 var(--hue))"></span><span style="background:oklch(48% .015 var(--hue))"></span><span style="background:oklch(38% .014 var(--hue))"></span><span style="background:oklch(27% .013 var(--hue))"></span><span style="background:oklch(17% .012 var(--hue))"></span>
+        </span></div>
+      </div>
+      <div class="hue-ctrl">
+        <span>Tint hue <b id="hueval">150°</b></span>
+        <input id="hue" type="range" min="0" max="360" value="150" aria-label="Neutral tint hue" />
+        <button class="hue-preset" data-hue="35">warm 35°</button>
+        <button class="hue-preset" data-hue="150">green 150°</button>
+        <button class="hue-preset" data-hue="245">cool 245°</button>
+        <button class="hue-preset" data-hue="320">plum 320°</button>
+      </div>
+      <p class="mini-note">Same lightness on both rows — the only difference is a whisper of chroma. The tinted ramp reads as <em>chosen</em>; the flat one reads as <em>default</em>. Every surface, border, and muted text derives from it.</p>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Color strategy — commit before you pick</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Pick a position on the commitment axis first; it decides how much color the surface carries. Most product UI is <b>restrained</b>; brand/landing pages earn more.</p>
+    <div class="commit-grid">
+      <div class="commit"><div class="bar"><i style="flex:11;background:oklch(96% .012 150)"></i><i style="flex:1;background:oklch(55% .13 150)"></i></div><div class="cm"><b>Restrained</b><span>tinted neutrals + one accent ≤10%</span></div></div>
+      <div class="commit"><div class="bar"><i style="flex:1;background:oklch(48% .12 250)"></i><i style="flex:1;background:oklch(95% .01 250)"></i></div><div class="cm"><b>Committed</b><span>one color carries 30–60%</span></div></div>
+      <div class="commit"><div class="bar"><i style="flex:1;background:oklch(60% .13 25)"></i><i style="flex:1;background:oklch(62% .12 145)"></i><i style="flex:1;background:oklch(60% .12 265)"></i><i style="flex:1;background:oklch(85% .1 90)"></i></div><div class="cm"><b>Full palette</b><span>3–4 named roles, each deliberate</span></div></div>
+      <div class="commit"><div class="bar"><i style="flex:1;background:oklch(50% .15 320)"></i></div><div class="cm"><b>Drenched</b><span>the surface IS the color</span></div></div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">The curated palettes — a menu by tone</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Same idea as the font pairings: one committed, tinted, category-reflex-avoiding palette per tone, light + dark. The skill recommends by tone.</p>
+    <div class="pal-grid" id="palettes">
+      <div class="pal">
+        <div class="swz"><i style="background:#f9f7ef"></i><i style="background:#fffefa"></i><i style="background:#e1ded5"></i><i style="background:#f0ede4"></i><i style="background:#5b5851"></i><i style="background:#292620"></i><i style="background:#267b4c"></i></div>
+        <div class="swz"><i style="background:#15140f"></i><i style="background:#292822"></i><i style="background:#35332c"></i><i style="background:#26241e"></i><i style="background:#adaba3"></i><i style="background:#eae8e1"></i><i style="background:#7fb390"></i></div>
+        <div class="pm"><span class="tone">technical · restrained</span><p class="mood">Pine on warm graphite — green on a warm off-white, no blue-on-black.</p></div>
+      </div>
+      <div class="pal">
+        <div class="swz"><i style="background:#fbf6f2"></i><i style="background:#fffefb"></i><i style="background:#e5ded9"></i><i style="background:#f2ebe6"></i><i style="background:#605955"></i><i style="background:#2d2824"></i><i style="background:#853a77"></i></div>
+        <div class="swz"><i style="background:#131216"></i><i style="background:#28272c"></i><i style="background:#363137"></i><i style="background:#262227"></i><i style="background:#aea9af"></i><i style="background:#eae6eb"></i><i style="background:#c388b6"></i></div>
+        <div class="pm"><span class="tone">corporate · restrained</span><p class="mood">Aubergine on warm stone — confident and human, zero boardroom navy.</p></div>
+      </div>
+      <div class="pal">
+        <div class="swz"><i style="background:#f2f6fa"></i><i style="background:#fcffff"></i><i style="background:#d8dde3"></i><i style="background:#e6ecf2"></i><i style="background:#4e5359"></i><i style="background:#1b2025"></i><i style="background:#c93029"></i></div>
+        <div class="swz"><i style="background:#0f1216"></i><i style="background:#23272c"></i><i style="background:#2c3136"></i><i style="background:#1f2328"></i><i style="background:#aaaeb4"></i><i style="background:#e9edf2"></i><i style="background:#d86353"></i></div>
+        <div class="pm"><span class="tone">editorial · committed</span><p class="mood">Signal red on cool newsprint — deliberately the opposite of terracotta-on-cream.</p></div>
+      </div>
+      <div class="pal">
+        <div class="swz"><i style="background:#f5f8fe"></i><i style="background:#fdffff"></i><i style="background:#dce0e8"></i><i style="background:#eaeff8"></i><i style="background:#545860"></i><i style="background:#23262d"></i><i style="background:#e19005"></i></div>
+        <div class="swz"><i style="background:#14161b"></i><i style="background:#2b2e34"></i><i style="background:#34383f"></i><i style="background:#26292f"></i><i style="background:#aaaeb6"></i><i style="background:#e8ebf2"></i><i style="background:#e5ab60"></i></div>
+        <div class="pm"><span class="tone">playful · committed</span><p class="mood">Marigold on periwinkle paper — one warm pop against a cool ground, not candy chaos.</p></div>
+      </div>
+      <div class="pal">
+        <div class="swz"><i style="background:#defaf8"></i><i style="background:#f3ffff"></i><i style="background:#c5e1e1"></i><i style="background:#d4f0f0"></i><i style="background:#3a5c5e"></i><i style="background:#113436"></i><i style="background:#6a9708"></i></div>
+        <div class="swz"><i style="background:#001c1e"></i><i style="background:#023538"></i><i style="background:#134244"></i><i style="background:#003033"></i><i style="background:#95bab7"></i><i style="background:#d2efec"></i><i style="background:#a5ce6f"></i></div>
+        <div class="pm"><span class="tone">bold-experimental · drenched</span><p class="mood">Acid lime on petrol teal — loud and saturated, but a teal base, not neon-on-black.</p></div>
+      </div>
+      <div class="pal">
+        <div class="swz"><i style="background:#f7f9fc"></i><i style="background:#feffff"></i><i style="background:#dde0e3"></i><i style="background:#edf0f4"></i><i style="background:#4d5054"></i><i style="background:#181b1e"></i><i style="background:#2e4a67"></i></div>
+        <div class="swz"><i style="background:#0c0f11"></i><i style="background:#202326"></i><i style="background:#2b2e32"></i><i style="background:#1d2023"></i><i style="background:#a5a8ab"></i><i style="background:#eceff1"></i><i style="background:#a5bad1"></i></div>
+        <div class="pm"><span class="tone">minimal · restrained</span><p class="mood">Monochrome ink-blue — even the grays are tinted; the accent is a deeper shade of the same hue.</p></div>
+      </div>
+    </div>
+    <p class="mini-note">Each row: light theme (top) and dark (bottom), running surface → ink then the accent. All six clear 4.5:1 for body ink in both themes. Two honest flags from the research: <code>ink-3</code> (captions/timestamps) is AA-Large only in light mode — never set body copy in it; and the <b>playful</b> marigold / <b>bold</b> lime accents are <em>fill</em> roles (button background with dark text), so darken them for text links.</p>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Anti-slop — the clusters to avoid</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Rendered so they're undeniable. The judge caught both marketplace builds sliding toward the first one.</p>
+    <div class="slop-grid">
+      <div class="slop"><span class="x">✕</span><div class="face" style="background:#F4F1EA;color:#b0653f;font-family:Fraunces,serif;">Aa <span style="margin-left:.6rem;background:#c06a42;color:#fff;font-size:.7rem;padding:.25rem .6rem;border-radius:6px;font-family:var(--font-ui);">Book</span></div><div class="tag"><b>Cream + serif + terracotta.</b> The #1 AI-design tell.</div></div>
+      <div class="slop"><span class="x">✕</span><div class="face" style="background:linear-gradient(135deg,#7c3aed,#2563eb);color:#fff;">Aa</div><div class="tag"><b>Purple→blue gradient.</b> Decorative, screams generated.</div></div>
+      <div class="slop"><span class="x">✕</span><div class="face" style="background:#0a0a0a;color:#39ff14;">Aa</div><div class="tag"><b>Neon-on-near-black.</b> "Cool" without a real decision.</div></div>
+      <div class="slop"><span class="x">✕</span><div class="face" style="background:#2563eb;color:#9ca3af;">Aa</div><div class="tag"><b>Gray text on a colored ground.</b> Washed out — use a tint of the ground instead.</div></div>
+    </div>
+
+    <div class="callout"><b>Where this lands:</b> retint the 3 scaffold themes in <code>styles.css</code> (kills the flat gray for every build) + rewrite <code>discovery.md</code> Step 4 Color + a <code>reference/color-palettes.md</code> menu. This is the load-bearing <b>#1 + #6 pair</b> — scaffold retint and generation guidance ship together, or the per-build step overwrites the fix.</div>
+  </section>
+
+  <section id="motion">
+    <p class="eyebrow">Audit 03 — up next</p>
+    <h2>Motion &amp; scrolling</h2>
+    <p class="soon-note">Easing curves (ease-out-quart/expo, never <code>ease</code>), durations, staggered page-load reveals, scroll-driven effects with Firefox-safe fallbacks, and reduced-motion. Renders here as toggleable live demos of each curve and scroll behavior.</p>
+  </section>
+
+  <section id="spacing"><p class="eyebrow">Audit 04 — up next</p><h2>Spacing &amp; rhythm</h2><p class="soon-note">4pt scale, tight-in-group vs generous-between, the squint test.</p></section>
+  <section id="depth"><p class="eyebrow">Audit 05 — up next</p><h2>Depth &amp; elevation</h2><p class="soon-note">Shadow scale, surface-contrast elevation, z-index tokens.</p></section>
+  <section id="interaction"><p class="eyebrow">Audit 06 — up next</p><h2>Interaction &amp; micro-states</h2><p class="soon-note">The 8 states, focus rings, hover-intent, optimistic feedback.</p></section>
+  <section id="imagery"><p class="eyebrow">Audit 07 — up next</p><h2>Imagery &amp; icons</h2><p class="soon-note">Replacing placeholder color-blocks with real treatment; inline Lucide/Phosphor SVG.</p></section>
+
+</main>
+
+<footer><div class="wrap">Prototype Design Lab · open locally in a browser (loads Google Fonts). Picks are stored in this browser only. Grows one audit at a time.</div></footer>
+
+<script>
+(function () {
+  var root = document.documentElement;
+  var KEY_THEME = 'lab-theme', KEY_PICKS = 'lab-type-picks';
+
+  // Theme
+  try { if (localStorage.getItem(KEY_THEME)) root.setAttribute('data-theme', localStorage.getItem(KEY_THEME)); } catch (e) {}
+  document.getElementById('theme').addEventListener('click', function () {
+    var next = root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark';
+    root.setAttribute('data-theme', next);
+    try { localStorage.setItem(KEY_THEME, next); } catch (e) {}
+  });
+
+  // Sample text → all display lines
+  var sample = document.getElementById('sample');
+  sample.addEventListener('input', function () {
+    var v = sample.value || 'Ship it by Friday';
+    document.querySelectorAll('.spec-display').forEach(function (el) { el.textContent = v; });
+  });
+
+  // Display size
+  var size = document.getElementById('size');
+  size.addEventListener('input', function () { root.style.setProperty('--disp-size', size.value + 'rem'); });
+
+  // Picks (persisted)
+  var picks = {};
+  try { picks = JSON.parse(localStorage.getItem(KEY_PICKS) || '{}'); } catch (e) { picks = {}; }
+  function save() { try { localStorage.setItem(KEY_PICKS, JSON.stringify(picks)); } catch (e) {} }
+  function renderPicks() {
+    var box = document.getElementById('picks');
+    var tones = Object.keys(picks).filter(function (t) { return picks[t]; });
+    if (!tones.length) { box.innerHTML = '<span class="empty">No picks yet — press <b>Use this</b> on the pairings you want the skill to default to per tone. Choices persist in this browser.</span>'; return; }
+    box.innerHTML = '<b>Your picks so far:</b> ' + tones.map(function (t) { return t + ' → ' + picks[t]; }).join('  ·  ');
+  }
+  document.querySelectorAll('.spec').forEach(function (card) {
+    var tone = card.getAttribute('data-tone');
+    var names = Array.prototype.map.call(card.querySelectorAll('.spec-names b'), function (b) { return b.textContent; }).join(' + ');
+    if (picks[tone] === names) card.classList.add('picked');
+    card.querySelector('.pick').addEventListener('click', function () {
+      if (card.classList.contains('picked')) { card.classList.remove('picked'); delete picks[tone]; }
+      else {
+        document.querySelectorAll('.spec[data-tone="' + tone + '"]').forEach(function (c) { c.classList.remove('picked'); });
+        card.classList.add('picked'); picks[tone] = names;
+      }
+      save(); renderPicks();
+    });
+  });
+  renderPicks();
+
+  // Color: tinted-neutral hue demonstrator
+  var demo = document.getElementById('tintdemo');
+  var hue = document.getElementById('hue');
+  var hueVal = document.getElementById('hueval');
+  if (demo && hue) {
+    function setHue(h) { demo.style.setProperty('--hue', h); hueVal.textContent = h + '°'; hue.value = h; }
+    hue.addEventListener('input', function () { setHue(hue.value); });
+    document.querySelectorAll('.hue-preset').forEach(function (b) {
+      b.addEventListener('click', function () { setHue(b.getAttribute('data-hue')); });
+    });
+  }
+})();
+</script>
+</body>
+</html>
