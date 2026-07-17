@@ -35,6 +35,28 @@ html[data-theme="mono"] {
   --radius: 0;
 }
 
+/* Type scale — committed 1.25 major third (fixed rem for UI; hero uses --text-display clamp).
+   Floor defaults: the per-prototype DESIGN.md may retune values, but keep one committed ratio.
+   Pick the tone's font pairing from reference/type-pairings.md. */
+:root {
+  --text-xs:      .75rem;   /* 12 · captions, legal, meta labels */
+  --text-sm:      .875rem;  /* 14 · secondary UI, table meta */
+  --text-base:    1rem;     /* 16 · body (never smaller) */
+  --text-lg:      1.25rem;  /* 20 · lead, subhead */
+  --text-xl:      1.563rem; /* 25 · h4 */
+  --text-2xl:     1.953rem; /* 31 · h3 */
+  --text-3xl:     2.441rem; /* 39 · h2 */
+  --text-4xl:     3.052rem; /* 49 · h1 */
+  --text-display: clamp(2.5rem, 6vw, 4rem); /* hero headline only */
+}
+
+/* Typographic polish — floor defaults; apply on top of the chosen pairing. */
+h1, h2, h3 { text-wrap: balance; }
+p          { text-wrap: pretty; }
+body       { font-optical-sizing: auto; }
+.tabular, [data-tabular] { font-variant-numeric: tabular-nums; } /* numeric cells / KPIs */
+.eyebrow   { text-transform: uppercase; letter-spacing: .1em; font-size: var(--text-xs); }
+
 /* Smooth theme transitions */
 html { transition: background-color .3s ease; }
 body { transition: background-color .3s ease, color .3s ease; }

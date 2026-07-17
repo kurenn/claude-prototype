@@ -21,7 +21,7 @@ single combined prompt.
 Ask one at a time, conversational, not as a form:
 
 1. **What are you prototyping?** — one-sentence product summary. Drives content, not just structure.
-2. **Tone?** — presets: *playful · corporate · technical · editorial · bold-experimental · minimal*. Free-text welcome.
+2. **Tone?** — presets: *playful · corporate · technical · editorial · bold-experimental · minimal*. Free-text welcome. Tone also selects the recommended **font pairing** (`reference/type-pairings.md`): auto-pick the tone's primary pairing in Quick mode; recommend it and offer the alternate in Discovery mode.
 3. **Inspiration** — URLs or images that capture the vibe. "Share 1–3 references, or skip." WebFetch public URLs for mood notes (palette words, typography feel, layout density); read images via multimodal. Use as vibes context only — never copy.
 4. **Audience & use case** — *sales demo · internal review · client pitch · design exploration*.
 5. **Scope** — how many screens, what's the core flow. Drives SPA-vs-multi-page.
@@ -111,7 +111,7 @@ a sales pitch page or marketing landing is **brand**. It changes which impeccabl
 Generate inline with these defaults (or run `$impeccable shape "<spec>"` if impeccable is
 loaded — it now finds PRODUCT.md and won't trigger `teach`):
 - **Color** — one accent, one neutral ramp (9 steps), one surface. Each theme remaps the ramp.
-- **Typography** — one heading + one body font (Google Fonts). Scale: 12 / 14 / 16 / 20 / 24 / 32 / 48.
+- **Typography** — choose the pairing for the tone from `reference/type-pairings.md` (curated Google-Fonts pairings, all off the reflex-reject list — never Inter/Roboto/Open Sans/Lato/Montserrat). Commit to the **1.25** scale `16 / 20 / 25 / 31 / 39 / 49` (fixed rem for UI; `clamp()` for the hero only); add a third **mono/utility** family when the product is data- or code-heavy. The scaffold ships the scale tokens + polish (`tabular-nums`, `text-wrap`, optical-sizing, `.eyebrow` tracking) — build on them.
 - **Spacing** — 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64.
 - **Radius** — 0 / 4 / 8 / 16 across the theme moods.
 - **Motion** — 150ms ease-out default; reveal-on-scroll only where it earns attention.
