@@ -77,7 +77,9 @@ it in the final report as an enhancement path.
 
 1. **Discover (steps 1–4)** → `reference/discovery.md`. Quick-vs-discovery mode, the 6-question
    Q&A, refine the spec (prompt-refiner if present), shape a per-prototype `DESIGN.md`.
-   Confirm a one-paragraph summary with the user before building.
+   Probe how it should **feel** (mood / physical scene), then present the committed **design
+   direction** (mood + named palette & type pairing + one signature move) and get a yes-or-tweak
+   before building — a design review, not a form.
 2. **Build (steps 5–6)** → `reference/build.md`. Scaffold from `templates/`, wire the visible
    control bar (theme + layout + persona + share + feedback), the data layer, interaction
    states, and the layout system; then build one HTML file per screen.
@@ -91,6 +93,11 @@ it in the final report as an enhancement path.
    screen); feedback tip (💬 is always on, export JSON → `/prototype apply-feedback <file>`);
    offer Vercel deploy only if the user seems ready to share; point to `/qa-only` and `/design-review`
    for deeper passes.
+
+**Iterate (any time after the first build)** → `reference/iterate.md`. Proactively offer to refine
+any screen — ask which page and how it should change (feel, layout, content, a specific element),
+apply it to just that screen, re-verify, and loop until they're happy. A prototype earns its keep
+by being iterated, not shipped once.
 
 Subcommands (`variant`, `apply-feedback`) → `reference/subcommands.md`.
 
@@ -121,7 +128,8 @@ how-to is still in `reference/build.md` / `reference/assess.md` — but the rule
 - **a11y floor.** `:focus-visible` rings defined (Tailwind's reset drops them); every modal carries `role="dialog"` + `aria-modal`.
 
 ## References
-- Phase detail: `reference/discovery.md` · `reference/build.md` · `reference/assess.md` · `reference/subcommands.md`
+- Phase detail: `reference/discovery.md` · `reference/build.md` · `reference/assess.md` · `reference/iterate.md` · `reference/subcommands.md`
+- Design menus (tone → pairing / palette) + workbench: `reference/type-pairings.md` · `reference/color-palettes.md` · `design-lab/index.html`
 - Scaffold templates: `templates/scaffold-base/` (control-bar markup + script order live here)
 - Feedback overlay: `templates/feedback-overlay/`
 - Handoff doc templates: `templates/demo-docs/`

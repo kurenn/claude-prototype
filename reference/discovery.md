@@ -21,14 +21,17 @@ single combined prompt.
 Ask one at a time, conversational, not as a form:
 
 1. **What are you prototyping?** — one-sentence product summary. Drives content, not just structure.
-2. **Tone?** — presets: *playful · corporate · technical · editorial · bold-experimental · minimal*. Free-text welcome. Tone selects the recommended **font pairing** (`reference/type-pairings.md`) and **color palette** (`reference/color-palettes.md`): auto-pick in Quick mode; recommend and offer to adjust in Discovery mode.
+2. **Tone & feeling?** — a tone preset (*playful · corporate · technical · editorial · bold-experimental · minimal*) **and** one line on how it should *feel* to use: picture the person, the place, and the mood (e.g. "an SRE glancing at incident severity at 2am in a dim room," or "a homeowner browsing on the couch on a Sunday"). The scene forces committed choices a category word can't. Tone selects the recommended **font pairing** (`reference/type-pairings.md`) and **color palette** (`reference/color-palettes.md`): auto-pick in Quick mode; recommend and offer to adjust in Discovery mode.
 3. **Inspiration** — URLs or images that capture the vibe. "Share 1–3 references, or skip." WebFetch public URLs for mood notes (palette words, typography feel, layout density); read images via multimodal. Use as vibes context only — never copy.
 4. **Audience & use case** — *sales demo · internal review · client pitch · design exploration*.
 5. **Scope** — how many screens, what's the core flow. Drives SPA-vs-multi-page.
 6. **Content** — *real (user provides) · realistic placeholder · loose lorem-ish*. Default to realistic placeholder; never actual lorem ipsum.
 
-After answers, confirm a one-paragraph summary before building — the cheap
-course-correction point.
+After answers, present the committed **design direction** back before building — the
+mood/scene, the named palette + type pairing, and one **signature move** that will make it
+memorable — as a short paragraph, and get a yes-or-tweak. This is the cheap course-correction
+point; in Discovery mode treat it like a design review, not a form. After building, keep
+iterating per screen (`reference/iterate.md`).
 
 ## Step 3: Refine the spec
 
@@ -116,3 +119,4 @@ loaded — it now finds PRODUCT.md and won't trigger `teach`):
 - **Depth** — subtle shadow scale (`--shadow-sm/md/lg`; "if you clearly see it, it's too strong") + a semantic z-index scale (`--z-dropdown … --z-tooltip`, never `9999`). Dark themes elevate with lighter surfaces (`--elevated` / `--elevated-2`), not shadow — set `--shadow-*` to `none` there.
 - **Radius** — 0 / 4 / 8 / 16 across the theme moods.
 - **Motion** — ease-out only (`--ease-out-quart` for UI, `--ease-out-expo` for reveals; never `ease`/linear/bounce). Durations 150 / 250 / 400ms (`--motion-fast/-/-slow`), exits ~75% of entrances. Animate transform + opacity only; heights via `grid-template-rows: 0fr→1fr`. `prefers-reduced-motion` is mandatory. Scroll-driven effects (`animation-timeline`) and View Transitions go behind a reduced-motion + Firefox fallback. Pacing by tone: technical/minimal snappy, corporate/editorial calm, playful/bold expressive.
+- **Signature move** — one memorable, on-brief detail that makes it *not generic*: a distinctive nav, an editorial hero, a considered data-viz treatment, a motion moment, a typographic flourish. Name it in `DESIGN.md` and make sure at least one screen delivers it. If you can't name the signature move, the design is still a template.
