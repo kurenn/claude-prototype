@@ -231,7 +231,34 @@
   .zrow .zk { font-family:var(--font-mono-ui); color:var(--ink-3); width:6rem; text-align:right; flex:none; }
   .zrow .zb { height:.5rem; border-radius:3px; background:var(--accent); opacity:.55; flex:none; }
 
-  @media (prefers-reduced-motion:reduce){ *{transition:none!important;} }
+  /* ---- Interaction audit ---- */
+  .states-grid { display:grid; gap:.7rem; grid-template-columns:repeat(2,1fr); margin-top:1.1rem; }
+  @media(min-width:44rem){ .states-grid{ grid-template-columns:repeat(4,1fr);} }
+  .state-cell { border:1px solid var(--hairline); border-radius:9px; padding:1.1rem .8rem .8rem; text-align:center; background:var(--surface); }
+  .state-cell .st { font-family:var(--font-mono-ui); font-size:.66rem; letter-spacing:.06em; text-transform:uppercase; color:var(--ink-3); margin-top:.75rem; }
+  .dbtn { display:inline-flex; align-items:center; justify-content:center; gap:.4rem; font:inherit; font-size:.85rem; font-weight:500; padding:.5rem 1rem; border-radius:7px; border:1px solid var(--accent); background:var(--accent); color:#fff; cursor:pointer; min-height:2.4rem; }
+  .dbtn.ghost { background:transparent; color:var(--ink); border-color:var(--hairline); }
+  .dbtn.s-hover { background:color-mix(in srgb, var(--accent) 86%, #000); border-color:color-mix(in srgb, var(--accent) 86%, #000); }
+  .dbtn.s-focus { outline:2px solid var(--accent); outline-offset:2px; }
+  .dbtn.s-active { transform:translateY(1px); background:color-mix(in srgb, var(--accent) 78%, #000); }
+  .dbtn.s-disabled { opacity:.45; cursor:not-allowed; }
+  .dbtn.s-error { background:#c0392b; border-color:#c0392b; }
+  .dbtn.s-success { background:#2f8f5b; border-color:#2f8f5b; }
+  .livebtn:hover { background:color-mix(in srgb, var(--accent) 86%, #000); border-color:color-mix(in srgb, var(--accent) 86%, #000); }
+  .livebtn:active { transform:translateY(1px); }
+  .spin { width:.8em; height:.8em; border:2px solid currentColor; border-right-color:transparent; border-radius:50%; animation:labspin .6s linear infinite; }
+  @keyframes labspin { to { transform:rotate(360deg); } }
+  .focus-row { display:flex; gap:.8rem; flex-wrap:wrap; align-items:center; }
+  .lab-input { font:inherit; font-size:.9rem; padding:.5rem .7rem; border:1px solid var(--hairline); border-radius:7px; background:var(--surface); color:var(--ink); }
+  .field { max-width:22rem; }
+  .field label { display:block; font-size:.8rem; color:var(--ink-2); margin-bottom:.3rem; }
+  .field input { width:100%; }
+  .field input:focus-visible { outline:2px solid var(--accent); outline-offset:1px; border-color:var(--accent); }
+  .field.invalid input { border-color:#c0392b; }
+  .field .err { display:none; font-size:.78rem; color:#c0392b; margin-top:.35rem; }
+  .field.invalid .err { display:block; }
+
+  @media (prefers-reduced-motion:reduce){ *{transition:none!important;} .spin{animation:none;} }
 </style>
 </head>
 <body>
@@ -252,7 +279,7 @@
       <a class="chip" href="#motion">3 · Motion</a>
       <a class="chip" href="#spacing">4 · Spacing</a>
       <a class="chip" href="#depth">5 · Depth</a>
-      <a class="chip soon" href="#interaction">6 · Interaction</a>
+      <a class="chip" href="#interaction">6 · Interaction</a>
       <a class="chip soon" href="#imagery">7 · Imagery</a>
     </nav>
     <span class="spacer"></span>
@@ -606,7 +633,50 @@
 
     <div class="callout"><b>Where this lands:</b> ship <code>--shadow-sm/md/lg</code> + <code>--z-*</code> tokens + <code>--elevated-2</code> per theme in <code>styles.css</code>; give <code>.card</code> a subtle default shadow (light) that becomes surface-contrast in dark; note dark-elevates-with-surface in <code>discovery.md</code> Step 4.</div>
   </section>
-  <section id="interaction"><p class="eyebrow">Audit 06 — up next</p><h2>Interaction &amp; micro-states</h2><p class="soon-note">The 8 states, focus rings, hover-intent, optimistic feedback.</p></section>
+  <section id="interaction">
+    <p class="eyebrow">Audit 06 — in progress ▸ every element, all eight states</p>
+    <h2>Interaction &amp; micro-states</h2>
+    <p class="lead">A button isn't one thing — it's eight. The scaffold already nails loading / toast / empty / skeleton via <code>ui.js</code>; the gaps are a global <code>:focus-visible</code> ring, an <code>:active</code> press, and a hover-intent guard. Tab through the demos and click the live button.</p>
+    <ul class="rules">
+      <li><b>8 states</b> — default / hover / focus / active / disabled / loading / error / success</li>
+      <li><b>:focus-visible</b> ring, never <code>outline:none</code></li>
+      <li><b>:active</b> press · <b>@media (hover:hover)</b> guard</li>
+      <li><b>Validate on blur</b>, error below field · <b>undo</b> &gt; confirm</li>
+      <li><b>44px</b> touch targets</li>
+    </ul>
+
+    <h3 style="margin-top:1.6rem;font-size:1.05rem;">The eight states</h3>
+    <div class="states-grid">
+      <div class="state-cell"><button class="dbtn">Save</button><div class="st">default</div></div>
+      <div class="state-cell"><button class="dbtn s-hover">Save</button><div class="st">hover</div></div>
+      <div class="state-cell"><button class="dbtn s-focus">Save</button><div class="st">focus</div></div>
+      <div class="state-cell"><button class="dbtn s-active">Save</button><div class="st">active</div></div>
+      <div class="state-cell"><button class="dbtn s-disabled" disabled>Save</button><div class="st">disabled</div></div>
+      <div class="state-cell"><button class="dbtn"><span class="spin"></span> Saving</button><div class="st">loading</div></div>
+      <div class="state-cell"><button class="dbtn s-error">Failed</button><div class="st">error</div></div>
+      <div class="state-cell"><button class="dbtn s-success">✓ Saved</button><div class="st">success</div></div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Live — hover, focus, press, submit</h3>
+    <p class="lead" style="margin-bottom:.4rem;">A real button: hover it, Tab to it (focus ring), click it (press → loading → success). Optimistic feedback in ~900ms.</p>
+    <div class="demo"><button class="dbtn livebtn" id="livebtn">Save changes</button></div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Focus-visible &amp; keyboard</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Press <b>Tab</b> — every interactive element shows a ring. Mouse clicks don't (that's <code>:focus-visible</code>, not <code>:focus</code>).</p>
+    <div class="demo"><div class="focus-row"><button class="dbtn ghost">Button</button><input type="text" class="lab-input" placeholder="Input"><a href="#interaction" class="btn">Link</a></div></div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Validate on blur, error below the field</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Type something invalid and click away. Errors validate on blur and render inline under the field — never a dismissible alert.</p>
+    <div class="demo">
+      <div class="field" id="emailfield">
+        <label for="email">Work email</label>
+        <input id="email" type="email" class="lab-input" placeholder="you@company.com">
+        <span class="err">Enter a valid email address.</span>
+      </div>
+    </div>
+
+    <div class="callout"><b>Where this lands:</b> ship a global <code>:focus-visible</code> ring, an <code>:active</code> press, and a <code>@media (hover:hover)</code> hover guard in <code>styles.css</code>; add the 8-states checklist + validate-on-blur / undo-over-confirm to <code>build.md</code>. Loading / toast / empty / skeleton already ship via <code>ui.js</code>.</div>
+  </section>
   <section id="imagery"><p class="eyebrow">Audit 07 — up next</p><h2>Imagery &amp; icons</h2><p class="soon-note">Replacing placeholder color-blocks with real treatment; inline Lucide/Phosphor SVG.</p></section>
 
 </main>
@@ -696,6 +766,33 @@
       if (s) s.classList.toggle('blur');
     });
   });
+
+  // Interaction: live button (optimistic) + validate-on-blur
+  var live = document.getElementById('livebtn');
+  if (live) {
+    live.addEventListener('click', function () {
+      if (live.dataset.busy) return;
+      live.dataset.busy = '1';
+      var orig = live.textContent;
+      live.innerHTML = '<span class="spin"></span> Saving';
+      setTimeout(function () {
+        live.classList.add('s-success'); live.textContent = '✓ Saved';
+        setTimeout(function () { live.classList.remove('s-success'); live.textContent = orig; delete live.dataset.busy; }, 1500);
+      }, 900);
+    });
+  }
+  var email = document.getElementById('email');
+  var emailField = document.getElementById('emailfield');
+  if (email && emailField) {
+    email.addEventListener('blur', function () {
+      var v = email.value.trim();
+      var ok = v === '' || /^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(v);
+      emailField.classList.toggle('invalid', !ok);
+    });
+    email.addEventListener('input', function () {
+      if (emailField.classList.contains('invalid')) emailField.classList.remove('invalid');
+    });
+  }
 })();
 </script>
 </body>

@@ -105,6 +105,16 @@ body       { font-optical-sizing: auto; }
   box-shadow: var(--shadow-sm);
 }
 
+/* Interaction floor — Tailwind's reset drops focus rings; ship one globally, plus a press
+   micro-interaction. Keep custom :hover styles behind @media (hover:hover) so they don't
+   stick on touch. :where() keeps specificity 0 so product styles win. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+  border-radius: 3px;
+}
+button:not([disabled]):active { transform: translateY(1px); }
+
 /* Smooth theme transitions */
 html { transition: background-color .3s var(--ease-out-quart); }
 body { transition: background-color .3s var(--ease-out-quart), color .3s var(--ease-out-quart); }

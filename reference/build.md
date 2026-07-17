@@ -135,6 +135,8 @@ hardest to design and the most often forgotten.
 Every interactive element needs a non-trivial response. A "Submit" that does nothing
 kills a demo. Baseline checklist:
 
+- **The eight states.** Every button and input covers default / hover / focus / active / disabled / loading / error / success. The scaffold ships a global `:focus-visible` ring + an `:active` press; keep custom `:hover` styles behind `@media (hover:hover)` (touch can't hover). Forms validate on blur with the error inline below the field; prefer an undo toast over a confirm dialog.
+
 - **Loading state** — primary CTAs (book, submit, save, send) use `data-loading="<text>"` (+ optional `data-toast="<msg>"`). Click shows loading text + spinner, fires the toast, then navigates or opens a modal. ui.js wires this.
 - **Success toast** — anything that "succeeds" shows a confirmation: `UI.toast('Saved', 'success')` or `data-toast`.
 - **Empty state** — every list/grid has an `.empty-state` wrapper for when the persona's list is empty: headline + one-line explainer + primary action ("Browse vendors", "Create your first…"). Ship at least the primary collection view's empty state on each side.
