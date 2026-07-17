@@ -178,6 +178,27 @@
   .disc.open { grid-template-rows:1fr; }
   .disc > div { overflow:hidden; }
 
+  /* ---- Spacing audit ---- */
+  .scale-ladder { display:flex; flex-direction:column; gap:.45rem; }
+  .scale-row { display:flex; align-items:center; gap:1rem; }
+  .scale-row .n { width:4.5rem; flex:none; font-family:var(--font-mono-ui); font-size:.78rem; color:var(--ink-3); text-align:right; }
+  .scale-row .b { height:1rem; background:var(--accent); border-radius:3px; }
+  .cmp2 { display:grid; gap:1rem; grid-template-columns:1fr; margin-top:1.1rem; }
+  @media(min-width:48rem){ .cmp2{ grid-template-columns:1fr 1fr;} }
+  .cmp-card { border:1px solid var(--hairline); border-radius:10px; background:var(--surface); padding:1.3rem; }
+  .cmp-t { font-family:var(--font-mono-ui); font-size:.72rem; letter-spacing:.1em; text-transform:uppercase; color:var(--ink-3); margin-bottom:1rem; }
+  .cmp-t em { color:var(--ink-3); font-style:normal; text-transform:none; letter-spacing:0; }
+  .u-stack { display:flex; flex-direction:column; gap:16px; }
+  .r-stack { display:flex; flex-direction:column; gap:40px; }
+  .r-stack .grp, .u-stack .grp { display:flex; flex-direction:column; gap:8px; }
+  .mock-h { font-weight:700; font-size:1.05rem; color:var(--ink); }
+  .mock-label { font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ink-3); }
+  .mock-line { height:.55rem; background:var(--surface-2); border-radius:3px; }
+  .mock-line.s { width:55%; } .mock-line.m { width:85%; }
+  .squint-wrap { border:1px solid var(--hairline); border-radius:10px; padding:1.5rem; background:var(--surface); transition:filter .2s var(--ease, ease); max-width:22rem; }
+  .squint-wrap.blur { filter:blur(4.5px); }
+  .squint-metric { font-size:2rem; font-weight:700; letter-spacing:-.02em; color:var(--ink); margin:.15rem 0 .3rem; }
+
   @media (prefers-reduced-motion:reduce){ *{transition:none!important;} }
 </style>
 </head>
@@ -197,7 +218,7 @@
       <a class="chip active" href="#typography">1 · Typography</a>
       <a class="chip" href="#color">2 · Color</a>
       <a class="chip" href="#motion">3 · Motion</a>
-      <a class="chip soon" href="#spacing">4 · Spacing</a>
+      <a class="chip" href="#spacing">4 · Spacing</a>
       <a class="chip soon" href="#depth">5 · Depth</a>
       <a class="chip soon" href="#interaction">6 · Interaction</a>
       <a class="chip soon" href="#imagery">7 · Imagery</a>
@@ -447,7 +468,72 @@
     <div class="callout"><b>Where this lands:</b> add the ease + duration tokens to <code>styles.css</code> and replace every <code>ease</code> (theme transition, <code>.reveal</code>, <code>.proto-seg</code>) with them; note the pacing in <code>discovery.md</code> Step 4 Motion. Scroll-driven effects (<code>animation-timeline</code>) and View Transitions ship behind a reduced-motion + Firefox fallback.</div>
   </section>
 
-  <section id="spacing"><p class="eyebrow">Audit 04 — up next</p><h2>Spacing &amp; rhythm</h2><p class="soon-note">4pt scale, tight-in-group vs generous-between, the squint test.</p></section>
+  <section id="spacing">
+    <p class="eyebrow">Audit 04 — in progress ▸ rhythm, not uniform padding</p>
+    <h2>Spacing &amp; rhythm</h2>
+    <p class="lead">Spacing carries structure. One 4pt scale, laid out with <code>gap</code> not margins, and — the part most AI layouts miss — <b>rhythm</b>: tight within a group, generous between groups. Uniform padding everywhere reads as monotone.</p>
+    <ul class="rules">
+      <li><b>4pt scale</b> — 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96</li>
+      <li><b>gap</b>, not per-element margins</li>
+      <li><b>Tight in-group</b> (8–12) · <b>generous between</b> (48–96)</li>
+      <li><b>Whitespace is a design element</b>, not empty</li>
+    </ul>
+
+    <h3 style="margin-top:1.6rem;font-size:1.05rem;">The 4pt scale</h3>
+    <div class="demo">
+      <div class="scale-ladder">
+        <div class="scale-row"><span class="n">4px</span><span class="b" style="width:4px"></span></div>
+        <div class="scale-row"><span class="n">8px</span><span class="b" style="width:8px"></span></div>
+        <div class="scale-row"><span class="n">12px</span><span class="b" style="width:12px"></span></div>
+        <div class="scale-row"><span class="n">16px</span><span class="b" style="width:16px"></span></div>
+        <div class="scale-row"><span class="n">24px</span><span class="b" style="width:24px"></span></div>
+        <div class="scale-row"><span class="n">32px</span><span class="b" style="width:32px"></span></div>
+        <div class="scale-row"><span class="n">48px</span><span class="b" style="width:48px"></span></div>
+        <div class="scale-row"><span class="n">64px</span><span class="b" style="width:64px"></span></div>
+        <div class="scale-row"><span class="n">96px</span><span class="b" style="width:96px"></span></div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Uniform vs. rhythm</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Same content, same scale. Left spaces everything the same; right groups it. The right one reads as organized without a single border.</p>
+    <div class="cmp2">
+      <div class="cmp-card">
+        <p class="cmp-t">Uniform · <em>everything 16px — monotone</em></p>
+        <div class="u-stack">
+          <span class="mock-label">Overview</span><span class="mock-h">Weekly active users</span><span class="mock-line m"></span>
+          <span class="mock-label">Activity</span><span class="mock-h">Recent events</span><span class="mock-line s"></span>
+        </div>
+      </div>
+      <div class="cmp-card">
+        <p class="cmp-t">Rhythm · <em>8px in-group, 40px between</em></p>
+        <div class="r-stack">
+          <div class="grp"><span class="mock-label">Overview</span><span class="mock-h">Weekly active users</span><span class="mock-line m"></span></div>
+          <div class="grp"><span class="mock-label">Activity</span><span class="mock-h">Recent events</span><span class="mock-line s"></span></div>
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">The squint test</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Blur the UI. If the primary thing still dominates, hierarchy works; if it's mush, the layout is flat. Cheapest hierarchy check there is.</p>
+    <div class="demo">
+      <div class="mrow" style="margin:0 0 1rem;"><button class="btn" data-squint="squint">Toggle squint (blur)</button></div>
+      <div class="squint-wrap" id="squint">
+        <span class="mock-label">Monthly revenue</span>
+        <div class="squint-metric">$48,290</div>
+        <span class="mock-line m" style="display:block;margin:.5rem 0"></span>
+        <span class="mock-line s" style="display:block"></span>
+        <button class="btn" style="margin-top:1.1rem;background:var(--accent);color:var(--surface);border-color:var(--accent);">View report</button>
+      </div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">The tokens to ship</h3>
+    <ul class="rules" style="margin-top:.6rem;">
+      <li><code>--space-1: 4px</code> … <code>--space-9: 96px</code></li>
+      <li>section padding <code>--space-8/9</code> · card padding <code>--space-5</code> · in-group <code>--space-2/3</code></li>
+    </ul>
+
+    <div class="callout"><b>Where this lands:</b> ship <code>--space-*</code> tokens in <code>styles.css</code>; add the rhythm rule (tight-in-group / generous-between) + the squint test to <code>build.md</code> Step 6 and <code>discovery.md</code> Step 4 Spacing.</div>
+  </section>
   <section id="depth"><p class="eyebrow">Audit 05 — up next</p><h2>Depth &amp; elevation</h2><p class="soon-note">Shadow scale, surface-contrast elevation, z-index tokens.</p></section>
   <section id="interaction"><p class="eyebrow">Audit 06 — up next</p><h2>Interaction &amp; micro-states</h2><p class="soon-note">The 8 states, focus rings, hover-intent, optimistic feedback.</p></section>
   <section id="imagery"><p class="eyebrow">Audit 07 — up next</p><h2>Imagery &amp; icons</h2><p class="soon-note">Replacing placeholder color-blocks with real treatment; inline Lucide/Phosphor SVG.</p></section>
@@ -531,6 +617,12 @@
     btn.addEventListener('click', function () {
       var d = document.getElementById(btn.getAttribute('data-disc'));
       if (d) d.classList.toggle('open');
+    });
+  });
+  document.querySelectorAll('[data-squint]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var s = document.getElementById(btn.getAttribute('data-squint'));
+      if (s) s.classList.toggle('blur');
     });
   });
 })();

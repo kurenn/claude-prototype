@@ -174,3 +174,4 @@ One HTML file per screen. Each screen:
 - **Responsive by default.** Design at 1440, verify at 768 and 375. Never horizontal scroll at 375.
 - **URL state for interactive bits.** Modals, tabs, accordions wired through `State.set()`. Opening `?modal=signup` lands with the modal open; the Share button copies a URL reproducing the exact screen.
 - **Theme-safe colors.** Every color uses a CSS var or a Tailwind class mapped to one. Flip all themes to verify nothing breaks.
+- **Spacing rhythm & the squint test.** Space with the `--space-*` scale via `gap` — tight within a group (8–12px), generous between sections (48–96px), never uniform padding. Then squint at each screen (or blur it): if the primary element still dominates, hierarchy holds; if it's mush, add contrast in size / weight / space.

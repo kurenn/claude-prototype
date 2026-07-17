@@ -60,6 +60,18 @@ html[data-theme="mono"] {
   --motion-fast: 150ms;
   --motion:      250ms;
   --motion-slow: 400ms;
+
+  /* Spacing — 4pt scale. Use `gap`, not per-element margins. Rhythm: tight
+     in-group (--space-2/3), generous between sections (--space-8/9). */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
 }
 
 /* Typographic polish — floor defaults; apply on top of the chosen pairing. */
