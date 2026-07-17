@@ -13,6 +13,7 @@
 html[data-theme="studio"] {
   --surface:  250 248 244;   /* warm off-white, tinted (was flat 252 252 250) */
   --elevated: 255 254 250;
+  --elevated-2: 255 255 252;
   --accent:    30  27  22;
   --muted:    120 116 108;   /* warm neutral, never flat gray */
   --ink:       26  23  18;
@@ -23,16 +24,19 @@ html[data-theme="studio"] {
 html[data-theme="terminal"] {
   --surface:   18  24  21;   /* warm-green graphite, not near-black */
   --elevated:  24  31  27;
+  --elevated-2: 34  43  38;
   --accent:   132 198 156;   /* desaturated phosphor green, not neon */
   --muted:     74  86  79;
   --ink:      224 230 221;
   --ink2:     150 166 152;
   --radius: 2px;
+  --shadow-sm: none; --shadow-md: none; --shadow-lg: none;  /* dark elevates via surface */
 }
 
 html[data-theme="mono"] {
   --surface:  252 252 253;   /* whisper-cool, never pure #fff */
   --elevated: 247 247 249;
+  --elevated-2: 240 240 243;
   --accent:    29  28  32;
   --muted:    174 173 178;
   --ink:       29  28  32;
@@ -72,6 +76,17 @@ html[data-theme="mono"] {
   --space-7: 48px;
   --space-8: 64px;
   --space-9: 96px;
+
+  /* Depth — subtle shadow scale (light) + semantic z-index. Dark themes set
+     --shadow-* to none and elevate with --elevated / --elevated-2 instead. */
+  --shadow-sm: 0 1px 2px rgb(20 30 24 / .05);
+  --shadow-md: 0 2px 4px rgb(20 30 24 / .06), 0 4px 12px rgb(20 30 24 / .05);
+  --shadow-lg: 0 4px 8px rgb(20 30 24 / .07), 0 12px 28px rgb(20 30 24 / .08);
+  --z-dropdown: 200;
+  --z-sticky:   400;
+  --z-modal:    600;
+  --z-toast:    800;
+  --z-tooltip: 1000;
 }
 
 /* Typographic polish — floor defaults; apply on top of the chosen pairing. */
@@ -80,6 +95,15 @@ p          { text-wrap: pretty; }
 body       { font-optical-sizing: auto; }
 .tabular, [data-tabular] { font-variant-numeric: tabular-nums; } /* numeric cells / KPIs */
 .eyebrow   { text-transform: uppercase; letter-spacing: .1em; font-size: var(--text-xs); }
+
+/* Baseline card — subtle shadow in light; dark themes drop it (--shadow-* none) and lift
+   via --elevated surface contrast. Builds may extend .card, but keep depth a whisper. */
+.card {
+  background: rgb(var(--elevated));
+  border: 1px solid rgb(var(--muted) / .18);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
 
 /* Smooth theme transitions */
 html { transition: background-color .3s var(--ease-out-quart); }
@@ -217,7 +241,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgb(var(--muted) / .3);
-  box-shadow: 0 8px 24px rgb(0 0 0 / .15);
+  box-shadow: var(--shadow-lg);
   font-size: .72rem;
   color: rgb(var(--ink2));
   pointer-events: auto;
@@ -335,7 +359,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
   border-radius: 12px;
   background: rgb(var(--elevated));
   border: 1px solid rgb(var(--muted) / .2);
-  box-shadow: 0 10px 30px rgb(0 0 0 / .15);
+  box-shadow: var(--shadow-lg);
   display: none;
 }
 .proto-history.visible { display: block; }

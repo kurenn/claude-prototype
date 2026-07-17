@@ -199,6 +199,38 @@
   .squint-wrap.blur { filter:blur(4.5px); }
   .squint-metric { font-size:2rem; font-weight:700; letter-spacing:-.02em; color:var(--ink); margin:.15rem 0 .3rem; }
 
+  /* ---- Depth audit ---- */
+  .shadow-grid { display:grid; gap:1.3rem; grid-template-columns:repeat(2,1fr); margin-top:1.2rem; }
+  @media(min-width:52rem){ .shadow-grid{ grid-template-columns:repeat(4,1fr);} }
+  .sh-card { background:var(--surface); border:1px solid var(--hairline); border-radius:10px; padding:1.1rem; text-align:center; }
+  .sh-1 { box-shadow:0 1px 2px rgb(20 30 24 / .05); }
+  .sh-2 { box-shadow:0 2px 4px rgb(20 30 24 / .06), 0 4px 12px rgb(20 30 24 / .05); }
+  .sh-3 { box-shadow:0 4px 8px rgb(20 30 24 / .07), 0 12px 28px rgb(20 30 24 / .08); }
+  .sh-bad { box-shadow:0 12px 22px rgb(0 0 0 / .5); }
+  .sh-card .sn { font-family:var(--font-mono-ui); font-size:.74rem; color:var(--ink-3); }
+  .sh-card .sl { font-size:.8rem; color:var(--ink-2); margin-top:.3rem; }
+  html[data-theme="dark"] .sh-1, html[data-theme="dark"] .sh-2, html[data-theme="dark"] .sh-3 { box-shadow:none; }
+  html[data-theme="dark"] .sh-1 { background:#1a2620; } html[data-theme="dark"] .sh-2 { background:#22302a; } html[data-theme="dark"] .sh-3 { background:#2b3a33; }
+  .elev-demo { display:grid; gap:1rem; grid-template-columns:1fr; margin-top:1.1rem; }
+  @media(min-width:48rem){ .elev-demo{ grid-template-columns:1fr 1fr;} }
+  .elev-panel { border-radius:12px; padding:1.5rem; border:1px solid var(--hairline); }
+  .elev-panel .lbl { font-family:var(--font-mono-ui); font-size:.72rem; letter-spacing:.08em; text-transform:uppercase; margin-bottom:1rem; }
+  .elev-stack { border-radius:9px; padding:1.1rem; }
+  .elev-stack .e2 { border-radius:7px; padding:1rem; margin-top:.8rem; }
+  .elev-panel .el-line { display:block; height:.5rem; border-radius:3px; background:currentColor; opacity:.16; }
+  .elev-panel .el-line.s { width:55%; } .elev-panel .el-line.m { width:85%; }
+  .elev-light { background:#f2f4f0; color:#1c231f; }
+  .elev-light .elev-stack { background:#fbfbf9; box-shadow:0 2px 10px rgb(20 30 24 / .09); }
+  .elev-light .elev-stack .e2 { background:#ffffff; box-shadow:0 1px 3px rgb(20 30 24 / .1); }
+  .elev-dark { background:#14201b; color:#eae8dc; }
+  .elev-dark .lbl { color:#a7b0a7; }
+  .elev-dark .elev-stack { background:#1f2c26; }
+  .elev-dark .elev-stack .e2 { background:#2a3931; }
+  .zscale { display:flex; flex-direction:column; gap:.4rem; }
+  .zrow { display:flex; align-items:center; gap:1rem; font-size:.84rem; color:var(--ink-2); }
+  .zrow .zk { font-family:var(--font-mono-ui); color:var(--ink-3); width:6rem; text-align:right; flex:none; }
+  .zrow .zb { height:.5rem; border-radius:3px; background:var(--accent); opacity:.55; flex:none; }
+
   @media (prefers-reduced-motion:reduce){ *{transition:none!important;} }
 </style>
 </head>
@@ -219,7 +251,7 @@
       <a class="chip" href="#color">2 · Color</a>
       <a class="chip" href="#motion">3 · Motion</a>
       <a class="chip" href="#spacing">4 · Spacing</a>
-      <a class="chip soon" href="#depth">5 · Depth</a>
+      <a class="chip" href="#depth">5 · Depth</a>
       <a class="chip soon" href="#interaction">6 · Interaction</a>
       <a class="chip soon" href="#imagery">7 · Imagery</a>
     </nav>
@@ -534,7 +566,46 @@
 
     <div class="callout"><b>Where this lands:</b> ship <code>--space-*</code> tokens in <code>styles.css</code>; add the rhythm rule (tight-in-group / generous-between) + the squint test to <code>build.md</code> Step 6 and <code>discovery.md</code> Step 4 Spacing.</div>
   </section>
-  <section id="depth"><p class="eyebrow">Audit 05 — up next</p><h2>Depth &amp; elevation</h2><p class="soon-note">Shadow scale, surface-contrast elevation, z-index tokens.</p></section>
+  <section id="depth">
+    <p class="eyebrow">Audit 05 — in progress ▸ subtle, and dark elevates with surface</p>
+    <h2>Depth &amp; elevation</h2>
+    <p class="lead">Depth is a whisper. A subtle, consistent shadow scale in light; in dark, elevation comes from <b>lighter surfaces</b>, not shadow (shadows vanish on dark). Plus a semantic z-index scale so nothing fights with <code>9999</code>. <em>Flip the ◐ theme to watch the shadow row switch to surface-contrast.</em></p>
+    <ul class="rules">
+      <li><b>Subtle scale</b> — "if you clearly see it, it's too strong"</li>
+      <li><b>Dark = lighter surface</b>, not shadow</li>
+      <li><b>Elevation ladder</b> — surface → elevated → elevated-2</li>
+      <li><b>z-index scale</b>, never 9999</li>
+    </ul>
+
+    <h3 style="margin-top:1.6rem;font-size:1.05rem;">The shadow scale</h3>
+    <div class="shadow-grid">
+      <div class="sh-card sh-1"><div class="sn">--shadow-sm</div><div class="sl">cards, chips</div></div>
+      <div class="sh-card sh-2"><div class="sn">--shadow-md</div><div class="sl">popovers</div></div>
+      <div class="sh-card sh-3"><div class="sn">--shadow-lg</div><div class="sl">modals, menus</div></div>
+      <div class="sh-card sh-bad"><div class="sn" style="color:var(--warn)">too strong ✕</div><div class="sl">harsh, muddy</div></div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Light vs. dark elevation</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Same two-layer card. Light lifts it with a faint shadow; dark lifts it by stepping the surface lighter — no shadow needed.</p>
+    <div class="elev-demo">
+      <div class="elev-panel elev-light"><div class="lbl">Light · shadow</div><div class="elev-stack"><span class="el-line m"></span><span class="el-line s" style="margin-top:.5rem"></span><div class="e2"><span class="el-line s"></span></div></div></div>
+      <div class="elev-panel elev-dark"><div class="lbl">Dark · lighter surface</div><div class="elev-stack"><span class="el-line m"></span><span class="el-line s" style="margin-top:.5rem"></span><div class="e2"><span class="el-line s"></span></div></div></div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">The z-index scale</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Named tokens in order, so layers never collide or escalate to <code>9999</code>.</p>
+    <div class="demo">
+      <div class="zscale">
+        <div class="zrow"><span class="zk">--z-tooltip</span><span class="zb" style="width:200px"></span><span>1000</span></div>
+        <div class="zrow"><span class="zk">--z-toast</span><span class="zb" style="width:160px"></span><span>800</span></div>
+        <div class="zrow"><span class="zk">--z-modal</span><span class="zb" style="width:120px"></span><span>600</span></div>
+        <div class="zrow"><span class="zk">--z-sticky</span><span class="zb" style="width:80px"></span><span>400 · nav</span></div>
+        <div class="zrow"><span class="zk">--z-dropdown</span><span class="zb" style="width:40px"></span><span>200</span></div>
+      </div>
+    </div>
+
+    <div class="callout"><b>Where this lands:</b> ship <code>--shadow-sm/md/lg</code> + <code>--z-*</code> tokens + <code>--elevated-2</code> per theme in <code>styles.css</code>; give <code>.card</code> a subtle default shadow (light) that becomes surface-contrast in dark; note dark-elevates-with-surface in <code>discovery.md</code> Step 4.</div>
+  </section>
   <section id="interaction"><p class="eyebrow">Audit 06 — up next</p><h2>Interaction &amp; micro-states</h2><p class="soon-note">The 8 states, focus rings, hover-intent, optimistic feedback.</p></section>
   <section id="imagery"><p class="eyebrow">Audit 07 — up next</p><h2>Imagery &amp; icons</h2><p class="soon-note">Replacing placeholder color-blocks with real treatment; inline Lucide/Phosphor SVG.</p></section>
 
