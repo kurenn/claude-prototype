@@ -53,6 +53,13 @@ html[data-theme="mono"] {
   --text-3xl:     2.441rem; /* 39 · h2 */
   --text-4xl:     3.052rem; /* 49 · h1 */
   --text-display: clamp(2.5rem, 6vw, 4rem); /* hero headline only */
+
+  /* Motion — ease-out only; never `ease` / linear / bounce. */
+  --ease-out-quart: cubic-bezier(.25, 1, .5, 1);  /* UI, controls, toasts */
+  --ease-out-expo:  cubic-bezier(.16, 1, .3, 1);  /* reveals, larger moves */
+  --motion-fast: 150ms;
+  --motion:      250ms;
+  --motion-slow: 400ms;
 }
 
 /* Typographic polish — floor defaults; apply on top of the chosen pairing. */
@@ -63,8 +70,8 @@ body       { font-optical-sizing: auto; }
 .eyebrow   { text-transform: uppercase; letter-spacing: .1em; font-size: var(--text-xs); }
 
 /* Smooth theme transitions */
-html { transition: background-color .3s ease; }
-body { transition: background-color .3s ease, color .3s ease; }
+html { transition: background-color .3s var(--ease-out-quart); }
+body { transition: background-color .3s var(--ease-out-quart), color .3s var(--ease-out-quart); }
 
 /* Respect reduced motion */
 @media (prefers-reduced-motion: reduce) {
@@ -75,7 +82,7 @@ body { transition: background-color .3s ease, color .3s ease; }
 .reveal {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity .6s ease, transform .6s ease;
+  transition: opacity .6s var(--ease-out-expo), transform .6s var(--ease-out-expo);
 }
 .reveal.visible {
   opacity: 1;
@@ -96,7 +103,7 @@ body { transition: background-color .3s ease, color .3s ease; }
   border: 1px solid rgb(var(--ink));
   font-size: .8rem;
   opacity: 0;
-  transition: opacity .2s ease, transform .2s ease;
+  transition: opacity .2s var(--ease-out-quart), transform .2s var(--ease-out-quart);
   pointer-events: none;
   white-space: nowrap;
   max-width: 90vw;
@@ -261,7 +268,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
   border: 0;
   background: transparent;
   cursor: pointer;
-  transition: background .15s ease, color .15s ease;
+  transition: background .15s var(--ease-out-quart), color .15s var(--ease-out-quart);
   font: inherit;
   white-space: nowrap;
   line-height: 1;

@@ -159,6 +159,25 @@
   .pal .pm .tone{ font-family:var(--font-mono-ui); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--ink-3); }
   .pal .pm .mood{ font-size:.86rem; color:var(--ink-2); margin:.3rem 0 0; }
 
+  /* ---- Motion audit ---- */
+  .ease-demo { display:flex; flex-direction:column; gap:.6rem; }
+  .ease-row { display:flex; align-items:center; gap:1rem; }
+  .ease-row .lab { width:13rem; flex:none; font-size:.82rem; color:var(--ink-2); }
+  .ease-row .lab em { color:var(--ink-3); font-style:normal; }
+  .ease-track { flex:1; height:2rem; position:relative; background:var(--surface-2); border-radius:7px; container-type:inline-size; min-width:0; }
+  .ease-dot { position:absolute; top:.2rem; left:.3rem; width:1.6rem; height:1.6rem; border-radius:6px; background:var(--accent); transform:translateX(0); }
+  .ease-demo:not(.play) .ease-dot { transition:none; }
+  .ease-demo.play .ease-dot { transition:transform 1.1s var(--curve); transform:translateX(calc(100cqi - 2.2rem)); }
+  .mrow { display:flex; align-items:center; gap:1rem; margin-top:1.1rem; flex-wrap:wrap; }
+  .stagger { display:grid; grid-template-columns:repeat(3,1fr); gap:.7rem; }
+  @media(min-width:44rem){ .stagger{ grid-template-columns:repeat(6,1fr);} }
+  .scard { height:3.2rem; border-radius:8px; background:var(--surface-2); border:1px solid var(--hairline); opacity:0; transform:translateY(12px); }
+  .stagger:not(.play) .scard { transition:none; }
+  .stagger.play .scard { opacity:1; transform:none; transition:opacity .5s cubic-bezier(.16,1,.3,1), transform .5s cubic-bezier(.16,1,.3,1); transition-delay:calc(var(--i) * 60ms); }
+  .disc { display:grid; grid-template-rows:0fr; transition:grid-template-rows .35s cubic-bezier(.16,1,.3,1); margin-top:.6rem; }
+  .disc.open { grid-template-rows:1fr; }
+  .disc > div { overflow:hidden; }
+
   @media (prefers-reduced-motion:reduce){ *{transition:none!important;} }
 </style>
 </head>
@@ -177,7 +196,7 @@
     <nav class="navchips" aria-label="Audits">
       <a class="chip active" href="#typography">1 · Typography</a>
       <a class="chip" href="#color">2 · Color</a>
-      <a class="chip soon" href="#motion">3 · Motion</a>
+      <a class="chip" href="#motion">3 · Motion</a>
       <a class="chip soon" href="#spacing">4 · Spacing</a>
       <a class="chip soon" href="#depth">5 · Depth</a>
       <a class="chip soon" href="#interaction">6 · Interaction</a>
@@ -381,9 +400,51 @@
   </section>
 
   <section id="motion">
-    <p class="eyebrow">Audit 03 — up next</p>
+    <p class="eyebrow">Audit 03 — in progress ▸ ease-out, never linear or bounce</p>
     <h2>Motion &amp; scrolling</h2>
-    <p class="soon-note">Easing curves (ease-out-quart/expo, never <code>ease</code>), durations, staggered page-load reveals, scroll-driven effects with Firefox-safe fallbacks, and reduced-motion. Renders here as toggleable live demos of each curve and scroll behavior.</p>
+    <p class="lead">Motion is felt, not read — so these are live. The scaffold uses the browser-default <code>ease</code> curve everywhere today; the fix is a small set of ease-out tokens, transform/opacity only, and a reduced-motion fallback. (If your OS has reduce-motion on, these demos correctly sit still.)</p>
+    <ul class="rules">
+      <li><b>Never</b> <code>ease</code> / linear / bounce</li>
+      <li><b>Ease-out</b> quart or expo — real objects decelerate</li>
+      <li><b>Durations</b> 150 / 250 / 400ms; exits ~75% of entrances</li>
+      <li><b>transform + opacity</b> only; heights via <code>grid-template-rows</code></li>
+      <li><b>Reduced-motion</b> mandatory</li>
+    </ul>
+
+    <div class="demo">
+      <div class="ease-demo" id="easedemo">
+        <div class="ease-row"><span class="lab">linear <em>— robotic</em></span><span class="ease-track" style="--curve:linear"><span class="ease-dot"></span></span></div>
+        <div class="ease-row"><span class="lab"><code>ease</code> <em>— the default, muddy</em></span><span class="ease-track" style="--curve:ease"><span class="ease-dot"></span></span></div>
+        <div class="ease-row"><span class="lab">ease-out-quart <em>✓</em></span><span class="ease-track" style="--curve:cubic-bezier(.25,1,.5,1)"><span class="ease-dot"></span></span></div>
+        <div class="ease-row"><span class="lab">ease-out-expo <em>✓</em></span><span class="ease-track" style="--curve:cubic-bezier(.16,1,.3,1)"><span class="ease-dot"></span></span></div>
+        <div class="ease-row"><span class="lab">bounce <em>— tacky, dated</em></span><span class="ease-track" style="--curve:cubic-bezier(.68,-.55,.27,1.55)"><span class="ease-dot"></span></span></div>
+      </div>
+      <div class="mrow"><button class="btn" data-replay="easedemo">▶ Replay</button><span class="mini-note" style="margin:0">Ease-out decelerates into place; linear feels mechanical, bounce feels toy-like.</span></div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Staggered reveal</h3>
+    <p class="lead" style="margin-bottom:.4rem;">One orchestrated page-load stagger beats scattered micro-interactions. Delay = <code>calc(var(--i) * 60ms)</code>, capped.</p>
+    <div class="demo">
+      <div class="stagger" id="stagger"><span class="scard" style="--i:0"></span><span class="scard" style="--i:1"></span><span class="scard" style="--i:2"></span><span class="scard" style="--i:3"></span><span class="scard" style="--i:4"></span><span class="scard" style="--i:5"></span></div>
+      <div class="mrow"><button class="btn" data-replay="stagger">▶ Replay</button></div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Height, the right way</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Animate <code>grid-template-rows: 0fr → 1fr</code>, never <code>height</code> (janky, and it can't animate to <code>auto</code>).</p>
+    <div class="demo">
+      <button class="btn" data-disc="disc1">Toggle detail</button>
+      <div class="disc" id="disc1"><div><p style="margin:.9rem 0 0;color:var(--ink-2);font-size:.9rem;max-width:60ch;">This panel expands by animating <code>grid-template-rows</code> from 0fr to 1fr — smooth, GPU-friendly, and it works with content of unknown height. No JS height measurement.</p></div></div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">The tokens to ship</h3>
+    <ul class="rules" style="margin-top:.6rem;">
+      <li><code>--ease-out-quart: cubic-bezier(.25,1,.5,1)</code></li>
+      <li><code>--ease-out-expo: cubic-bezier(.16,1,.3,1)</code></li>
+      <li><code>--motion-fast: 150ms</code> · <code>--motion: 250ms</code> · <code>--motion-slow: 400ms</code></li>
+    </ul>
+    <p class="mini-note">Motion personality by tone: <b>technical / minimal</b> → snappy (150ms, quart) · <b>corporate / editorial</b> → calm (250ms, expo) · <b>playful / bold</b> → expressive (staggered reveals). Same tokens, different pacing.</p>
+
+    <div class="callout"><b>Where this lands:</b> add the ease + duration tokens to <code>styles.css</code> and replace every <code>ease</code> (theme transition, <code>.reveal</code>, <code>.proto-seg</code>) with them; note the pacing in <code>discovery.md</code> Step 4 Motion. Scroll-driven effects (<code>animation-timeline</code>) and View Transitions ship behind a reduced-motion + Firefox fallback.</div>
   </section>
 
   <section id="spacing"><p class="eyebrow">Audit 04 — up next</p><h2>Spacing &amp; rhythm</h2><p class="soon-note">4pt scale, tight-in-group vs generous-between, the squint test.</p></section>
@@ -455,6 +516,23 @@
       b.addEventListener('click', function () { setHue(b.getAttribute('data-hue')); });
     });
   }
+
+  // Motion: replay demos + disclosure
+  document.querySelectorAll('[data-replay]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var el = document.getElementById(btn.getAttribute('data-replay'));
+      if (!el) return;
+      el.classList.remove('play');
+      void el.offsetWidth; // force reflow so the animation re-triggers
+      el.classList.add('play');
+    });
+  });
+  document.querySelectorAll('[data-disc]').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      var d = document.getElementById(btn.getAttribute('data-disc'));
+      if (d) d.classList.toggle('open');
+    });
+  });
 })();
 </script>
 </body>
