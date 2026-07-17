@@ -66,8 +66,8 @@ and compare:
 
 Run all three briefs through both. Average the scores. The candidate should be **≥** the
 baseline on output quality. Because LLM output varies run-to-run, do 2–3 runs per brief
-per side and compare averages, not single runs. Record results in `results/` (gitignored
-scratch is fine) so trends are visible across skill versions.
+per side and compare averages, not single runs. Record a curated `.md` summary in `results/`
+(committed; raw builds/screenshots are gitignored) so trends are visible across skill versions.
 
 ---
 
@@ -117,7 +117,7 @@ benchmark/check-overflow.sh <prototype-dir>  # objective: no horizontal overflow
   test for progressive disclosure's one real risk — detail in `reference/` getting skipped.
 
 Taste is noisy: n=1/brief shows direction, not proof. For a real claim, render 2–3 builds
-per side per brief and compare win-rate. Record runs in `results/` (gitignored).
+per side per brief and compare win-rate. Record a curated `.md` summary in `results/` (committed).
 
 ---
 
@@ -145,4 +145,4 @@ output quality is a regression regardless of how lean it made the skill.
 - `design-judge.md` — blind pairwise design-quality rubric (Tier 3).
 - `baseline.json` — pre-refactor trigger-time cost, for the comparison.
 - `briefs/` — three fixed briefs (SaaS dashboard, marketplace, fintech) to generate from.
-- `results/` — gitignored scratch for recorded A/B runs.
+- `results/` — committed `.md` A/B summaries (raw builds / screenshots gitignored).
