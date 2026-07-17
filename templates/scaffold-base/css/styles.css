@@ -18,6 +18,9 @@ html[data-theme="studio"] {
   --muted:    120 116 108;   /* warm neutral, never flat gray */
   --ink:       26  23  18;
   --ink2:      92  87  79;
+  --ink3:     130 125 116;
+  --hairline: 224 220 212;
+  --accent-ink: 250 248 244;
   --radius: 12px;
 }
 
@@ -29,6 +32,9 @@ html[data-theme="terminal"] {
   --muted:     74  86  79;
   --ink:      224 230 221;
   --ink2:     150 166 152;
+  --ink3:     118 130 120;
+  --hairline:  46  54  49;
+  --accent-ink: 18  24  21;
   --radius: 2px;
   --shadow-sm: none; --shadow-md: none; --shadow-lg: none;  /* dark elevates via surface */
 }
@@ -41,6 +47,9 @@ html[data-theme="mono"] {
   --muted:    174 173 178;
   --ink:       29  28  32;
   --ink2:     100 100 107;
+  --ink3:     130 130 136;
+  --hairline: 222 222 226;
+  --accent-ink: 252 252 253;
   --radius: 0;
 }
 
@@ -87,6 +96,7 @@ html[data-theme="mono"] {
   --z-modal:    600;
   --z-toast:    800;
   --z-tooltip: 1000;
+  --z-feedback: 1100; /* review overlay — above all prototype UI */
 }
 
 /* Typographic polish — floor defaults; apply on top of the chosen pairing. */
@@ -111,9 +121,8 @@ body       { font-optical-sizing: auto; }
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
   outline: 2px solid rgb(var(--accent));
   outline-offset: 2px;
-  border-radius: 3px;
 }
-button:not([disabled]):active { transform: translateY(1px); }
+:where(button:not([disabled])):active { transform: translateY(1px); }
 
 /* Imagery — initials avatar + aspect-ratio media placeholder. Prefer these over flat
    color-block "photos". Icons: copy inline SVG from reicon.dev (MIT) at one weight. */
@@ -133,9 +142,12 @@ button:not([disabled]):active { transform: translateY(1px); }
 html { transition: background-color .3s var(--ease-out-quart); }
 body { transition: background-color .3s var(--ease-out-quart), color .3s var(--ease-out-quart); }
 
-/* Respect reduced motion */
+/* Respect reduced motion — stop transitions and decorative motion, but keep the loading
+   spinner turning (blanking it mid-ring looks broken) and force reveals visible. */
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
+  *, *::before, *::after { transition-duration: .01ms !important; }
+  .reveal { opacity: 1; transform: none; }
+  .skeleton { animation: none; }   /* static shimmer is fine; spinner keeps turning as feedback */
 }
 
 /* Reveal-on-scroll (applied by app.js via IntersectionObserver) */
@@ -155,7 +167,7 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
   bottom: 5rem;
   left: 50%;
   transform: translate(-50%, 8px);
-  z-index: 50;
+  z-index: var(--z-toast);
   padding: .55rem 1rem;
   border-radius: 999px;
   background: rgb(var(--ink));
@@ -227,7 +239,7 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
 }
 .empty-state h3 {
   color: rgb(var(--ink));
-  font-family: inherit;   /* use the prototype's heading font, not a hardcoded one */
+  font-family: inherit;   /* inherits body; add class="font-heading" in markup for the display face */
   font-weight: 500;
   font-size: 1.25rem;
   margin-bottom: .5rem;
@@ -242,7 +254,7 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
   bottom: .9rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 40;
+  z-index: var(--z-sticky);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -356,7 +368,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
    Mobile: always 1 col. Tablet: 2. Desktop: 2 or 3 depending on layout. */
 .proto-grid {
   display: grid;
-  gap: 1.25rem;
+  gap: var(--space-5);
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 @media (min-width: 640px) {
@@ -375,7 +387,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
   position: fixed;
   bottom: 5rem;
   right: 1rem;
-  z-index: 45;
+  z-index: var(--z-modal);
   width: min(22rem, calc(100vw - 2rem));
   max-height: 60vh;
   overflow: auto;

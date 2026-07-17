@@ -57,6 +57,8 @@
 
   // ---------- WIRE DECLARATIVE ATTRIBUTES ----------
   document.addEventListener('click', (e) => {
+    // In feedback pin-mode, let the overlay capture the click — don't fire loading/nav/confirm.
+    if (document.body.classList.contains('proto-fb-active')) return;
     const el = e.target.closest('[data-loading], [data-toast], [data-confirm]');
     if (!el) return;
 

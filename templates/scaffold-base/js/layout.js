@@ -16,7 +16,7 @@
  * The first entry is the default. Applied to <html data-layout="...">.
  */
 (function () {
-  const LAYOUTS = ['layout-a', 'layout-b']; // CUSTOMIZE for your prototype
+  const LAYOUTS = ['2col', '3col']; // CUSTOMIZE for your prototype (match the control-bar buttons + styles.css)
   const STORAGE_KEY = 'proto-layout';
   const root = document.documentElement;
 

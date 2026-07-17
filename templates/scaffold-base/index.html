@@ -25,9 +25,13 @@
             muted:    'rgb(var(--muted)    / <alpha-value>)',
             ink:      'rgb(var(--ink)      / <alpha-value>)',
             ink2:     'rgb(var(--ink2)     / <alpha-value>)',
+            ink3:        'rgb(var(--ink3)        / <alpha-value>)',
+            hairline:    'rgb(var(--hairline)    / <alpha-value>)',
+            'elevated-2':'rgb(var(--elevated-2)  / <alpha-value>)',
+            'accent-ink':'rgb(var(--accent-ink)  / <alpha-value>)',
           },
           fontFamily: {
-            heading: ['{{HEADING_FONT}}', 'serif'],
+            heading: ['{{HEADING_FONT}}', 'system-ui', 'serif'],
             body:    ['{{BODY_FONT}}', 'system-ui', 'sans-serif'],
           },
           borderRadius: {
@@ -51,7 +55,7 @@
         <li><a href="index.html" class="hover:text-accent">Home</a></li>
         <!-- add nav items as screens grow -->
       </ul>
-      <a href="#" class="rounded-proto bg-accent text-surface px-4 py-2 text-sm font-medium hover:opacity-90">Get started</a>
+      <a href="#" class="rounded-proto bg-accent text-accent-ink px-4 py-2 text-sm font-medium hover:opacity-90">Get started</a>
     </nav>
   </header>
 
@@ -62,7 +66,7 @@
       <p class="mt-6 text-lg text-ink2 leading-relaxed">{{HERO_SUB}}</p>
       <!-- Action rows wrap (flex-wrap) so they never overflow the viewport at 390px. -->
       <div class="mt-8 flex flex-wrap gap-3">
-        <a href="#" class="rounded-proto bg-accent text-surface px-5 py-3 font-medium">Primary action</a>
+        <a href="#" class="rounded-proto bg-accent text-accent-ink px-5 py-3 font-medium">Primary action</a>
         <a href="#" class="rounded-proto border border-muted/30 px-5 py-3 font-medium">Secondary</a>
       </div>
     </section>

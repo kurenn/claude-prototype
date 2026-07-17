@@ -16,6 +16,12 @@
   const SESSION_KEY = 'proto-history';
   const MAX_HISTORY = 10;
 
+  function esc(s) {
+    return String(s == null ? '' : s).replace(/[&<>"']/g, c => (
+      { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c]
+    ));
+  }
+
   function readParams() {
     const p = new URLSearchParams(location.search);
     const out = {};
@@ -108,7 +114,7 @@
       entries.length === 0
         ? '<p style="font-size:.8rem;opacity:.7">No history yet.</p>'
         : '<ol>' + entries.map(e =>
-            `<li><a href="${e.url}">${e.title}</a></li>`
+            `<li><a href="${esc(e.url)}">${esc(e.title)}</a></li>`
           ).join('') + '</ol>'
     );
     el.classList.toggle('visible');

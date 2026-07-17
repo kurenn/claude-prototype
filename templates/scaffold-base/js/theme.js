@@ -7,6 +7,7 @@
  */
 (function () {
   const THEMES = ['studio', 'terminal', 'mono']; // edit to match your DESIGN.md
+  const DARK_THEME = 'terminal'; // theme prefers-color-scheme:dark picks — rename alongside THEMES
   const STORAGE_KEY = 'proto-theme';
   const root = document.documentElement;
 
@@ -34,7 +35,7 @@
   const initial =
     (fromUrl && THEMES.includes(fromUrl)) ? fromUrl :
     (stored && THEMES.includes(stored))   ? stored :
-    (prefersDark && THEMES.includes('terminal')) ? 'terminal' :
+    (prefersDark && THEMES.includes(DARK_THEME)) ? DARK_THEME :
     THEMES[0];
   applyTheme(initial);
 
