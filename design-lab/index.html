@@ -258,6 +258,22 @@
   .field .err { display:none; font-size:.78rem; color:#c0392b; margin-top:.35rem; }
   .field.invalid .err { display:block; }
 
+  /* ---- Imagery audit ---- */
+  .icon-row { display:flex; gap:1.5rem; align-items:center; flex-wrap:wrap; color:var(--ink); }
+  .icon-row svg { width:24px; height:24px; display:block; }
+  .img-grid { display:grid; gap:1rem; grid-template-columns:repeat(2,1fr); margin-top:1.1rem; }
+  @media(min-width:52rem){ .img-grid{ grid-template-columns:repeat(4,1fr);} }
+  .img-cell { border:1px solid var(--hairline); border-radius:10px; overflow:hidden; background:var(--surface); }
+  .img-box { aspect-ratio:4/3; display:flex; align-items:center; justify-content:center; overflow:hidden; }
+  .img-flat { background:var(--surface-2); color:var(--ink-3); font-size:2rem; }
+  .img-duo { background:linear-gradient(135deg, color-mix(in srgb,var(--accent) 24%, var(--surface)), color-mix(in srgb,var(--accent) 6%, var(--surface-2))); }
+  .img-pattern { background:var(--surface-2); color:var(--ink-3); }
+  .img-pattern svg { width:100%; height:100%; }
+  .img-cap { padding:.55rem .75rem; font-size:.76rem; color:var(--ink-2); border-top:1px solid var(--hairline); }
+  .img-cap.bad { color:var(--warn); }
+  .avatar-row { display:flex; gap:.7rem; flex-wrap:wrap; }
+  .avatar { width:2.7rem; height:2.7rem; border-radius:50%; display:flex; align-items:center; justify-content:center; font-size:.85rem; font-weight:600; color:#fff; letter-spacing:.02em; }
+
   @media (prefers-reduced-motion:reduce){ *{transition:none!important;} .spin{animation:none;} }
 </style>
 </head>
@@ -280,7 +296,7 @@
       <a class="chip" href="#spacing">4 · Spacing</a>
       <a class="chip" href="#depth">5 · Depth</a>
       <a class="chip" href="#interaction">6 · Interaction</a>
-      <a class="chip soon" href="#imagery">7 · Imagery</a>
+      <a class="chip" href="#imagery">7 · Imagery</a>
     </nav>
     <span class="spacer"></span>
     <label class="ctrl">Sample <input id="sample" type="text" value="Ship it by Friday" aria-label="Specimen sample text" /></label>
@@ -677,7 +693,50 @@
 
     <div class="callout"><b>Where this lands:</b> ship a global <code>:focus-visible</code> ring, an <code>:active</code> press, and a <code>@media (hover:hover)</code> hover guard in <code>styles.css</code>; add the 8-states checklist + validate-on-blur / undo-over-confirm to <code>build.md</code>. Loading / toast / empty / skeleton already ship via <code>ui.js</code>.</div>
   </section>
-  <section id="imagery"><p class="eyebrow">Audit 07 — up next</p><h2>Imagery &amp; icons</h2><p class="soon-note">Replacing placeholder color-blocks with real treatment; inline Lucide/Phosphor SVG.</p></section>
+  <section id="imagery">
+    <p class="eyebrow">Audit 07 — in progress ▸ inline SVG icons, tasteful placeholders</p>
+    <h2>Imagery &amp; icons</h2>
+    <p class="lead">The judge caught both marketplace builds using flat color-block "photos" — a real gap for a photo-forward product. Fix: inline SVG icons at one consistent stroke, and placeholder treatments that look considered rather than broken. All zero-dep.</p>
+    <ul class="rules">
+      <li><b>Inline SVG</b> from <a href="https://reicon.dev" style="color:var(--accent)">reicon.dev</a> (MIT, copy-HTML), one weight</li>
+      <li><b>No</b> big rounded icon above every heading</li>
+      <li><b>Tasteful placeholders</b>, not flat glyphs</li>
+      <li><b>Initials avatars</b> on tinted circles</li>
+      <li><b>Lazy-load</b> real images; aspect-ratio box to avoid shift</li>
+    </ul>
+
+    <h3 style="margin-top:1.6rem;font-size:1.05rem;">Icons — one stroke weight, inline</h3>
+    <p class="lead" style="margin-bottom:.6rem;">Copy raw HTML/SVG from <a href="https://reicon.dev" style="color:var(--accent)">reicon.dev</a> (2,700+ icons, MIT, multiple weights) — or Lucide / Phosphor — and keep <b>one weight</b> across the set. Don't stack a big rounded icon above every heading; that's the templated tell.</p>
+    <div class="demo"><div class="icon-row">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="7"/><line x1="21" y1="21" x2="16.5" y2="16.5"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 11 L12 4 L20 11"/><path d="M6 10 V19 H18 V10"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5" width="17" height="15.5" rx="2"/><line x1="3.5" y1="9.5" x2="20.5" y2="9.5"/><line x1="8" y1="3" x2="8" y2="7"/><line x1="16" y1="3" x2="16" y2="7"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="3.5"/><path d="M5.5 20 v-1 c0-3 3-4.5 6.5-4.5 s6.5 1.5 6.5 4.5 v1"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><polyline points="8,12.5 11,15.5 16.5,9"/></svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="12" x2="20" y2="12"/><polyline points="14,6 20,12 14,18"/></svg>
+    </div></div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Placeholder treatments</h3>
+    <p class="lead" style="margin-bottom:.4rem;">Left is what the builds do now (flat glyph — reads as a missing image). The others read as intentional.</p>
+    <div class="img-grid">
+      <div class="img-cell"><div class="img-box img-flat">▦</div><div class="img-cap bad">flat glyph ✕</div></div>
+      <div class="img-cell"><div class="img-box img-duo"></div><div class="img-cap">duotone wash</div></div>
+      <div class="img-cell"><div class="img-box img-pattern"><svg xmlns="http://www.w3.org/2000/svg"><defs><pattern id="labdots" width="14" height="14" patternUnits="userSpaceOnUse"><circle cx="2.5" cy="2.5" r="1.3" fill="currentColor" opacity="0.3"/></pattern></defs><rect width="100%" height="100%" fill="url(#labdots)"/></svg></div><div class="img-cap">subtle pattern</div></div>
+      <div class="img-cell"><div class="img-box" style="background:var(--surface-2)"><span class="avatar" style="width:3.4rem;height:3.4rem;font-size:1.05rem;background:#267b4c">MV</span></div><div class="img-cap">initials avatar</div></div>
+    </div>
+
+    <h3 style="margin-top:2rem;font-size:1.05rem;">Avatars — initials on tinted circles</h3>
+    <p class="lead" style="margin-bottom:.6rem;">The cheapest way to make a people-list feel real without hotlinking photos. Tints borrowed from the color palettes.</p>
+    <div class="demo"><div class="avatar-row">
+      <span class="avatar" style="background:#267b4c">MV</span>
+      <span class="avatar" style="background:#853a77">AK</span>
+      <span class="avatar" style="background:#c93029">RS</span>
+      <span class="avatar" style="background:#2e4a67">JL</span>
+      <span class="avatar" style="background:#915f27">DN</span>
+    </div></div>
+
+    <div class="callout"><b>Where this lands:</b> add an icon + imagery note to <code>build.md</code> — inline SVG at one stroke weight, no icon-above-every-heading, and placeholder treatments (duotone wash / subtle pattern / initials avatar) instead of flat glyphs; lazy-load real images inside an aspect-ratio box.</div>
+  </section>
 
 </main>
 

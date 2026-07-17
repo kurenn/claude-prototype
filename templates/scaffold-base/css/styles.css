@@ -115,6 +115,20 @@ body       { font-optical-sizing: auto; }
 }
 button:not([disabled]):active { transform: translateY(1px); }
 
+/* Imagery — initials avatar + aspect-ratio media placeholder. Prefer these over flat
+   color-block "photos". Icons: copy inline SVG from reicon.dev (MIT) at one weight. */
+.avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; border-radius: 999px;
+  background: rgb(var(--accent)); color: rgb(var(--accent-ink, var(--surface)));
+  font-weight: 600; font-size: .85rem; letter-spacing: .02em; flex: none;
+}
+.media {
+  aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius); overflow: hidden;
+  background: linear-gradient(135deg, rgb(var(--accent) / .18), rgb(var(--muted) / .12));
+}
+.media > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
 /* Smooth theme transitions */
 html { transition: background-color .3s var(--ease-out-quart); }
 body { transition: background-color .3s var(--ease-out-quart), color .3s var(--ease-out-quart); }
