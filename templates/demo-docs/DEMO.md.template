@@ -2,7 +2,7 @@
 
 A click-through narrative for presenting this prototype. Follow top-to-bottom; each step is a screen or interaction you can show live.
 
-**Tip:** Click the 🔗 button in the floating control pill to copy a URL to the exact screen you're on, including any open modal or selected tab.
+**Tip:** Click the 🔗 button in the control bar to copy a URL to the exact screen you're on, including any open modal or selected tab.
 
 ---
 
@@ -10,7 +10,7 @@ A click-through narrative for presenting this prototype. Follow top-to-bottom; e
 
 ```
 cd {{SLUG}}
-python3 -m http.server 8000
+python3 serve.py
 # or: npx serve .
 ```
 

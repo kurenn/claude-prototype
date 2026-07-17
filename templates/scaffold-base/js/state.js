@@ -77,6 +77,8 @@
     if (!el) {
       el = document.createElement('div');
       el.className = 'proto-toast';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
       document.body.appendChild(el);
     }
     el.textContent = msg;
@@ -107,6 +109,7 @@
     if (!el) {
       el = document.createElement('aside');
       el.className = 'proto-history';
+      el.setAttribute('aria-label', 'Recently viewed');
       document.body.appendChild(el);
     }
     const entries = readHistory();

@@ -87,7 +87,7 @@ Section padding (vertical): `--s-9 --s-10` on `comfortable`, `--s-7 --s-8` on `c
 
 ## Motion
 
-- `--motion-fast`: 150ms cubic-bezier(0.22, 1, 0.36, 1) — ease-out-quart
+- `--motion-fast`: 150ms cubic-bezier(0.22, 1, 0.36, 1) — ease-out (steeper than the scaffold's `--ease-out-quart`)
 - `--motion-medium`: 300ms cubic-bezier(0.22, 1, 0.36, 1)
 
 What animates:
@@ -143,5 +143,5 @@ Theme-aware `:focus-visible` outline on every interactive element: 2px solid `--
 - No feature-card grid with icons. Features are a `<dl>` definition list
 - No testimonials, no logos, no social proof
 - No gradient text, no gradient backgrounds, no gradient borders
-- No box-shadows for elevation. Elevation comes from surface-0/1/2 contrast
+- No box-shadows for elevation — elevation comes from surface-0/1/2 contrast. (A deliberate choice for *this* site; the skill's scaffold ships a subtle shadow scale in light + surface-contrast in dark. Both are valid.)
 - No pill shapes, no fully-rounded buttons (only the platform control bar)

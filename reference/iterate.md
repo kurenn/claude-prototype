@@ -10,13 +10,16 @@ offer to refine, like a design review, not a form.
    the content, or a specific element."*
 2. **Scope to the screen named.** Change only that screen. Don't silently restyle the whole
    prototype off one comment. If a change is genuinely global (a token, the palette, the type
-   pairing), say so and confirm before propagating it everywhere.
+   pairing, or shared chrome — nav / footer / control bar, which is duplicated per page and must
+   stay in sync), say so and confirm before propagating it everywhere.
 3. **Interpret feeling, not just literal instructions.** Translate the vibe into concrete moves:
    - *"make it feel calmer"* → lower density, soften contrast, slow the motion, more whitespace
    - *"more premium"* → tighten tracking, refine spacing, one restrained accent, drop a font weight
    - *"more energetic"* → a bolder display size, a committed accent fill, a staggered reveal
    - *"it feels generic"* → change the palette off its category reflex, add the signature move
-4. **Re-verify the changed screen** — render it, check 390px overflow, console clean, all themes hold.
+4. **Re-verify the changed screen** — render it, check 390px overflow (the skill repo's
+   `benchmark/check-overflow.sh <dir>`, or embed the screen in a 390px same-origin iframe and read
+   `documentElement.scrollWidth`), console clean, all themes hold.
 5. **Loop** until they're happy. Each pass is cheap — that's the whole point of a zero-build prototype.
 
 ## Modes of iteration

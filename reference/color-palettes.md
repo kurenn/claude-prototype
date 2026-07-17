@@ -7,7 +7,7 @@ each deliberately dodges its category-reflex cliché. Preview them live in `desi
 ## How the skill uses this
 
 1. Discovery Step 2 captures the **tone**. Map it to a palette below.
-2. **Quick mode** — silently use that tone's palette.
+2. **Quick mode** — use the tone's palette, but still run the category-reflex check (below): if it happens to be the domain's own reflex (e.g. a green palette for a dev tool), shift the hue.
 3. **Discovery mode** — recommend it in one line and offer to shift hue/strategy, e.g.
    *"For an editorial tone I'd go signal-red on cool newsprint — deliberately not the
    terracotta-on-cream everyone uses. Want it warmer or cooler?"*
@@ -29,9 +29,14 @@ each deliberately dodges its category-reflex cliché. Preview them live in `desi
 - **Category-reflex check**: if the palette is guessable from the domain (finance→navy/gold,
   health→teal/white, crypto→neon, dev-tool→blue-on-black), rework it.
 
-## The menu (one palette per tone)
+## The menu — one strong start per tone (rotate the hue)
 
-Token order: `surface · elevated · elevated-2 · ink · ink-2 · ink-3 · hairline · muted · accent · accent-ink`.
+These are committed **starting points**, not fixed defaults — one strong option per tone. Shift the
+hue per project so two prototypes in the same tone aren't twins (the pine-green "technical" palette
+is one choice; a warm amber or a cool slate works too). Keep the tinting + one-accent + strategy
+discipline whatever hue you land on.
+
+Token order: `surface · elevated · elevated-2 · ink · ink2 · ink3 · hairline · muted · accent · accent-ink` (the scaffold's var names — write them exactly: `--ink2` / `--ink3`, no hyphen).
 
 ### technical — pine on warm graphite · restrained
 Green on a warm off-white / warm graphite, no blue-on-black.

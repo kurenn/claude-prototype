@@ -114,7 +114,7 @@ These are load-bearing — they're what separates this from generic AI output.
 - **No build tools** (webpack, vite, npm). Tailwind CDN + vanilla JS only — load-bearing for "anyone can clone and run it."
 - **Respect scope.** 4 screens asked → 4 screens shipped. Extra screens are scope creep.
 - **Don't shortcut an available skill.** If `prompt-refiner` / `impeccable` / `claude-in-chrome` is in the session, using it is required, not optional.
-- **One question per turn** during discovery — conversational, not a form.
+- **One topic per turn** during discovery — conversational, not a form (tone and how it should *feel* are one topic).
 - **No hardcoded paths or user names** — this is open source.
 
 ### Never ship without (check on every screen before assess)
@@ -124,8 +124,8 @@ repeatedly caught them being dropped when their detail lived only in `reference/
 how-to is still in `reference/build.md` / `reference/assess.md` — but the rule lives here.
 
 - **No horizontal scroll at 390px — including toolbars.** Not just tables (`.proto-table-wrap`): search bars, filter-chip rows, and header action clusters must wrap (`.proto-actions` / `flex-wrap`) so no primary action lands off-screen. A clipped "Approve"/"Book" button is a blocker.
-- **Color restraint — one accent, no gradient fills.** No multi-hue card faces, no purple/violet-on-black, no gradient text. Generic gradients are the #1 "AI-generated" tell and read as off-brand on a serious product.
-- **a11y floor.** `:focus-visible` rings defined (Tailwind's reset drops them); every modal carries `role="dialog"` + `aria-modal`.
+- **Color restraint — one accent, no gradient fills** (a single-hue neutral wash — the `.media` image placeholder — is the one sanctioned exception). No multi-hue card faces, no purple/violet-on-black, no gradient text. Generic gradients are the #1 "AI-generated" tell and read as off-brand on a serious product.
+- **a11y floor.** The scaffold ships `:focus-visible` rings + `aria-live` toasts. Every modal carries `role="dialog"` + `aria-modal`, moves focus into itself on open, traps Tab, and restores focus on close; Esc closes.
 
 ## References
 - Phase detail: `reference/discovery.md` · `reference/build.md` · `reference/assess.md` · `reference/iterate.md` · `reference/subcommands.md`

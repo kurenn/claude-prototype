@@ -7,7 +7,7 @@ generated prototypes distinctive instead of defaulting to the invisible sans eve
 ## How the skill uses this
 
 1. Discovery Step 2 captures the **tone**. Map it to a row below.
-2. **Quick mode** — silently use that tone's **primary** pairing.
+2. **Quick mode** — pick a display from the tone's row (vary it across runs — don't always grab the first) plus its body.
 3. **Discovery mode** — state the recommendation in one line and offer the alternate or a free
    choice, e.g. *"For an editorial tone I'd pair Instrument Serif headings with Newsreader body —
    or Fraunces + DM Sans if you want more warmth. Sound good?"* Recommend, don't interrogate.
@@ -15,20 +15,30 @@ generated prototypes distinctive instead of defaulting to the invisible sans eve
    `{{BODY_FONT}}` (+ mono) tokens in each screen's Google-Fonts `<link>`. Load only the weights
    you use.
 
-## Pairings
+## Pairings — rotate, don't converge
 
-| Tone | Display | Body | Mono / utility | Reads as | Alternate |
-|---|---|---|---|---|---|
-| **technical** | Space Grotesk | IBM Plex Sans | JetBrains Mono | dev-tool, precise (Linear/Vercel) | Geist + Geist Mono |
-| **corporate** | Plus Jakarta Sans | Public Sans | — | trustworthy B2B, not-Inter | Outfit + Source Sans 3 |
-| **editorial** | Instrument Serif | Newsreader | — | magazine, literary | Fraunces + DM Sans |
-| **playful** | Bricolage Grotesque | Work Sans | — | friendly, contemporary | Syne + DM Sans |
-| **bold-experimental** | Syne | Archivo | Space Mono | high-contrast, confident | Unbounded + Archivo |
-| **minimal** | Manrope *(one family, weights only)* | Manrope | — | quiet, Swiss | Instrument Sans (solo) |
+**These are starting points, not a default to settle on.** A menu of one produces a monoculture —
+two "technical" prototypes would come out twins. Rotate the display across projects, and never
+ship the same pairing twice in a row. Pick one display + one body (+ mono only when the product is
+data/code-heavy).
 
-Free-text tones: map to the nearest row, or combine deliberately (e.g. "warm + technical" →
-Space Grotesk display with a humanist body like IBM Plex Sans). One family in multiple weights
-often beats two competing typefaces — only add a second face for genuine contrast.
+| Tone | Display (rotate) | Body | Mono / utility | Reads as |
+|---|---|---|---|---|
+| **technical** | Space Grotesk · Hanken Grotesk · Schibsted Grotesk | IBM Plex Sans / Public Sans | JetBrains Mono / IBM Plex Mono | dev-tool, precise |
+| **corporate** | Plus Jakarta Sans · Outfit · Onest | Public Sans / Source Sans 3 | — | trustworthy B2B, not-Inter |
+| **editorial** | Instrument Serif · Newsreader · Fraunces | Newsreader / DM Sans | — | magazine, literary |
+| **playful** | Bricolage Grotesque · Gabarito · Syne | Work Sans / DM Sans | — | friendly, contemporary |
+| **bold-experimental** | Syne · Unbounded · Archivo | Archivo | Space Mono | high-contrast, confident |
+| **minimal** | Manrope · Instrument Sans · Hanken Grotesk *(one family, weights only)* | same family | — | quiet, Swiss |
+
+**Watch the new reflexes.** Space Grotesk (technical) and Fraunces (editorial) are now the *common*
+pick for their tone — fine, but rotate to an alternate when you can. Avoid **Geist**: it is Vercel's
+own typeface, so using it for a "reads like Vercel" brief copies the category leader — the opposite
+of distinctive.
+
+Free-text tones: map to the nearest row or combine deliberately (e.g. "warm + technical" → a
+grotesque display with a humanist body like IBM Plex Sans). One family in several weights often
+beats two competing typefaces — only add a second face for genuine contrast.
 
 ## Reflex-reject list — never ship these for distinctive work
 
