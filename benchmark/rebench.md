@@ -24,36 +24,58 @@ and the "Cost" section below for what a real run costs.
 
 ## 0. Prerequisites
 
-- Two clean worktrees of this repo, one per side, so both skill versions exist on disk at
-  once and neither build can leak context from the other session:
+- A scratch directory per run — worktrees and builds both live here, **outside**
+  `~/.claude/skills/`. `~/.claude/skills/` is where the README's recommended install
+  lives (a clone at `~/.claude/skills/prototype`), and anything placed under it
+  auto-registers as a skill by directory name. Landing a worktree there would silently
+  create a second, unwanted skill entry before you've even symlinked anything:
 
   ```bash
-  git worktree add ../bench-main main
-  git worktree add ../bench-candidate design-audits
+  mkdir -p /tmp/rebench-2026-XX/{main,candidate}
+  ```
+
+- Two clean worktrees of this repo, one per side, so both skill versions exist on disk at
+  once and neither build can leak context from the other session — created under the
+  scratch directory above, not under `~/.claude/skills/` and not as repo-adjacent
+  `../bench-*` dirs (same footgun if this repo happens to live under `~/.claude/skills/`):
+
+  ```bash
+  git worktree add /tmp/rebench-2026-XX/bench-main main
+  git worktree add /tmp/rebench-2026-XX/bench-candidate design-audits
+  ```
+
+- Both worktrees' `SKILL.md` declare `name: prototype` in frontmatter — that name, not
+  the directory name, is what Claude Code resolves skills by. Symlinking them in as-is
+  would register two skills that both claim the name `prototype`, colliding silently.
+  Before symlinking, edit each worktree's own `SKILL.md` frontmatter `name:` field so it
+  matches the skill name you're about to link it as. This edit is made directly in the
+  worktree (not the main checkout) and is never committed — it only needs to survive on
+  disk for the duration of the run:
+
+  ```bash
+  # in /tmp/rebench-2026-XX/bench-main/SKILL.md,      change `name: prototype` -> `name: prototype-main`
+  # in /tmp/rebench-2026-XX/bench-candidate/SKILL.md, change `name: prototype` -> `name: prototype-candidate`
   ```
 
 - Install **both** as distinct skills so you can invoke either by name in the same Claude
   Code environment:
 
   ```bash
-  ln -s "$(cd ../bench-main && pwd)"      ~/.claude/skills/prototype-main
-  ln -s "$(cd ../bench-candidate && pwd)" ~/.claude/skills/prototype-candidate
+  ln -s /tmp/rebench-2026-XX/bench-main      ~/.claude/skills/prototype-main
+  ln -s /tmp/rebench-2026-XX/bench-candidate ~/.claude/skills/prototype-candidate
   ```
 
-  Restart Claude Code (or `/help`) so both show up. From here, `/prototype-main` builds
-  with `main`'s SKILL.md and `/prototype-candidate` builds with `design-audits`'s — same
-  session, no ambiguity about which version produced which folder.
+  Restart Claude Code (or `/help`) and confirm **both** `prototype-main` and
+  `prototype-candidate` appear as distinct entries before starting any builds — that's
+  the check that the frontmatter edit above actually took, not just that the symlinks
+  exist. From here, `/prototype-main` builds with `main`'s SKILL.md and
+  `/prototype-candidate` builds with `design-audits`'s — same session, no ambiguity about
+  which version produced which folder.
 
   > Do **not** symlink either one to the plain `~/.claude/skills/prototype` name while
   > benchmarking — that's the name your own daily driver may resolve to, and a stray
   > `/prototype` invocation during the run would silently pick whichever side is
   > currently linked there.
-
-- A scratch directory per run to keep builds out of this repo:
-
-  ```bash
-  mkdir -p /tmp/rebench-2026-XX/{main,candidate}
-  ```
 
 ## 1. Build matrix
 
@@ -128,27 +150,34 @@ anti-monoculture rotation: "a menu of one produces a monoculture — two 'techni
 prototypes would come out twins." This is a testable claim, not a mechanical scoring
 check, so `score-output.sh` can't verify it — this run does it directly.
 
+This reuses the step-1 build matrix — it is not an additional round of builds. Step 1
+already produced 2–3 fresh-session, same-brief builds per side per brief
+(`candidate/<brief>-1..3` and `main/<brief>-1..3`), which is exactly the input this check
+needs. Only build something new if a matrix slot from step 1 had to be rebuilt (e.g. it
+failed Tier 1 in step 2).
+
 **Procedure:**
 
 1. Pick **one brief and one tone** (e.g. `saas-dashboard.md`, tone "technical, calm,
-   confident" as written). Build it **2–3 times on the candidate side**, fresh session
-   each time, brief text unchanged.
-2. For each build, record: the type pairing chosen (display + body font), the accent hue
-   / palette family, and the one named "distinctive signature move" (per the
+   confident" as written) and use its existing `candidate/<brief>-1..3` builds from step 1.
+2. For each of those builds, record: the type pairing chosen (display + body font), the
+   accent hue / palette family, and the one named "distinctive signature move" (per the
    Distinctiveness lens in `design-judge.md`).
 3. Compare across the 2–3 builds. **Pass** = at least the type pairing *or* the palette
    family differs across every pair (no two builds share both), and the signature moves
    are independently nameable, not the same idea restated. **Fail (monoculture)** = two or
    more builds converge on the same display font + same hue family — the rotation guidance
    existed on paper but the building agent didn't apply it.
-4. Repeat for **one more brief** (different tone) as a second data point, not because one
-   brief settles it. Two briefs × 2–3 builds is enough to say "the rotation guidance
-   works" or "it doesn't" without a third dimension of variance to control for.
-5. Do the same 2–3-build repeat on the **main side** for at least one brief, as the
-   control — `main` has no equivalent rotation guidance, so builds converging there isn't
-   a bug, it's the expected baseline the candidate is supposed to improve on. If `main`
-   *also* diversifies on its own (LLM sampling variance alone), that's worth knowing too:
-   it would mean the rotation files are lower-leverage than assumed.
+4. Repeat for **one more brief**'s existing `candidate/<brief>-1..3` builds (different
+   tone) as a second data point, not because one brief settles it. Two briefs × 2–3 builds
+   is enough to say "the rotation guidance works" or "it doesn't" without a third
+   dimension of variance to control for.
+5. Do the same comparison on the existing `main/<brief>-1..3` builds for at least one
+   brief, as the control — `main` has no equivalent rotation guidance, so builds
+   converging there isn't a bug, it's the expected baseline the candidate is supposed to
+   improve on. If `main` *also* diversifies on its own (LLM sampling variance alone),
+   that's worth knowing too: it would mean the rotation files are lower-leverage than
+   assumed.
 
 Record the raw comparison (a small table: build → font pairing → palette family → named
 signature move) in the results file, not just a pass/fail — the "why" is the useful part
@@ -176,18 +205,21 @@ scaffold, discovery-driven content, control bar, three switchers, interaction st
 built-in lint pass. Historical runs in this repo have hit session token/length limits
 completing even a *single* 3-brief × 2-side × n=1 fan-out (see the "hit the session token
 limit" note in `design-ab-rerun-2026-06-08.md`). At n=2–3 across full-length briefs this
-is a **12–18 build** run, plus up to 9 blind-judge passes and the monoculture sub-run on
-top — realistically several sessions of work, not one. That's why this issue documents
-the procedure and makes it cheap to *start*, rather than executing it inline.
+is a **12–18 build** run, plus up to 9 blind-judge passes — the monoculture check (§4)
+adds no new builds, it re-reads the same 12–18 outputs, but the build + judging pass
+alone is realistically several sessions of work, not one. That's why this issue
+documents the procedure and makes it cheap to *start*, rather than executing it inline.
 
 ## Quick reference
 
 ```bash
 # setup (once)
-git worktree add ../bench-main main
-git worktree add ../bench-candidate design-audits
-ln -s "$(cd ../bench-main && pwd)"      ~/.claude/skills/prototype-main
-ln -s "$(cd ../bench-candidate && pwd)" ~/.claude/skills/prototype-candidate
+git worktree add /tmp/rebench-2026-XX/bench-main main
+git worktree add /tmp/rebench-2026-XX/bench-candidate design-audits
+# edit name: prototype -> prototype-main / prototype-candidate in each worktree's SKILL.md
+ln -s /tmp/rebench-2026-XX/bench-main      ~/.claude/skills/prototype-main
+ln -s /tmp/rebench-2026-XX/bench-candidate ~/.claude/skills/prototype-candidate
+# restart Claude Code / run /help, confirm both names appear before building
 
 # per build (repeat per brief × side × run)
 /prototype-main         # or /prototype-candidate — paste a benchmark/briefs/*.md verbatim, Quick mode
