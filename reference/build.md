@@ -59,7 +59,7 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 ```
 
 ### Baseline every screen needs
-- `<html data-theme="<default>" data-layout="<default>" data-persona="<default>">` with spec defaults.
+- `<html data-theme="<default>" data-layout="<default>" data-persona="<default>">` with spec defaults. `data-persona` here is cosmetic before first paint — `persona.js` overwrites it on load from `PERSONAS[0]` (URL param → localStorage → array order), so the array order is what actually governs the default; keep them in agreement.
 - Tailwind CDN + inline config extending CSS vars so `bg-surface`, `text-accent`, `border-muted` work.
 - The visible control bar (below) — not a click-to-reveal pill.
 - Scripts loaded in this order at the end of `<body>`: `state.js` → `theme.js` → `layout.js` → `data.js` → `persona.js` → `ui.js` → `app.js` → `feedback.js`. Data loads before persona (persona reads it); ui before app (app may call `UI.toast`).
@@ -142,18 +142,7 @@ kills a demo. Baseline checklist:
 - **Empty state** — every list/grid has an `.empty-state` wrapper for when the persona's list is empty: headline + one-line explainer + primary action ("Browse vendors", "Create your first…"). Ship at least the primary collection view's empty state on each side.
 - **Error state / 404** — `404.html` ships with the scaffold. Link at least one "broken" affordance to it. Form validation errors render inline under the field, not as dismissable alerts.
 - **Form state persistence** — multi-step inputs save to localStorage and restore on reload. Cheap win; makes the demo feel alive across refreshes.
-- **Skeleton loaders** — any list/grid that changes on user action (filter chips, pagination, persona switch, page load) briefly swaps to placeholder silhouettes. Mark a container `data-skeleton-on-load` (auto-wires on page load; tune with `data-skeleton-count` / `data-skeleton-duration`), and for filter/pagination/persona changes call `UI.fakeLoad(container, 650, { count: 6 })` from the relevant handler in `app.js`. The `.skeleton` class + shimmer ships in styles.css; shape with `.is-text` / `.is-text-lg` / `.is-block` / `.is-circle`.
-  **Gotcha with JS-rendered containers:** `data-skeleton-on-load`'s auto-wiring stashes
-  the container's *current* `innerHTML` and restores that exact snapshot when the timer
-  ends. If the container starts empty in the HTML and a script (e.g. a persona-driven
-  list renderer) fills it in later, the auto-wiring will stash the empty markup, then
-  overwrite your real content with that empty snapshot once its timer fires — the list
-  silently disappears a few hundred ms after load. For any container populated by your
-  own render function rather than static HTML, skip `data-skeleton-on-load` and call
-  `UI.showSkeletons(container, { count })` yourself right before the render, then call
-  your render function (not `UI.hideSkeletons`) once the timer fires — and clear
-  `container.dataset.skeletonActive` / `stashedContent` afterward so a later
-  `showSkeletons` call on the same container isn't silently a no-op.
+- **Skeleton loaders** — any list/grid that changes on user action (filter chips, pagination, persona switch, page load) briefly swaps to placeholder silhouettes. Mark a container `data-skeleton-on-load` (auto-wires on page load; tune with `data-skeleton-count` / `data-skeleton-duration`), and for filter/pagination/persona changes call `UI.fakeLoad(container, 650, { count: 6 })` from the relevant handler in `app.js`. The `.skeleton` class + shimmer ships in styles.css; shape with `.is-text` / `.is-text-lg` / `.is-block` / `.is-circle`. `hideSkeletons` only restores the pre-skeleton snapshot if the container still shows the exact skeleton markup it injected — if a render function (e.g. a persona-driven list renderer) already filled the container with real content before the timer fires, the restore is skipped, so JS-rendered containers are safe to use with `data-skeleton-on-load` without any manual cleanup.
 
 ### Layout system
 
