@@ -183,6 +183,10 @@
       focusables[0].focus({ preventScroll: true });
     }
 
+    // Listens on document (not modalEl) because focus can land on <body> or
+    // any other element outside the modal (e.g. after clicking non-interactive
+    // modal text) — a listener scoped to modalEl would never see Tab in that
+    // case, letting focus walk the page behind the overlay.
     function onKeydown(e) {
       if (e.key !== 'Tab') return;
       const items = getFocusable(modalEl);
@@ -195,10 +199,24 @@
       } else if (!e.shiftKey && document.activeElement === last) {
         e.preventDefault();
         first.focus();
+      } else if (!modalEl.contains(document.activeElement)) {
+        // Focus is outside the modal entirely (e.g. started on <body>) —
+        // pull it back in rather than letting Tab continue from there.
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
       }
     }
-    modalEl.addEventListener('keydown', onKeydown);
-    traps.set(modalEl, { trigger, onKeydown });
+    // Belt-and-suspenders: if focus ends up outside modalEl by any means
+    // other than Tab (e.g. a programmatic .focus() elsewhere), snap it back
+    // to the first focusable element inside.
+    function onFocusIn(e) {
+      if (modalEl.contains(e.target)) return;
+      const items = getFocusable(modalEl);
+      (items[0] || modalEl).focus({ preventScroll: true });
+    }
+    document.addEventListener('keydown', onKeydown, true);
+    document.addEventListener('focusin', onFocusIn, true);
+    traps.set(modalEl, { trigger, onKeydown, onFocusIn });
   }
 
   // Tears down the trap and restores focus to whatever triggered the modal
@@ -207,7 +225,8 @@
     if (!modalEl) return;
     const rec = traps.get(modalEl);
     if (!rec) return;
-    modalEl.removeEventListener('keydown', rec.onKeydown);
+    document.removeEventListener('keydown', rec.onKeydown, true);
+    document.removeEventListener('focusin', rec.onFocusIn, true);
     traps.delete(modalEl);
     if (rec.trigger && typeof rec.trigger.focus === 'function' && document.contains(rec.trigger)) {
       rec.trigger.focus({ preventScroll: true });
