@@ -126,8 +126,8 @@ html, body {
   text-rendering: optimizeLegibility;
 }
 
-html { transition: background-color .3s ease; }
-body { transition: background-color .3s ease, color .3s ease; }
+html { transition: background-color .3s cubic-bezier(0.22, 1, 0.36, 1); }
+body { transition: background-color .3s cubic-bezier(0.22, 1, 0.36, 1), color .3s cubic-bezier(0.22, 1, 0.36, 1); }
 
 a {
   color: inherit;
@@ -872,7 +872,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
 .reveal {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity .6s ease, transform .6s ease;
+  transition: opacity .6s cubic-bezier(0.22, 1, 0.36, 1), transform .6s cubic-bezier(0.22, 1, 0.36, 1);
 }
 .reveal.visible {
   opacity: 1;
@@ -893,7 +893,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
   border: 1px solid rgb(var(--ink));
   font-size: .8rem;
   opacity: 0;
-  transition: opacity .2s ease, transform .2s ease;
+  transition: opacity .2s cubic-bezier(0.22, 1, 0.36, 1), transform .2s cubic-bezier(0.22, 1, 0.36, 1);
   pointer-events: none;
   white-space: nowrap;
   max-width: 90vw;
@@ -1049,7 +1049,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
   border: 0;
   background: transparent;
   cursor: pointer;
-  transition: background .15s ease, color .15s ease;
+  transition: background .15s cubic-bezier(0.22, 1, 0.36, 1), color .15s cubic-bezier(0.22, 1, 0.36, 1);
   font: inherit;
   white-space: nowrap;
   line-height: 1;
