@@ -813,20 +813,20 @@
   // Rotate display: swap the tone's --disp (and --body, for the one-family "minimal"
   // row) live, so every alternate in reference/type-pairings.md is actually previewable —
   // not just the primary baked into the .t-* rule above.
+  function applyRotate(sel, family) {
+    var card = sel.closest('.spec');
+    if (!card) return;
+    card.style.setProperty('--disp', "'" + family + "'");
+    var dispName = card.querySelector('.fn-disp');
+    if (dispName) dispName.textContent = family;
+    if (sel.hasAttribute('data-both')) {
+      card.style.setProperty('--body', "'" + family + "'");
+      var bodyName = card.querySelector('.fn-body');
+      if (bodyName) bodyName.textContent = family;
+    }
+  }
   document.querySelectorAll('.rotate-select').forEach(function (sel) {
-    sel.addEventListener('change', function () {
-      var card = sel.closest('.spec');
-      if (!card) return;
-      var family = sel.value;
-      card.style.setProperty('--disp', "'" + family + "'");
-      var dispName = card.querySelector('.fn-disp');
-      if (dispName) dispName.textContent = family;
-      if (sel.hasAttribute('data-both')) {
-        card.style.setProperty('--body', "'" + family + "'");
-        var bodyName = card.querySelector('.fn-body');
-        if (bodyName) bodyName.textContent = family;
-      }
-    });
+    sel.addEventListener('change', function () { applyRotate(sel, sel.value); });
   });
 
   document.querySelectorAll('.spec').forEach(function (card) {
@@ -834,6 +834,17 @@
     // Read names at click time, not once at load — a rotate-select swap changes
     // .fn-disp/.fn-body text, and "Use this" should save the font actually on screen.
     function currentNames() { return Array.prototype.map.call(card.querySelectorAll('.spec-names b'), function (b) { return b.textContent; }).join(' + '); }
+    // Restore the rotate-select (and its live font swap) from a saved pick *before*
+    // comparing picked state — otherwise a pick saved under a rotated font always
+    // resets to the primary on reload and the card never shows as picked.
+    if (picks[tone]) {
+      var savedFirst = picks[tone].split(' + ')[0];
+      var sel = card.querySelector('.rotate-select');
+      if (sel) {
+        var opt = Array.prototype.find.call(sel.options, function (o) { return o.value === savedFirst; });
+        if (opt) { sel.value = savedFirst; applyRotate(sel, savedFirst); }
+      }
+    }
     if (picks[tone] === currentNames()) card.classList.add('picked');
     card.querySelector('.pick').addEventListener('click', function () {
       if (card.classList.contains('picked')) { card.classList.remove('picked'); delete picks[tone]; }
