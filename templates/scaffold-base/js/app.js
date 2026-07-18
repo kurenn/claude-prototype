@@ -4,16 +4,35 @@
  * State.set() so URLs stay shareable.
  */
 (function () {
-  // Reveal-on-scroll for any element with class="reveal"
-  const io = new IntersectionObserver((entries) => {
-    entries.forEach(e => {
-      if (e.isIntersecting) {
-        e.target.classList.add('visible');
-        io.unobserve(e.target);
-      }
-    });
-  }, { threshold: 0.1 });
-  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+  // Reveal-on-scroll — mark any element class="reveal" and it fades/slides in the
+  // first time it scrolls into view (see the `.reveal` rules in styles.css for the
+  // actual motion). Opt-in per element; nothing reveals unless you add the class.
+  //
+  // Reduced-motion-safe two ways: (1) if the user has prefers-reduced-motion, skip
+  // the observer entirely and just show everything — no need to watch elements that
+  // are going to render at full opacity anyway; (2) styles.css also force-overrides
+  // `.reveal` to its visible state under the same media query, as a belt-and-suspenders
+  // backstop in case JS runs before the check below (or doesn't run at all — see next).
+  // Also falls back to "just show it" if IntersectionObserver isn't available at all,
+  // so an old/unusual browser never ends up with permanently-invisible content.
+  // Docs: reference/build.md → "Scroll reveal (opt-in)".
+  const revealEls = document.querySelectorAll('.reveal');
+  if (revealEls.length) {
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion || typeof IntersectionObserver !== 'function') {
+      revealEls.forEach(el => el.classList.add('visible'));
+    } else {
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach(e => {
+          if (e.isIntersecting) {
+            e.target.classList.add('visible');
+            io.unobserve(e.target);
+          }
+        });
+      }, { threshold: 0.1, rootMargin: '0px 0px -10% 0px' });
+      revealEls.forEach(el => io.observe(el));
+    }
+  }
 
   // Example modal wiring — replace with your own.
   function openModal(name) {
@@ -52,11 +71,14 @@
       b.setAttribute('aria-selected', String(b.dataset.tab === name));
     });
   }
+  // Wrapped in UI.withViewTransition — cross-fades the panel swap in browsers that
+  // support the View Transitions API, calls selectTab(name) directly everywhere else
+  // (Firefox, older Safari, reduced-motion). See ui.js for the fallback logic.
   document.querySelectorAll('[data-tab]').forEach(b => {
     b.addEventListener('click', () => {
       const name = b.dataset.tab;
       window.State?.set('tab', name);
-      selectTab(name);
+      (window.UI?.withViewTransition || ((fn) => fn()))(() => selectTab(name));
     });
   });
 

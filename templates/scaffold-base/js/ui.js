@@ -14,6 +14,7 @@
  *   UI.toast('Message sent');
  *   UI.toast('Something failed', 'error');
  *   UI.loadingButton(btn, 800, () => { location.href = '/next.html'; });
+ *   UI.withViewTransition(() => selectTab('billing')); // cross-fade a same-doc update, opt-in
  */
 (function () {
   const TOAST_MS = 1600;
@@ -137,5 +138,24 @@
     setTimeout(() => hideSkeletons(container), duration || 700);
   }
 
-  window.UI = { toast, loadingButton, showSkeletons, hideSkeletons, fakeLoad };
+  // ---------- VIEW TRANSITIONS (same-doc, opt-in) ----------
+  // Wrap a same-document DOM update (tab switch, filter re-render, persona swap) so it
+  // cross-fades instead of snapping:
+  //
+  //   UI.withViewTransition(() => selectTab(name));
+  //
+  // Falls back to just running `fn` synchronously — same result, no animation — when
+  // `document.startViewTransition` isn't supported (Firefox, older Safari) or the user
+  // has prefers-reduced-motion set. Never gate correctness on this running; it's a
+  // visual upgrade, not a step the callback depends on.
+  function withViewTransition(fn) {
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion || typeof document.startViewTransition !== 'function') {
+      fn();
+      return;
+    }
+    document.startViewTransition(fn);
+  }
+
+  window.UI = { toast, loadingButton, showSkeletons, hideSkeletons, fakeLoad, withViewTransition };
 })();

@@ -115,6 +115,120 @@ body       { font-optical-sizing: auto; }
   box-shadow: var(--shadow-sm);
 }
 
+/* Shared components — a small set every build can extend beyond .card, so
+ * KPI strips / filter rows / tables / forms don't get reinvented from scratch
+ * per prototype. Tokens only (surface/elevated/ink/accent/hairline/space/radius/
+ * shadow) — no gradients, no colors outside the one accent + the existing
+ * success/error status pair already used by .proto-toast. Builds may restyle
+ * these, but keep them token-driven so a theme swap doesn't break them. */
+
+/* .stat — KPI tile. Group 2-4 in a .proto-grid row. */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  background: rgb(var(--elevated));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.stat-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: rgb(var(--ink2));
+}
+.stat-value {
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  color: rgb(var(--ink));
+  font-variant-numeric: tabular-nums; /* also covered by .tabular if applied directly */
+}
+.stat-delta {
+  font-size: var(--text-sm);
+  color: rgb(var(--ink2));
+}
+
+/* .chip — filter pill / tag / status label. `.is-active` for a selected filter;
+   `.is-muted` for a disabled/inactive one. Same "is-" state prefix as
+   .is-loading / .is-error / .is-success elsewhere in this file. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: .3rem .7rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--hairline));
+  background: rgb(var(--surface));
+  color: rgb(var(--ink2));
+  font-size: var(--text-xs);
+  line-height: 1;
+  white-space: nowrap;
+}
+.chip.is-active {
+  background: rgb(var(--accent));
+  border-color: rgb(var(--accent));
+  color: rgb(var(--accent-ink));
+}
+.chip.is-muted { opacity: .6; }
+
+/* .table — put on the <table> itself, inside the existing .proto-table-wrap
+   (that wrapper only handles horizontal overflow; this handles the look). */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.table th,
+.table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid rgb(var(--hairline));
+}
+.table th {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-weight: 600;
+  color: rgb(var(--ink2));
+  background: rgb(var(--elevated-2));
+}
+.table tbody tr:last-child td { border-bottom: 0; }
+@media (hover: hover) {
+  .table tbody tr:hover { background: rgb(var(--muted) / .06); }
+}
+
+/* .form-field — label + control + optional hint/error, stacked. Pairs with the
+   "form state persistence" + "inline error on blur" guidance in reference/build.md. */
+.form-field { display: flex; flex-direction: column; gap: var(--space-1); }
+.form-field > label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: rgb(var(--ink));
+}
+.form-field input,
+.form-field select,
+.form-field textarea {
+  padding: .55rem .75rem;
+  border-radius: var(--radius);
+  border: 1px solid rgb(var(--hairline));
+  background: rgb(var(--elevated));
+  color: rgb(var(--ink));
+  font: inherit;
+}
+.form-field .hint {
+  font-size: var(--text-xs);
+  color: rgb(var(--ink2));
+}
+/* Error state reuses the same status red as .proto-toast.is-error, not a new color. */
+.form-field.has-error input,
+.form-field.has-error select,
+.form-field.has-error textarea {
+  border-color: rgb(190 60 60);
+}
+.form-field .error { font-size: var(--text-xs); color: rgb(190 60 60); }
+
 /* Interaction floor — Tailwind's reset drops focus rings; ship one globally, plus a press
    micro-interaction. Keep custom :hover styles behind @media (hover:hover) so they don't
    stick on touch. :where() keeps specificity 0 so product styles win. */
@@ -143,14 +257,22 @@ html { transition: background-color .3s var(--ease-out-quart); }
 body { transition: background-color .3s var(--ease-out-quart), color .3s var(--ease-out-quart); }
 
 /* Respect reduced motion — stop transitions and decorative motion, but keep the loading
-   spinner turning (blanking it mid-ring looks broken) and force reveals visible. */
+   spinner turning (blanking it mid-ring looks broken) and force reveals visible. The
+   `*` selector doesn't reach the ::view-transition-* pseudo tree (it's a separate tree,
+   not matched by the universal selector), so that gets its own override below. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; }
   .reveal { opacity: 1; transform: none; }
   .skeleton { animation: none; }   /* static shimmer is fine; spinner keeps turning as feedback */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
 }
 
-/* Reveal-on-scroll (applied by app.js via IntersectionObserver) */
+/* Reveal-on-scroll — opt-in; app.js observes any `.reveal` element and adds `.visible`
+   the first time it enters the viewport (IntersectionObserver, with a reduced-motion
+   and no-IO fallback — see the comment above app.js's `revealEls` block). Nothing
+   moves unless you add class="reveal" to the element. */
 .reveal {
   opacity: 0;
   transform: translateY(12px);
@@ -159,6 +281,17 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
 .reveal.visible {
   opacity: 1;
   transform: none;
+}
+
+/* Same-doc View Transitions — opt-in; wrap a DOM update in UI.withViewTransition()
+   (ui.js) and, where the browser supports the API, the swap cross-fades instead of
+   snapping. Unsupported browsers (Firefox, older Safari) never generate these pseudo-
+   elements at all, so this rule is inert there — the fallback in ui.js is what actually
+   keeps the update working, this is just the transition's look where it fires. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--motion);
+  animation-timing-function: var(--ease-out-quart);
 }
 
 /* Toast (state.js + ui.js use this) */

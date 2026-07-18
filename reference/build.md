@@ -14,7 +14,7 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 
 **Copy literally, no edits** (product-agnostic platform code):
 - `scaffold-base/js/state.js` → `js/state.js` — URL state utility.
-- `scaffold-base/js/ui.js` → `js/ui.js` — interaction helpers (loading button, toast, declarative `[data-loading]` / `[data-toast]` / `[data-confirm]`).
+- `scaffold-base/js/ui.js` → `js/ui.js` — interaction helpers (loading button, toast, declarative `[data-loading]` / `[data-toast]` / `[data-confirm]`, opt-in `UI.withViewTransition`).
 - `feedback-overlay/feedback.js` → `js/feedback.js` — feedback overlay.
 - `feedback-overlay/feedback.css` → `css/feedback.css` — feedback overlay styles.
 - `scaffold-base/serve.py` → `serve.py` — no-cache dev server. Shipping it means reviewers who clone+run don't hit the browser-cache "my changes aren't showing" trap.
@@ -24,8 +24,8 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 - `scaffold-base/js/layout.js` → `js/layout.js` — set `LAYOUTS` to match the spec's layout names.
 - `scaffold-base/js/persona.js` → `js/persona.js` — set `PERSONAS` to match `data.js` persona keys.
 - `scaffold-base/js/data.js` → `js/data.js` — populate personas + shared data (see "Data layer").
-- `scaffold-base/js/app.js` → `js/app.js` — keep core wiring (modals, tabs, composer, hydrate); add product handlers.
-- `scaffold-base/css/styles.css` → `css/styles.css` — replace the 3 default `html[data-theme="X"]` blocks with `DESIGN.md` tokens; add product classes (`.card`, `.chip`, `.status-*`, `.kpi`). **Keep** `.proto-grid`, `.proto-seg`, `#proto-controls`, `.proto-toast`, `.is-loading`, `.skeleton`, `.empty-state` as-is — platform.
+- `scaffold-base/js/app.js` → `js/app.js` — keep core wiring (modals, tabs, composer, hydrate, reveal-on-scroll); add product handlers.
+- `scaffold-base/css/styles.css` → `css/styles.css` — replace the 3 default `html[data-theme="X"]` blocks with `DESIGN.md` tokens; add product-specific classes beyond the shared set below (e.g. `.status-*` badges, a `.kpi` variant if `.stat` doesn't fit). **Keep** `.card`, `.chip`, `.table`, `.form-field`, `.stat`, `.reveal`, `.proto-grid`, `.proto-seg`, `#proto-controls`, `.proto-toast`, `.is-loading`, `.skeleton`, `.empty-state` as-is — platform.
 - `scaffold-base/404.html` → `404.html` — substitute tokens, swap in the product's nav/footer.
 
 **Structural reference, not a copy:**
@@ -165,6 +165,79 @@ Number of layouts, names, and behavior come from the spec (see "Choosing layouts
 
 The layout names in the spec, `layout.js`, CSS, and control-bar buttons MUST match
 exactly. A typo silently breaks the toggle.
+
+### Shared components
+
+Beyond `.card`, `styles.css` ships four more classes so common surfaces (KPI strips,
+filter rows, tables, forms) don't get reinvented per prototype. All four are
+token-driven (surface/elevated/ink/accent/hairline/space/radius/shadow) — restyle them
+per `DESIGN.md` by changing the tokens, not by overriding these rules with new colors.
+
+- **`.stat`** — a KPI tile. Group 2–4 inside `.proto-grid` (or a Tailwind grid) so they
+  reflow at 390px per the overflow rules above.
+  ```html
+  <div class="stat">
+    <span class="stat-label">Active listings</span>
+    <span class="stat-value tabular">128</span>
+    <span class="stat-delta">+12 this week</span>
+  </div>
+  ```
+- **`.chip`** — a filter pill / tag / status label. `.is-active` for the selected filter
+  in a filter row; `.is-muted` for a disabled or inactive one.
+  ```html
+  <button class="chip is-active">All</button>
+  <button class="chip">Pending</button>
+  <span class="chip is-muted">Archived</span>
+  ```
+- **`.table`** — put on the `<table>` itself, nested in the existing
+  `.proto-table-wrap` (that wrapper only handles the horizontal-scroll overflow guard;
+  `.table` is the look — header row, row dividers, a subtle hover on pointer devices).
+  ```html
+  <div class="proto-table-wrap">
+    <table class="table">…</table>
+  </div>
+  ```
+- **`.form-field`** — label + control + optional hint/error, stacked. Add
+  `.has-error` to the wrapper to show the inline error (pairs with the "form
+  validates on blur" rule under "Interaction states" below).
+  ```html
+  <div class="form-field has-error">
+    <label for="email">Email</label>
+    <input id="email" type="email">
+    <span class="error">Enter a valid email</span>
+  </div>
+  ```
+
+Product-specific variants (a `.status-*` badge palette, a `.kpi` shape `.stat` doesn't
+fit) still belong in the build's own `styles.css` additions — keep them token-driven too.
+
+### Motion utilities (opt-in)
+
+Two scroll/transition utilities ship in the scaffold but do nothing until a screen
+opts in by adding the class or calling the helper. Both are reduced-motion-safe and
+degrade to "just show the correct end state" if unsupported — never gate correctness
+on either running.
+
+- **Reveal-on-scroll** — add `class="reveal"` to any element and `app.js` fades/slides
+  it in the first time it scrolls into view (IntersectionObserver, `.reveal` rules in
+  `styles.css`). Use sparingly — a hero section, a stat strip, maybe a testimonial —
+  not every card in a long list (that just delays the user seeing content).
+  ```html
+  <section class="reveal">…</section>
+  ```
+  Reduced-motion-safe two ways: `prefers-reduced-motion` skips the observer in `app.js`
+  and reveals everything immediately, and `styles.css` force-overrides `.reveal` to its
+  visible state under the same media query as a backstop. Also falls back to "show it"
+  if `IntersectionObserver` itself is unavailable.
+- **Same-doc View Transitions** — wrap a DOM update (tab switch, filter re-render,
+  persona swap) in `UI.withViewTransition()` (`ui.js`) so it cross-fades where the
+  browser supports the API:
+  ```js
+  UI.withViewTransition(() => selectTab(name));
+  ```
+  Falls back to calling the function directly — same result, no animation — on
+  Firefox, older Safari, or with `prefers-reduced-motion` set. `app.js`'s tab wiring
+  already does this; use it as the reference call site.
 
 ## Step 6: Build screens
 
