@@ -773,7 +773,7 @@
   function renderPicks() {
     var box = document.getElementById('picks');
     var tones = Object.keys(picks).filter(function (t) { return picks[t]; });
-    if (!tones.length) { box.innerHTML = '<span class="empty">No picks yet — press <b>Use this</b> to note your favorite pairing per tone (a local note; the skill's menu lives in reference/type-pairings.md). Choices persist in this browser.</span>'; return; }
+    if (!tones.length) { box.innerHTML = '<span class="empty">No picks yet — press <b>Use this</b> to note your favorite pairing per tone (a local note; the skill\'s menu lives in reference/type-pairings.md). Choices persist in this browser.</span>'; return; }
     box.innerHTML = '<b>Your picks so far:</b> ' + tones.map(function (t) { return t + ' → ' + picks[t]; }).join('  ·  ');
   }
   document.querySelectorAll('.spec').forEach(function (card) {
