@@ -78,7 +78,7 @@ default** (the #1 tell) · gray text on a colored ground (use a tint of the grou
 ## Contrast (verified, WCAG)
 
 Body `ink` on `surface` clears 4.5:1 in both themes for all six. Two honest flags:
-- **`ink-3`** (tertiary — timestamps, placeholders, captions) is AA-*Large* only in light mode.
-  Never set body copy in it; use `ink-2` for anything essential.
+- **`ink3`** (tertiary — timestamps, placeholders, captions) is AA-*Large* only in light mode.
+  Never set body copy in it; use `ink2` for anything essential.
 - **playful marigold / bold lime** accents are **fill** roles (button background + `accent-ink`
   on top, which pass). As a text link on the surface they fail — darken to ~L0.55 for that use.
