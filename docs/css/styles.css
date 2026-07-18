@@ -126,8 +126,8 @@ html, body {
   text-rendering: optimizeLegibility;
 }
 
-html { transition: background-color .3s cubic-bezier(0.22, 1, 0.36, 1); }
-body { transition: background-color .3s cubic-bezier(0.22, 1, 0.36, 1), color .3s cubic-bezier(0.22, 1, 0.36, 1); }
+html { transition: background-color var(--motion-medium); }
+body { transition: background-color var(--motion-medium), color var(--motion-medium); }
 
 a {
   color: inherit;
@@ -1049,7 +1049,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
   border: 0;
   background: transparent;
   cursor: pointer;
-  transition: background .15s cubic-bezier(0.22, 1, 0.36, 1), color .15s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: background var(--motion-fast), color var(--motion-fast);
   font: inherit;
   white-space: nowrap;
   line-height: 1;
