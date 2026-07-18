@@ -143,6 +143,15 @@ Zero `package.json`, zero `node_modules/`, zero `vite.config.*`. Tailwind CDN on
 
 ---
 
+### 21. Signature move named in DESIGN.md
+Beautiful design commits to one memorable, on-brief detail. DESIGN.md should name a **signature
+move** — a distinctive nav, an editorial hero, a considered data-viz treatment, a motion moment.
+If none is named, the design is probably a template.
+```
+grep -i "signature" <prototype>/DESIGN.md
+```
+Flag if absent.
+
 ## Report format
 
 Produce `LINT.md` at the prototype root:
@@ -150,7 +159,7 @@ Produce `LINT.md` at the prototype root:
 ```markdown
 # Lint Report — {{timestamp}}
 
-**Rules checked:** 20  ·  **Passing:** N  ·  **Findings:** M
+**Rules checked:** 21  ·  **Passing:** N  ·  **Findings:** M
 
 ## Errors (N)
 

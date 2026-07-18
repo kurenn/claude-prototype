@@ -46,7 +46,7 @@ Before anything else, auto-install missing companions (idempotent, safe to re-ru
 ```
 bash ~/.claude/skills/prototype/ensure-deps.sh --yes
 ```
-Installs **impeccable** (deep design assessment) and **prompt-refiner** (Q&A → spec). If
+Installs **impeccable** (deep design assessment) and **prompt-refiner** (Q&A → spec) — third-party companions from their marketplaces; idempotent and safe, but it fetches remote code (drop `--yes` to review first). If
 npx/Node or network is unavailable it prints guidance and continues — `/prototype` falls
 back to built-in checks and notes it in the final report. Then proceed to Step 1.
 

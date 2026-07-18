@@ -21,6 +21,8 @@ npx serve .                     # Node alternative
 
 **Why `serve.py`:** plain `python3 -m http.server` lets the browser cache CSS/JS, which makes edits look like they don't apply until a hard refresh (Cmd+Shift+R). `serve.py` sends `Cache-Control: no-store` so every reload fetches fresh files.
 
+**Console note:** the Tailwind CDN prints a "should not be used in production" warning — that's expected for a prototype, not an error.
+
 ## Features
 
 - **{{SCREEN_COUNT}} screens** — see `DEMO.md` for the click-through story.
