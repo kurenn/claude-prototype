@@ -15,7 +15,13 @@
   // backstop in case JS runs before the check below (or doesn't run at all — see next).
   // Also falls back to "just show it" if IntersectionObserver isn't available at all,
   // so an old/unusual browser never ends up with permanently-invisible content.
-  // Docs: reference/build.md → "Scroll reveal (opt-in)".
+  //
+  // Static markup only: this scan runs once at script load. `.reveal` elements added
+  // later (e.g. list/card markup hydrated from data.js after this file runs) are never
+  // observed and stay at opacity 0 — don't add the class to anything rendered after
+  // page load. This is on top of the "sparingly, not every card in a list" UX guidance
+  // in build.md.
+  // Docs: reference/build.md → "Motion utilities (opt-in)".
   const revealEls = document.querySelectorAll('.reveal');
   if (revealEls.length) {
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;

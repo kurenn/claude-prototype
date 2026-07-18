@@ -229,6 +229,11 @@ on either running.
   and reveals everything immediately, and `styles.css` force-overrides `.reveal` to its
   visible state under the same media query as a backstop. Also falls back to "show it"
   if `IntersectionObserver` itself is unavailable.
+
+  Static markup only — `app.js` scans for `.reveal` once at script load. Elements added
+  to the DOM afterward (e.g. list/card markup hydrated from `data.js`) are never
+  observed and stay stuck at opacity 0. Only add the class to markup that's already in
+  the page when `app.js` runs.
 - **Same-doc View Transitions** — wrap a DOM update (tab switch, filter re-render,
   persona swap) in `UI.withViewTransition()` (`ui.js`) so it cross-fades where the
   browser supports the API:

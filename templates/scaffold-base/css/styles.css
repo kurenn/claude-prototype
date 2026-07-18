@@ -21,6 +21,7 @@ html[data-theme="studio"] {
   --ink3:     130 125 116;
   --hairline: 224 220 212;
   --accent-ink: 250 248 244;
+  --status-error: 190 60 60;  /* ~5:1 on this theme's light surfaces */
   --radius: 12px;
 }
 
@@ -35,6 +36,9 @@ html[data-theme="terminal"] {
   --ink3:     118 130 120;
   --hairline:  46  54  49;
   --accent-ink: 18  24  21;
+  /* Lighter than --status-error on the other themes — the darker red fails ~3.2:1
+     against this theme's dark surface for small text; this variant holds ~6.5:1. */
+  --status-error: 248 113 113;
   --radius: 2px;
   --shadow-sm: none; --shadow-md: none; --shadow-lg: none;  /* dark elevates via surface */
 }
@@ -50,6 +54,7 @@ html[data-theme="mono"] {
   --ink3:     130 130 136;
   --hairline: 222 222 226;
   --accent-ink: 252 252 253;
+  --status-error: 190 60 60;  /* ~5:1 on this theme's light surfaces */
   --radius: 0;
 }
 
@@ -221,13 +226,13 @@ body       { font-optical-sizing: auto; }
   font-size: var(--text-xs);
   color: rgb(var(--ink2));
 }
-/* Error state reuses the same status red as .proto-toast.is-error, not a new color. */
+/* Error state reuses the --status-error token, same as .proto-toast.is-error. */
 .form-field.has-error input,
 .form-field.has-error select,
 .form-field.has-error textarea {
-  border-color: rgb(190 60 60);
+  border-color: rgb(var(--status-error));
 }
-.form-field .error { font-size: var(--text-xs); color: rgb(190 60 60); }
+.form-field .error { font-size: var(--text-xs); color: rgb(var(--status-error)); }
 
 /* Interaction floor — Tailwind's reset drops focus rings; ship one globally, plus a press
    micro-interaction. Keep custom :hover styles behind @media (hover:hover) so they don't
@@ -259,10 +264,12 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
 /* Respect reduced motion — stop transitions and decorative motion, but keep the loading
    spinner turning (blanking it mid-ring looks broken) and force reveals visible. The
    `*` selector doesn't reach the ::view-transition-* pseudo tree (it's a separate tree,
-   not matched by the universal selector), so that gets its own override below. */
+   not matched by the universal selector), so that gets its own override below. `.reveal`
+   needs `!important` too: it's equal specificity to (and comes before, in source order)
+   the base `.reveal { opacity: 0 }` rule further down, which would otherwise win. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; }
-  .reveal { opacity: 1; transform: none; }
+  .reveal { opacity: 1 !important; transform: none !important; }
   .skeleton { animation: none; }   /* static shimmer is fine; spinner keeps turning as feedback */
   ::view-transition-group(*),
   ::view-transition-old(*),
