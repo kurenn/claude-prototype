@@ -161,6 +161,26 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
   transform: none;
 }
 
+/* Modal (app.js toggles the `open` class + aria-hidden on [data-modal] — this is the
+   display half of that contract; every prototype needs one, so it ships here rather
+   than being reinvented per-build). Prototype-specific modal content still lives in
+   each screen's HTML; this only handles show/hide + the dim backdrop + entry motion. */
+[data-modal] {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgb(var(--ink) / .45);
+  opacity: 0;
+  transition: opacity var(--motion-fast) var(--ease-out-quart);
+  overflow-y: auto;
+}
+[data-modal].open { display: flex; opacity: 1; }
+@media (prefers-reduced-motion: reduce) { [data-modal] { transition: none; } }
+
 /* Toast (state.js + ui.js use this) */
 .proto-toast {
   position: fixed;

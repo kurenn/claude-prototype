@@ -22,3 +22,6 @@ benchmark/results/*
 !benchmark/results/*.md
 */.shots/
 */.ovprobe.html
+
+# Scratch prototypes built to exercise/test the skill — not shipped output
+test-output/
