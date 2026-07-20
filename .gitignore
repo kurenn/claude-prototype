@@ -23,3 +23,6 @@ benchmark/results/*
 */.shots/
 */.ovprobe.html
 .gstack/
+
+# Scratch prototypes built to exercise/test the skill — not shipped output
+test-output/

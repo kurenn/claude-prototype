@@ -25,7 +25,7 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 - `scaffold-base/js/persona.js` → `js/persona.js` — set `PERSONAS` to match `data.js` persona keys.
 - `scaffold-base/js/data.js` → `js/data.js` — populate personas + shared data (see "Data layer").
 - `scaffold-base/js/app.js` → `js/app.js` — keep core wiring (modals, tabs, composer, hydrate); add product handlers.
-- `scaffold-base/css/styles.css` → `css/styles.css` — replace the 3 default `html[data-theme="X"]` blocks with `DESIGN.md` tokens; add product classes (`.card`, `.chip`, `.status-*`, `.kpi`). **Keep** `.proto-grid`, `.proto-seg`, `#proto-controls`, `.proto-toast`, `.is-loading`, `.skeleton`, `.empty-state` as-is — platform.
+- `scaffold-base/css/styles.css` → `css/styles.css` — replace the 3 default `html[data-theme="X"]` blocks with `DESIGN.md` tokens; add product classes (`.card`, `.chip`, `.status-*`, `.kpi`). **Keep** `.proto-grid`, `.proto-seg`, `#proto-controls`, `.proto-toast`, `.is-loading`, `.skeleton`, `.empty-state`, `[data-modal]` as-is — platform. `[data-modal]` is the *only* CSS driving the modal JS in `app.js` (which toggles the `open` class) — don't skip it assuming Tailwind utility classes on the modal markup will cover it; there's no per-screen equivalent.
 - `scaffold-base/404.html` → `404.html` — substitute tokens, swap in the product's nav/footer.
 
 **Structural reference, not a copy:**
@@ -59,7 +59,7 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 ```
 
 ### Baseline every screen needs
-- `<html data-theme="<default>" data-layout="<default>" data-persona="<default>">` with spec defaults.
+- `<html data-theme="<default>" data-layout="<default>" data-persona="<default>">` with spec defaults. `data-persona` here is cosmetic before first paint — `persona.js` overwrites it on load from `PERSONAS[0]` (URL param → localStorage → array order), so the array order is what actually governs the default; keep them in agreement.
 - Tailwind CDN + inline config extending CSS vars so `bg-surface`, `text-accent`, `border-muted` work.
 - The visible control bar (below) — not a click-to-reveal pill.
 - Scripts loaded in this order at the end of `<body>`: `state.js` → `theme.js` → `layout.js` → `data.js` → `persona.js` → `ui.js` → `app.js` → `feedback.js`. Data loads before persona (persona reads it); ui before app (app may call `UI.toast`).
@@ -142,7 +142,7 @@ kills a demo. Baseline checklist:
 - **Empty state** — every list/grid has an `.empty-state` wrapper for when the persona's list is empty: headline + one-line explainer + primary action ("Browse vendors", "Create your first…"). Ship at least the primary collection view's empty state on each side.
 - **Error state / 404** — `404.html` ships with the scaffold. Link at least one "broken" affordance to it. Form validation errors render inline under the field, not as dismissable alerts.
 - **Form state persistence** — multi-step inputs save to localStorage and restore on reload. Cheap win; makes the demo feel alive across refreshes.
-- **Skeleton loaders** — any list/grid that changes on user action (filter chips, pagination, persona switch, page load) briefly swaps to placeholder silhouettes. Mark a container `data-skeleton-on-load` (auto-wires on page load; tune with `data-skeleton-count` / `data-skeleton-duration`), and for filter/pagination/persona changes call `UI.fakeLoad(container, 650, { count: 6 })` from the relevant handler in `app.js`. The `.skeleton` class + shimmer ships in styles.css; shape with `.is-text` / `.is-text-lg` / `.is-block` / `.is-circle`.
+- **Skeleton loaders** — any list/grid that changes on user action (filter chips, pagination, persona switch, page load) briefly swaps to placeholder silhouettes. Mark a container `data-skeleton-on-load` (auto-wires on page load; tune with `data-skeleton-count` / `data-skeleton-duration`), and for filter/pagination/persona changes call `UI.fakeLoad(container, 650, { count: 6 })` from the relevant handler in `app.js`. The `.skeleton` class + shimmer ships in styles.css; shape with `.is-text` / `.is-text-lg` / `.is-block` / `.is-circle`. `hideSkeletons` only restores the pre-skeleton snapshot if the container still shows the exact skeleton markup it injected — if a render function (e.g. a persona-driven list renderer) already filled the container with real content before the timer fires, the restore is skipped, so JS-rendered containers are safe to use with `data-skeleton-on-load` without any manual cleanup.
 - **Modal focus trap** — every modal needs `role="dialog"`, `aria-modal="true"`, and an `aria-hidden` that flips with open state (author these on the modal markup itself); `app.js`'s `openModal`/`closeModal` already call `UI.trapFocus(modalEl, triggerEl)` on open and `UI.releaseFocus(modalEl)` on close. That helper (in `ui.js`) moves focus to the first focusable element inside, loops Tab/Shift+Tab within the modal so it can't leak to the page behind it, and restores focus to whatever triggered the modal when it closes. `app.js` also wires Esc to close whichever modal is open. Keep passing the trigger element (usually the clicked button) into `openModal` — it's what focus returns to. See `checks/builtin-lint.md` rule 6.
 
 ### Layout system

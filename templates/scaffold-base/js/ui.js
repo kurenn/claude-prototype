@@ -127,14 +127,24 @@
     const template = options.template || DEFAULT_SKELETON_TEMPLATE;
     if (container.dataset.skeletonActive === '1') return;
     container.dataset.stashedContent = container.innerHTML;
+    const skeletonMarkup = Array.from({ length: count }, () => template).join('');
+    container.dataset.skeletonMarkup = skeletonMarkup;
     container.dataset.skeletonActive = '1';
-    container.innerHTML = Array.from({ length: count }, () => template).join('');
+    container.innerHTML = skeletonMarkup;
   }
 
   function hideSkeletons(container) {
     if (!container || container.dataset.skeletonActive !== '1') return;
-    container.innerHTML = container.dataset.stashedContent || '';
+    // Guard: if a render function already replaced the skeleton content (common
+    // for containers a build fills itself rather than via data-skeleton-on-load),
+    // the container no longer matches what we injected — skip the restore so we
+    // don't stomp real content with the stale pre-skeleton snapshot. Flags still
+    // get cleared either way so a later showSkeletons() call isn't a no-op.
+    if (container.innerHTML === container.dataset.skeletonMarkup) {
+      container.innerHTML = container.dataset.stashedContent || '';
+    }
     delete container.dataset.stashedContent;
+    delete container.dataset.skeletonMarkup;
     delete container.dataset.skeletonActive;
   }
 
