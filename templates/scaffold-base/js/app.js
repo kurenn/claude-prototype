@@ -16,16 +16,21 @@
   document.querySelectorAll('.reveal').forEach(el => io.observe(el));
 
   // Example modal wiring — replace with your own.
-  function openModal(name) {
+  // triggerEl is whatever the user clicked to open it (undefined on a
+  // hydrate-from-URL open); UI.trapFocus/releaseFocus own focus while the
+  // modal is open, Esc and this wiring decide *when* it closes.
+  function openModal(name, triggerEl) {
     const m = document.querySelector(`[data-modal="${name}"]`);
     if (!m) return;
     m.classList.add('open');
     m.setAttribute('aria-hidden', 'false');
+    window.UI?.trapFocus(m, triggerEl);
   }
   function closeModal(m) {
     m.classList.remove('open');
     m.setAttribute('aria-hidden', 'true');
     window.State?.set('modal', null);
+    window.UI?.releaseFocus(m);
   }
 
   document.querySelectorAll('[data-open-modal]').forEach(btn => {
@@ -33,7 +38,7 @@
       e.preventDefault();
       const name = btn.dataset.openModal;
       window.State?.set('modal', name);
-      openModal(name);
+      openModal(name, btn);
     });
   });
   document.querySelectorAll('[data-close-modal]').forEach(btn => {
@@ -41,6 +46,13 @@
       const m = btn.closest('[data-modal]');
       if (m) closeModal(m);
     });
+  });
+  // Esc closes whichever modal is open — completes the a11y floor
+  // (SKILL.md: "moves focus in, traps Tab, restores focus on close; Esc closes").
+  document.addEventListener('keydown', (e) => {
+    if (e.key !== 'Escape') return;
+    const open = document.querySelector('[data-modal].open');
+    if (open) closeModal(open);
   });
 
   // Tab wiring example

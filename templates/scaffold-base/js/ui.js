@@ -14,6 +14,12 @@
  *   UI.toast('Message sent');
  *   UI.toast('Something failed', 'error');
  *   UI.loadingButton(btn, 800, () => { location.href = '/next.html'; });
+ *
+ * Modal focus trap — call from app.js's openModal/closeModal:
+ *   UI.trapFocus(modalEl, triggerEl);  // on open: focus moves inside, Tab loops
+ *   UI.releaseFocus(modalEl);          // on close: focus returns to triggerEl
+ * Esc-to-close and click-outside-to-close stay app.js's job (they decide
+ * *when* to close); this helper only owns focus while the modal is open.
  */
 (function () {
   const TOAST_MS = 1600;
@@ -137,5 +143,98 @@
     setTimeout(() => hideSkeletons(container), duration || 700);
   }
 
-  window.UI = { toast, loadingButton, showSkeletons, hideSkeletons, fakeLoad };
+  // ---------- MODAL FOCUS TRAP ----------
+  // Vanilla, dependency-free. One active trap per modal element, tracked by
+  // a WeakMap so multiple modals on a page can't collide.
+  const FOCUSABLE_SELECTOR = [
+    'a[href]', 'button:not([disabled])', 'input:not([disabled])',
+    'select:not([disabled])', 'textarea:not([disabled])',
+    '[tabindex]:not([tabindex="-1"])', 'audio[controls]', 'video[controls]',
+    '[contenteditable="true"]',
+  ].join(',');
+
+  function isVisible(el) {
+    return !!(el.offsetWidth || el.offsetHeight || el.getClientRects().length);
+  }
+
+  function getFocusable(container) {
+    return Array.from(container.querySelectorAll(FOCUSABLE_SELECTOR)).filter(isVisible);
+  }
+
+  const traps = new WeakMap(); // modalEl -> { trigger, onKeydown }
+
+  // Moves focus to the first focusable element inside modalEl, then traps
+  // Tab/Shift+Tab so it cycles within the modal instead of leaking to the
+  // page behind it. triggerEl (usually the button that opened the modal) is
+  // remembered so releaseFocus() can put focus back where the user was.
+  function trapFocus(modalEl, triggerEl) {
+    if (!modalEl) return;
+    releaseFocus(modalEl); // clear any stale trap before re-arming
+
+    const trigger = triggerEl || document.activeElement;
+    const focusables = getFocusable(modalEl);
+
+    if (focusables.length === 0) {
+      // Nothing focusable inside — the modal itself becomes the focus target
+      // so Tab has somewhere sane to land and screen readers announce it.
+      if (!modalEl.hasAttribute('tabindex')) modalEl.setAttribute('tabindex', '-1');
+      modalEl.focus({ preventScroll: true });
+    } else {
+      focusables[0].focus({ preventScroll: true });
+    }
+
+    // Listens on document (not modalEl) because focus can land on <body> or
+    // any other element outside the modal (e.g. after clicking non-interactive
+    // modal text) — a listener scoped to modalEl would never see Tab in that
+    // case, letting focus walk the page behind the overlay.
+    function onKeydown(e) {
+      if (e.key !== 'Tab') return;
+      const items = getFocusable(modalEl);
+      if (items.length === 0) { e.preventDefault(); return; }
+      const first = items[0];
+      const last = items[items.length - 1];
+      if (e.shiftKey && document.activeElement === first) {
+        e.preventDefault();
+        last.focus();
+      } else if (!e.shiftKey && document.activeElement === last) {
+        e.preventDefault();
+        first.focus();
+      } else if (!modalEl.contains(document.activeElement)) {
+        // Focus is outside the modal entirely (e.g. started on <body>) —
+        // pull it back in rather than letting Tab continue from there.
+        e.preventDefault();
+        (e.shiftKey ? last : first).focus();
+      }
+    }
+    // Belt-and-suspenders: if focus ends up outside modalEl by any means
+    // other than Tab (e.g. a programmatic .focus() elsewhere), snap it back
+    // to the first focusable element inside.
+    function onFocusIn(e) {
+      if (modalEl.contains(e.target)) return;
+      const items = getFocusable(modalEl);
+      (items[0] || modalEl).focus({ preventScroll: true });
+    }
+    document.addEventListener('keydown', onKeydown, true);
+    document.addEventListener('focusin', onFocusIn, true);
+    traps.set(modalEl, { trigger, onKeydown, onFocusIn });
+  }
+
+  // Tears down the trap and restores focus to whatever triggered the modal
+  // (falls back gracefully if the trigger is gone — e.g. removed from the DOM).
+  function releaseFocus(modalEl) {
+    if (!modalEl) return;
+    const rec = traps.get(modalEl);
+    if (!rec) return;
+    document.removeEventListener('keydown', rec.onKeydown, true);
+    document.removeEventListener('focusin', rec.onFocusIn, true);
+    traps.delete(modalEl);
+    if (rec.trigger && typeof rec.trigger.focus === 'function' && document.contains(rec.trigger)) {
+      rec.trigger.focus({ preventScroll: true });
+    }
+  }
+
+  window.UI = {
+    toast, loadingButton, showSkeletons, hideSkeletons, fakeLoad,
+    trapFocus, releaseFocus,
+  };
 })();
