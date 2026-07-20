@@ -2,6 +2,8 @@
 
 > A single-page technical-editorial site. Three themes, two layouts, two personas, one tight aesthetic. No illustrations. No gradients. Hairlines and monospace do the work.
 
+> **Bespoke, not scaffold-generated.** This page predates the audit doctrine (design-audits work, PR #11) and was hand-built with its own deliberate choices: no-shadow elevation (surface-0/1/2 contrast instead — see "What this is NOT" below) and its own 1.27 type-scale ratio, not the scaffold's. Where the doctrine and this page's original intent genuinely agreed — ease-out motion curves — it's been brought into line (see Motion). Where they diverge on purpose, the divergence is called out inline rather than silently overwritten.
+
 ## Register
 
 **Brand.** The design IS the product here: this page is the only pre-install experience a skeptical developer has with claude-prototype. Restraint earns trust.
@@ -89,6 +91,7 @@ Section padding (vertical): `--s-9 --s-10` on `comfortable`, `--s-7 --s-8` on `c
 
 - `--motion-fast`: 150ms cubic-bezier(0.22, 1, 0.36, 1) — ease-out (steeper than the scaffold's `--ease-out-quart`)
 - `--motion-medium`: 300ms cubic-bezier(0.22, 1, 0.36, 1)
+- All one-shot transitions use that same ease-out curve, `cubic-bezier(0.22, 1, 0.36, 1)`, inlined where a hand-tuned duration falls outside the two tokens above (theme-switch fade, reveal-on-scroll, toast, segmented control). None use bare `ease` anymore — that was a leftover from before the doctrine existed, not a deliberate choice, so it got fixed rather than defended.
 
 What animates:
 - Button color/border on hover (fast)
