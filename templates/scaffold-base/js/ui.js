@@ -20,6 +20,7 @@
  *   UI.releaseFocus(modalEl);          // on close: focus returns to triggerEl
  * Esc-to-close and click-outside-to-close stay app.js's job (they decide
  * *when* to close); this helper only owns focus while the modal is open.
+ *   UI.withViewTransition(() => selectTab('billing')); // cross-fade a same-doc update, opt-in
  */
 (function () {
   const TOAST_MS = 1600;
@@ -243,8 +244,24 @@
     }
   }
 
-  window.UI = {
-    toast, loadingButton, showSkeletons, hideSkeletons, fakeLoad,
-    trapFocus, releaseFocus,
-  };
+  // ---------- VIEW TRANSITIONS (same-doc, opt-in) ----------
+  // Wrap a same-document DOM update (tab switch, filter re-render, persona swap) so it
+  // cross-fades instead of snapping:
+  //
+  //   UI.withViewTransition(() => selectTab(name));
+  //
+  // Falls back to just running `fn` synchronously — same result, no animation — when
+  // `document.startViewTransition` isn't supported (Firefox, older Safari) or the user
+  // has prefers-reduced-motion set. Never gate correctness on this running; it's a
+  // visual upgrade, not a step the callback depends on.
+  function withViewTransition(fn) {
+    const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    if (reduceMotion || typeof document.startViewTransition !== 'function') {
+      fn();
+      return;
+    }
+    document.startViewTransition(fn);
+  }
+
+  window.UI = { toast, loadingButton, showSkeletons, hideSkeletons, fakeLoad, trapFocus, releaseFocus, withViewTransition };
 })();
