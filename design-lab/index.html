@@ -8,8 +8,10 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<!-- Candidate pairings + the reject-list faces, loaded so specimens render in their real type. -->
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;700&family=Public+Sans:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Newsreader:wght@400;500&family=DM+Sans:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700&family=Work+Sans:wght@400;500&family=Syne:wght@600;700;800&family=Archivo:wght@400;500;700&family=Space+Mono:wght@400;700&family=Manrope:wght@300;400;500;700;800&family=Inter:wght@400;600&family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&family=Lato:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
+<!-- Candidate pairings + the reject-list faces, loaded so specimens render in their real type.
+     Includes every rotation alternate from reference/type-pairings.md (not just the primaries)
+     so the rotate-display control below can preview each one for real. -->
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&family=Hanken+Grotesk:wght@400;500;600;700&family=Schibsted+Grotesk:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&family=Plus+Jakarta+Sans:wght@400;500;700&family=Outfit:wght@400;500;600;700&family=Onest:wght@400;500;600;700&family=Public+Sans:wght@400;500;700&family=Instrument+Serif:ital@0;1&family=Fraunces:opsz,wght@9..144,400;9..144,600&family=Newsreader:wght@400;500&family=DM+Sans:wght@400;500;700&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700&family=Gabarito:wght@400;500;600;700&family=Work+Sans:wght@400;500&family=Syne:wght@600;700;800&family=Unbounded:wght@600;700;800&family=Archivo:wght@400;500;700&family=Space+Mono:wght@400;700&family=Manrope:wght@300;400;500;700;800&family=Instrument+Sans:wght@400;500;600;700&family=Inter:wght@400;600&family=Roboto:wght@400;700&family=Open+Sans:wght@400;600&family=Lato:wght@400;700&family=Montserrat:wght@400;700&display=swap" rel="stylesheet" />
 
 <style>
   :root {
@@ -85,6 +87,8 @@
   .spec-names { display:flex; flex-wrap:wrap; gap:.4rem 1rem; margin-top:1.2rem; padding-top:.9rem; border-top:1px solid var(--hairline); font-size:.78rem; color:var(--ink-3); }
   .spec-names b { color:var(--ink-2); font-weight:600; }
   .spec-alt { font-size:.76rem; color:var(--ink-3); margin-top:.6rem; }
+  .rotate-ctrl { display:flex; align-items:center; gap:.45rem; font-size:.76rem; color:var(--ink-3); margin:0 0 .9rem; }
+  .rotate-ctrl select { font:inherit; font-size:.76rem; padding:.22rem .5rem; border:1px solid var(--hairline); border-radius:6px; background:var(--surface); color:var(--ink); }
 
   /* role fonts per tone */
   .t-technical { --disp:'Space Grotesk'; --body:'IBM Plex Sans'; --mono:'JetBrains Mono'; }
@@ -322,57 +326,87 @@
     <div class="grid" id="specimens">
       <article class="spec t-technical" data-tone="technical">
         <div class="spec-head"><span class="tone">technical · dev tools, dashboards</span><button class="pick">Use this</button></div>
+        <label class="rotate-ctrl">Rotate display <select class="rotate-select" aria-label="Rotate technical display font">
+          <option value="Space Grotesk">Space Grotesk</option>
+          <option value="Hanken Grotesk">Hanken Grotesk</option>
+          <option value="Schibsted Grotesk">Schibsted Grotesk</option>
+        </select></label>
         <p class="spec-eyebrow">Product analytics</p>
         <p class="spec-display">Ship it by Friday</p>
         <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
         <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
-        <div class="spec-names"><span>Display <b>Space Grotesk</b></span><span>Body <b>IBM Plex Sans</b></span><span>Mono <b>JetBrains Mono</b></span></div>
+        <div class="spec-names"><span>Display <b class="fn-disp">Space Grotesk</b></span><span>Body <b>IBM Plex Sans</b></span><span>Mono <b>JetBrains Mono</b></span></div>
       </article>
 
       <article class="spec t-corporate" data-tone="corporate">
         <div class="spec-head"><span class="tone">corporate · trustworthy B2B</span><button class="pick">Use this</button></div>
+        <label class="rotate-ctrl">Rotate display <select class="rotate-select" aria-label="Rotate corporate display font">
+          <option value="Plus Jakarta Sans">Plus Jakarta Sans</option>
+          <option value="Outfit">Outfit</option>
+          <option value="Onest">Onest</option>
+        </select></label>
         <p class="spec-eyebrow">Product analytics</p>
         <p class="spec-display">Ship it by Friday</p>
         <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
         <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
-        <div class="spec-names"><span>Display <b>Plus Jakarta Sans</b></span><span>Body <b>Public Sans</b></span></div>
+        <div class="spec-names"><span>Display <b class="fn-disp">Plus Jakarta Sans</b></span><span>Body <b>Public Sans</b></span></div>
       </article>
 
       <article class="spec t-editorial" data-tone="editorial">
         <div class="spec-head"><span class="tone">editorial · magazine, brand</span><button class="pick">Use this</button></div>
+        <label class="rotate-ctrl">Rotate display <select class="rotate-select" aria-label="Rotate editorial display font">
+          <option value="Instrument Serif">Instrument Serif</option>
+          <option value="Newsreader">Newsreader</option>
+          <option value="Fraunces">Fraunces</option>
+        </select></label>
         <p class="spec-eyebrow">Product analytics</p>
         <p class="spec-display">Ship it by Friday</p>
         <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
         <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
-        <div class="spec-names"><span>Display <b>Instrument Serif</b></span><span>Body <b>Newsreader</b></span></div>
+        <div class="spec-names"><span>Display <b class="fn-disp">Instrument Serif</b></span><span>Body <b>Newsreader</b></span></div>
         <p class="spec-alt">Less-reflex alt: <b>Fraunces</b> + <b>DM Sans</b> (Fraunces is the expressive serif everyone reaches for right now).</p>
       </article>
 
       <article class="spec t-playful" data-tone="playful">
         <div class="spec-head"><span class="tone">playful · friendly, contemporary</span><button class="pick">Use this</button></div>
+        <label class="rotate-ctrl">Rotate display <select class="rotate-select" aria-label="Rotate playful display font">
+          <option value="Bricolage Grotesque">Bricolage Grotesque</option>
+          <option value="Gabarito">Gabarito</option>
+          <option value="Syne">Syne</option>
+        </select></label>
         <p class="spec-eyebrow">Product analytics</p>
         <p class="spec-display">Ship it by Friday</p>
         <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
         <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
-        <div class="spec-names"><span>Display <b>Bricolage Grotesque</b></span><span>Body <b>Work Sans</b></span></div>
+        <div class="spec-names"><span>Display <b class="fn-disp">Bricolage Grotesque</b></span><span>Body <b>Work Sans</b></span></div>
       </article>
 
       <article class="spec t-bold" data-tone="bold-experimental">
         <div class="spec-head"><span class="tone">bold-experimental · high contrast</span><button class="pick">Use this</button></div>
+        <label class="rotate-ctrl">Rotate display <select class="rotate-select" aria-label="Rotate bold-experimental display font">
+          <option value="Syne">Syne</option>
+          <option value="Unbounded">Unbounded</option>
+          <option value="Archivo">Archivo</option>
+        </select></label>
         <p class="spec-eyebrow">Product analytics</p>
         <p class="spec-display">Ship it by Friday</p>
         <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
         <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
-        <div class="spec-names"><span>Display <b>Syne</b></span><span>Body <b>Archivo</b></span><span>Mono <b>Space Mono</b></span></div>
+        <div class="spec-names"><span>Display <b class="fn-disp">Syne</b></span><span>Body <b>Archivo</b></span><span>Mono <b>Space Mono</b></span></div>
       </article>
 
       <article class="spec t-minimal" data-tone="minimal">
         <div class="spec-head"><span class="tone">minimal · quiet, Swiss</span><button class="pick">Use this</button></div>
+        <label class="rotate-ctrl">Rotate family <select class="rotate-select" data-both="1" aria-label="Rotate minimal display and body font (one family)">
+          <option value="Manrope">Manrope</option>
+          <option value="Instrument Sans">Instrument Sans</option>
+          <option value="Hanken Grotesk">Hanken Grotesk</option>
+        </select></label>
         <p class="spec-eyebrow">Product analytics</p>
         <p class="spec-display">Ship it by Friday</p>
         <p class="spec-body">Every button works, the numbers are plausible, and the whole thing runs from a single folder — no build step, no backend, nothing to install.</p>
         <p class="spec-data">24,981 events · +12.4% WoW · p95 428ms</p>
-        <div class="spec-names"><span>Display <b>Manrope</b> (700)</span><span>Body <b>Manrope</b> (400) — one family, weights only</span></div>
+        <div class="spec-names"><span>Display <b class="fn-disp">Manrope</b> (700)</span><span>Body <b class="fn-body">Manrope</b> (400) — one family, weights only</span></div>
       </article>
     </div>
 
@@ -776,15 +810,47 @@
     if (!tones.length) { box.innerHTML = '<span class="empty">No picks yet — press <b>Use this</b> to note your favorite pairing per tone (a local note; the skill\'s menu lives in reference/type-pairings.md). Choices persist in this browser.</span>'; return; }
     box.innerHTML = '<b>Your picks so far:</b> ' + tones.map(function (t) { return t + ' → ' + picks[t]; }).join('  ·  ');
   }
+  // Rotate display: swap the tone's --disp (and --body, for the one-family "minimal"
+  // row) live, so every alternate in reference/type-pairings.md is actually previewable —
+  // not just the primary baked into the .t-* rule above.
+  function applyRotate(sel, family) {
+    var card = sel.closest('.spec');
+    if (!card) return;
+    card.style.setProperty('--disp', "'" + family + "'");
+    var dispName = card.querySelector('.fn-disp');
+    if (dispName) dispName.textContent = family;
+    if (sel.hasAttribute('data-both')) {
+      card.style.setProperty('--body', "'" + family + "'");
+      var bodyName = card.querySelector('.fn-body');
+      if (bodyName) bodyName.textContent = family;
+    }
+  }
+  document.querySelectorAll('.rotate-select').forEach(function (sel) {
+    sel.addEventListener('change', function () { applyRotate(sel, sel.value); });
+  });
+
   document.querySelectorAll('.spec').forEach(function (card) {
     var tone = card.getAttribute('data-tone');
-    var names = Array.prototype.map.call(card.querySelectorAll('.spec-names b'), function (b) { return b.textContent; }).join(' + ');
-    if (picks[tone] === names) card.classList.add('picked');
+    // Read names at click time, not once at load — a rotate-select swap changes
+    // .fn-disp/.fn-body text, and "Use this" should save the font actually on screen.
+    function currentNames() { return Array.prototype.map.call(card.querySelectorAll('.spec-names b'), function (b) { return b.textContent; }).join(' + '); }
+    // Restore the rotate-select (and its live font swap) from a saved pick *before*
+    // comparing picked state — otherwise a pick saved under a rotated font always
+    // resets to the primary on reload and the card never shows as picked.
+    if (picks[tone]) {
+      var savedFirst = picks[tone].split(' + ')[0];
+      var sel = card.querySelector('.rotate-select');
+      if (sel) {
+        var opt = Array.prototype.find.call(sel.options, function (o) { return o.value === savedFirst; });
+        if (opt) { sel.value = savedFirst; applyRotate(sel, savedFirst); }
+      }
+    }
+    if (picks[tone] === currentNames()) card.classList.add('picked');
     card.querySelector('.pick').addEventListener('click', function () {
       if (card.classList.contains('picked')) { card.classList.remove('picked'); delete picks[tone]; }
       else {
         document.querySelectorAll('.spec[data-tone="' + tone + '"]').forEach(function (c) { c.classList.remove('picked'); });
-        card.classList.add('picked'); picks[tone] = names;
+        card.classList.add('picked'); picks[tone] = currentNames();
       }
       save(); renderPicks();
     });
