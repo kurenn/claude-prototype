@@ -50,7 +50,7 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 │   ├── ui.js               # loading / toast / skeleton / confirm helpers
 │   ├── app.js              # page interactions (modals, tabs, filters, composer)
 │   └── feedback.js         # pin-to-element overlay (always on)
-├── assets/images/          # placeholder images
+├── assets/images/          # real photos for photo-forward products (Step 6) — ask first
 ├── serve.py                # no-cache dev server
 ├── PRODUCT.md               # impeccable context (users, tone, register) — required for Step 7 audit
 ├── DESIGN.md
@@ -177,4 +177,46 @@ One HTML file per screen. Each screen:
 - **URL state for interactive bits.** Modals, tabs, accordions wired through `State.set()`. Opening `?modal=signup` lands with the modal open; the Share button copies a URL reproducing the exact screen.
 - **Theme-safe colors.** Every color uses a CSS var or a Tailwind class mapped to one. Flip all themes to verify nothing breaks.
 - **Spacing rhythm & the squint test.** Space with the `--space-*` scale via `gap` — tight within a group (8–12px), generous between sections (48–96px), never uniform padding. Then squint at each screen (or blur it): if the primary element still dominates, hierarchy holds; if it's mush, add contrast in size / weight / space.
-- **Icons & imagery.** Icons are inline SVG copied from [reicon.dev](https://reicon.dev) (MIT, 2,700+, multiple weights) at **one** weight — never a big rounded icon above every heading. For images, lazy-load a real asset in an aspect-ratio box (`.media`), or use a considered placeholder — duotone wash, subtle pattern, or an initials `.avatar` — never a flat color-block glyph. `brands.reicon.dev` covers real-looking logos. **Photo-forward products (marketplaces, listings, profiles) need real images to demo credibly** — ask the user for a handful to drop into `assets/images/`; a glyph tile is a fallback, not a photo.
+- **Icons & imagery.** Icons are inline SVG copied from [reicon.dev](https://reicon.dev) (MIT, 2,700+, multiple weights) at **one** weight — never a big rounded icon above every heading. `brands.reicon.dev` covers real-looking logos. For photos, follow "Real imagery for photo-forward products" below — a glyph tile is a fallback, never the plan.
+
+### Real imagery for photo-forward products
+
+Marketplaces, listings, and profiles can't demo credibly on placeholders — a reviewer
+clicks into a listing expecting a photo, and a gradient tile reads as unfinished. Before
+building any screen in one of these categories, **ask the user for a handful of images**
+(3–8 covers most demos: a few products/venues/listings + a couple of profile photos).
+Don't silently ship placeholders for a photo-forward product and hope no one notices.
+
+1. **Ask, then wait.** One message: "This prototype is photo-forward — can you drop 3–8
+   images into `assets/images/` (or share paths/links), or should I use placeholders for
+   now?" Build the rest of the screen while you wait; wire images in once they land.
+2. **Real photo, when you have one:** drop the file in `assets/images/` and reference it
+   literally — no build step, no optimization pipeline:
+   ```html
+   <div class="media"><img src="assets/images/listing-1.jpg" alt="Sunlit loft living room"></div>
+   ```
+   `.media` sizes and crops (`object-fit: cover`) whatever `<img>` you give it — same
+   markup for a 4000px photo or a 400px screenshot.
+3. **Consented hotlink, if the user points you at URLs they have rights to** (their own
+   site, a stock library they're licensed for): use the URL directly as `src`. Never
+   hotlink imagery you found yourself to fill a gap — it's someone else's asset, and the
+   link can rot mid-demo. If the user's links aren't reachable from this environment,
+   say so rather than swapping in a silent placeholder.
+4. **Generated images, if the user wants AI photos** and says so: generate or ask them to
+   generate a small set, save to `assets/images/`, reference the same way as (2). Caption
+   generated images honestly in `DEMO.md` if the reviewer might ask ("product photos are
+   AI-generated placeholders").
+5. **No images available yet:** use a `data-scene` placeholder — still better than a flat
+   glyph, but say so in `DEMO.md` ("swap in real photos before a live demo"):
+   ```html
+   <div class="media" data-scene="still-life"></div>   <!-- marketplace / product listing -->
+   <div class="media" data-scene="landscape"></div>    <!-- venue / real-estate / travel -->
+   <div class="media" data-scene="portrait"></div>     <!-- profile card -->
+   ```
+   Never mix `data-scene` and a real `<img>` on the same `.media` — the photo should
+   always win outright, not share the box with a mask.
+
+**Fallback ladder, strongest to weakest:** real photo in `.media` → `data-scene` →
+flat wash (bare `.media`, no attribute) → initials `.avatar` (people only, never for
+objects or places). For a photo-forward product, landing on anything below "real
+photo" without having asked the user first is the bug this section exists to prevent.

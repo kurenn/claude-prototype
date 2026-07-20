@@ -147,7 +147,7 @@ acme-demo/
 │   ├── ui.js            # loading / toast / skeleton / confirm helpers
 │   ├── app.js           # page interactions (modals, tabs, filters, composer)
 │   └── feedback.js      # pin-to-element overlay (always on)
-├── assets/images/
+├── assets/images/       # real photos for photo-forward products — ask first
 ├── serve.py             # no-cache dev server (kills the "my edits aren't showing" trap)
 ├── PRODUCT.md           # users · tone · register — context for the design audit
 ├── DESIGN.md            # tokens + rationale
