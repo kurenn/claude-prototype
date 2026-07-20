@@ -78,7 +78,7 @@ it in the final report as an enhancement path.
 1. **Discover (steps 1–4)** → `reference/discovery.md`. Quick-vs-discovery mode, the 6-question
    Q&A, refine the spec (prompt-refiner if present), shape a per-prototype `DESIGN.md`.
    Probe how it should **feel** (mood / physical scene), then present the committed **design
-   direction** (mood + named palette & type pairing + one signature move) and get a yes-or-tweak
+   direction** (mood + named palette & type pairing + one signature move) and wait for a real yes-or-tweak (never self-approve)
    before building — a design review, not a form.
 2. **Build (steps 5–6)** → `reference/build.md`. Scaffold from `templates/`, wire the visible
    control bar (theme + layout + persona + share + feedback), the data layer, interaction
@@ -109,7 +109,7 @@ These are load-bearing — they're what separates this from generic AI output.
 - **Always-visible control bar.** A bottom-center segmented control showing every theme + layout + persona option at once, plus share + feedback — never a click-to-reveal pill. Reviewers judge options they can see.
 - **The control bar never wraps.** `flex-wrap: nowrap` + `overflow-x: auto` is load-bearing: a two-line bar reads as broken, and once one thing looks broken the reviewer doubts everything else.
 - **Feedback is always on.** The 💬 button ships enabled on every screen — no URL flags, no hidden modes.
-- **Ask before building.** The user sees and approves the one-paragraph summary first. Discovery prevents generic output.
+- **Ask before building — a hard gate.** Never write a screen until the user gives a real yes (or tweak) to the committed **design direction**. This holds in *every* mode — a rich brief or Quick mode does not waive it. Don't self-approve or infer consent from a detailed brief: a brief says *what*, the confirm settles *how it looks*. Discovery prevents generic output.
 - **Never lorem ipsum.** Realistic, domain-matched content only — fake-looking content reads as "this isn't real."
 - **No build tools** (webpack, vite, npm). Tailwind CDN + vanilla JS only — load-bearing for "anyone can clone and run it."
 - **Respect scope.** 4 screens asked → 4 screens shipped. Extra screens are scope creep.

@@ -13,8 +13,10 @@ First message to the user:
 > - **Discovery** — I'll ask about 6 questions (tone &amp; feeling, inspiration, audience, scope, content) to get the vibe right before I build.
 
 If the user already has a rich brief (multiple paragraphs, attached references), skip
-the question and go straight to discovery. If they say "quick", collapse the Q&A into a
-single combined prompt.
+the *mode* question and go straight to design-shaping — but still ask the tone &amp; feeling
+clarifier and **confirm the committed direction before building**. A rich brief settles
+*what* to build, never *how it looks* — that still needs a yes. If they say "quick",
+collapse the Q&A into a single combined prompt (that still ends in the direction confirm).
 
 ## Step 2: Discovery Q&A
 
@@ -29,7 +31,8 @@ Ask one at a time, conversational, not as a form:
 
 After answers, present the committed **design direction** back before building — the
 mood/scene, the named palette + type pairing, and one **signature move** that will make it
-memorable — as a short paragraph, and get a yes-or-tweak. This is the cheap course-correction
+memorable — as a short paragraph, and wait for an explicit yes-or-tweak (never build on a
+self-assumed approval). This is the cheap course-correction
 point; in Discovery mode treat it like a design review, not a form — and in Quick mode still show
 the direction in one line for a fast yes. After building, keep iterating per screen
 (`reference/iterate.md`).
