@@ -82,6 +82,8 @@ a `-w390` window-size screenshot looked clipped. Swap `src=` per screen. Delete 
 For each brief, the judge compares A vs B across these lenses and picks **A / B / tie**
 with a one-sentence justification grounded in what's visible:
 
+<!-- Slop gates adapted from Hallmark (github.com/Nutlope/hallmark), MIT. -->
+
 | Lens | What "better" means |
 |---|---|
 | **Visual hierarchy** | Eye lands on the right thing first; clear primary vs secondary; no flat wall of equal-weight elements |
@@ -89,7 +91,9 @@ with a one-sentence justification grounded in what's visible:
 | **Typography** | Sensible scale, readable line-length, restrained weights; not 6 sizes fighting |
 | **Color discipline** | Restrained palette, purposeful accent, sufficient contrast; **no random gradients, no AI-slop purple-on-black** |
 | **Component craft** | Cards/tables/charts/buttons feel intentional; states and affordances read clearly |
+| **Input-state craft** | Focus rings don't reflow layout (no border-width jumps); inputs and buttons in the same row share height; disabled/error states read clearly and don't collapse the layout when they appear |
 | **Content quality** | Real domain copy and plausible numbers; **no lorem, no "John Doe", no placeholder labels** |
+| **Chrome authenticity** | No hand-redrawn browser/phone/IDE chrome standing in for a real screenshot; no invented precise metrics ("99.98% uptime") — only real or clearly-placeholder domain data |
 | **Cohesion** | Screens feel like one product; themes/layouts hold together |
 | **Layout integrity** | Nothing occluded, clipped, overlapping, or wrapping badly — including the fixed control bar over page content |
 | **Distinctiveness** | One memorable, on-brief signature move you can name (a distinctive nav, an editorial hero, a data-viz treatment); a template has none |
