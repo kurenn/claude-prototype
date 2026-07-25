@@ -21,6 +21,18 @@
  * Esc-to-close and click-outside-to-close stay app.js's job (they decide
  * *when* to close); this helper only owns focus while the modal is open.
  *   UI.withViewTransition(() => selectTab('billing')); // cross-fade a same-doc update, opt-in
+ *
+ * Copy-to-clipboard as a label swap (no toast — the label change IS the feedback):
+ *   `[data-copy="npm install acme-cli"]` on a button → click copies the text and
+ *   swaps the button's own label to "Copied!" for ~1.2s, then reverts.
+ *   UI.copyButton(btn, text);  // same behavior, for values only known at click time
+ * See reference/microinteractions.md for the full recipe.
+ *
+ * Undo toast — prefer over a blocking confirm() for reversible actions:
+ *   UI.undoToast('Archived "Q3 report"', () => restoreItem(id));  // 6s window by default
+ *   UI.undoToast('Removed from list', () => restoreItem(id), 8000); // custom window
+ * Calls onUndo if the user clicks Undo within `ms`; otherwise just dismisses and
+ * the change stands.
  */
 (function () {
   const TOAST_MS = 1600;
@@ -35,13 +47,88 @@
       el.setAttribute('aria-live', 'polite');
       document.body.appendChild(el);
     }
+    // A still-armed undoToast() may have left its hover/focus-pause listeners on
+    // this (shared, reused) element — drop them so they can't hijack this toast's
+    // timer later (see undoToast()'s matching set-up below).
+    if (el._undoPause) { el.removeEventListener('mouseenter', el._undoPause); el._undoPause = null; }
+    if (el._undoArm)   { el.removeEventListener('mouseleave', el._undoArm);   el._undoArm = null; }
     el.textContent = msg;
-    el.classList.remove('is-error', 'is-success');
+    el.classList.remove('is-error', 'is-success', 'has-undo');
     if (type === 'error')   el.classList.add('is-error');
     if (type === 'success') el.classList.add('is-success');
     el.classList.add('visible');
     clearTimeout(el._t);
     el._t = setTimeout(() => el.classList.remove('visible'), TOAST_MS);
+  }
+
+  // ---------- UNDO TOAST ----------
+  // Portions adapted from Hallmark (MIT): prefer optimistic update + Undo over a
+  // blocking confirm() dialog for anything reversible (archive, remove-from-list,
+  // mark-read). Do the thing immediately, then offer a window to change course.
+  //
+  //   item.archived = true; renderList();               // optimistic — apply first
+  //   UI.undoToast(`Archived "${item.name}"`, () => {
+  //     item.archived = false; renderList();             // rollback
+  //   });
+  //
+  // Reuses the same .proto-toast element as toast() above (only one toast — plain
+  // or undo — is ever on screen at once). Calls onUndo if the user clicks Undo
+  // within `ms` (default 6000 — longer than a plain toast's dwell, since the user
+  // has to read the offer and decide); otherwise just dismisses and the change
+  // stands. See reference/microinteractions.md for the full recipe.
+  function undoToast(msg, onUndo, ms) {
+    let el = document.querySelector('.proto-toast');
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'proto-toast';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
+      document.body.appendChild(el);
+    }
+    // Drop a still-armed previous undo's hover/focus-pause listeners before
+    // rebuilding — they're closed over the old dismiss()/dismissMs and would
+    // otherwise stack on this shared, reused element across repeated calls.
+    if (el._undoPause) { el.removeEventListener('mouseenter', el._undoPause); el._undoPause = null; }
+    if (el._undoArm)   { el.removeEventListener('mouseleave', el._undoArm);   el._undoArm = null; }
+
+    el.classList.remove('is-error', 'is-success');
+    el.innerHTML = '';
+    const msgEl = document.createElement('span');
+    msgEl.className = 'proto-toast-msg';
+    msgEl.appendChild(document.createTextNode(msg));
+    el.appendChild(msgEl);
+
+    const dismissMs = ms || 6000;
+
+    function dismiss() {
+      clearTimeout(el._t);
+      el.classList.remove('visible', 'has-undo');
+    }
+    function pause() { clearTimeout(el._t); } // hover/focus on the Undo control — don't dismiss out from under the user
+    function arm()   { clearTimeout(el._t); el._t = setTimeout(dismiss, dismissMs); }
+
+    if (typeof onUndo === 'function') {
+      const undoBtn = document.createElement('button');
+      undoBtn.type = 'button';
+      undoBtn.className = 'proto-toast-undo'; // styled in styles.css, incl. pointer-events:auto
+      undoBtn.textContent = 'Undo';
+      undoBtn.addEventListener('click', () => {
+        dismiss();
+        onUndo();
+      });
+      undoBtn.addEventListener('focus', pause);
+      undoBtn.addEventListener('blur', arm);
+      undoBtn.addEventListener('keydown', (e) => { if (e.key === 'Escape') dismiss(); });
+      el.appendChild(undoBtn);
+      el.classList.add('has-undo');
+      el._undoPause = pause;
+      el._undoArm = arm;
+      el.addEventListener('mouseenter', pause);
+      el.addEventListener('mouseleave', arm);
+    }
+
+    el.classList.add('visible');
+    arm();
   }
 
   // ---------- LOADING BUTTON ----------
@@ -64,17 +151,89 @@
     }, ms || 600);
   }
 
+  // ---------- COPY TO CLIPBOARD (label swap) ----------
+  // Portions adapted from Hallmark (MIT): the button's own label IS the feedback —
+  // no toast for a copy action. Swaps `btn`'s textContent to a success label for
+  // ~1.2s, then reverts. Always copies on click — re-clicks re-copy (harmless,
+  // same text) and re-arm the revert timer (the old one is cleared, so reverts
+  // never stack). `is-copied` is a plain styling hook (like `.is-loading`
+  // elsewhere) if a build wants to visually differentiate the copied state.
+  //
+  //   UI.copyButton(btn, 'https://example.com/share/abc');
+  //
+  // Declaratively: <button data-copy="npm install acme-cli">Copy</button> — wired
+  // by the delegated click listener below, no JS needed on the screen. Override the
+  // success label with `data-copy-success="Link copied!"`.
+  function copyButton(btn, text, ms) {
+    if (!btn) return;
+    // The label swap below is the only feedback (see module comment) — make it
+    // announced to screen readers too. Set synchronously, before the clipboard
+    // write resolves, so the live region is registered in time to catch it.
+    if (!btn.hasAttribute('aria-live')) btn.setAttribute('aria-live', 'polite');
+
+    const successLabel = btn.dataset.copySuccess || 'Copied!';
+    const revertMs = ms || 1200;
+    // Capture the pre-copy label only when the button isn't already showing the
+    // success state — otherwise a re-click mid-window (before the previous
+    // revert fires) would capture "Copied!" itself as the thing to revert to.
+    const original = btn.dataset.copyActive === '1' ? btn._copyOriginal : btn.textContent;
+    btn._copyOriginal = original;
+
+    function swapLabel() {
+      btn.dataset.copyActive = '1';
+      btn.textContent = successLabel;
+      btn.classList.add('is-copied');
+      clearTimeout(btn._copyT);
+      btn._copyT = setTimeout(() => {
+        btn.textContent = original;
+        btn.classList.remove('is-copied');
+        btn.dataset.copyActive = '0';
+      }, revertMs);
+    }
+
+    function fallbackCopy() {
+      // execCommand fallback for http:// contexts without the Clipboard API —
+      // same pattern state.js's copyShareUrl already uses.
+      const ta = document.createElement('textarea');
+      ta.value = text;
+      ta.style.position = 'fixed';
+      ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch {}
+      document.body.removeChild(ta);
+      btn.focus(); // ta.select() stole focus onto the textarea — give the ring back
+      if (ok) swapLabel(); // only claim success if the copy actually happened
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text).then(swapLabel, fallbackCopy);
+    } else {
+      fallbackCopy();
+    }
+  }
+
   // ---------- WIRE DECLARATIVE ATTRIBUTES ----------
   document.addEventListener('click', (e) => {
     // In feedback pin-mode, let the overlay capture the click — don't fire loading/nav/confirm.
     if (document.body.classList.contains('proto-fb-active')) return;
-    const el = e.target.closest('[data-loading], [data-toast], [data-confirm]');
+    const el = e.target.closest('[data-loading], [data-toast], [data-confirm], [data-copy]');
     if (!el) return;
 
     // confirm — must come first, can cancel other actions
     if (el.dataset.confirm && !window.confirm(el.dataset.confirm)) {
       e.preventDefault();
       e.stopImmediatePropagation();
+      return;
+    }
+
+    // copy-to-clipboard — label swap only, no toast (see reference/microinteractions.md).
+    // Truthy (not `!== undefined`) like the other attributes below — `data-copy=""`
+    // has nothing to copy, so skip it rather than writing an empty string.
+    if (el.dataset.copy) {
+      e.preventDefault();
+      copyButton(el, el.dataset.copy);
       return;
     }
 
@@ -263,5 +422,5 @@
     document.startViewTransition(fn);
   }
 
-  window.UI = { toast, loadingButton, showSkeletons, hideSkeletons, fakeLoad, trapFocus, releaseFocus, withViewTransition };
+  window.UI = { toast, undoToast, copyButton, loadingButton, showSkeletons, hideSkeletons, fakeLoad, trapFocus, releaseFocus, withViewTransition };
 })();
