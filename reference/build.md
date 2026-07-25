@@ -145,6 +145,8 @@ kills a demo. Baseline checklist:
 - **Skeleton loaders** — any list/grid that changes on user action (filter chips, pagination, persona switch, page load) briefly swaps to placeholder silhouettes. Mark a container `data-skeleton-on-load` (auto-wires on page load; tune with `data-skeleton-count` / `data-skeleton-duration`), and for filter/pagination/persona changes call `UI.fakeLoad(container, 650, { count: 6 })` from the relevant handler in `app.js`. The `.skeleton` class + shimmer ships in styles.css; shape with `.is-text` / `.is-text-lg` / `.is-block` / `.is-circle`. `hideSkeletons` only restores the pre-skeleton snapshot if the container still shows the exact skeleton markup it injected — if a render function (e.g. a persona-driven list renderer) already filled the container with real content before the timer fires, the restore is skipped, so JS-rendered containers are safe to use with `data-skeleton-on-load` without any manual cleanup.
 - **Modal focus trap** — every modal needs `role="dialog"`, `aria-modal="true"`, and an `aria-hidden` that flips with open state (author these on the modal markup itself); `app.js`'s `openModal`/`closeModal` already call `UI.trapFocus(modalEl, triggerEl)` on open and `UI.releaseFocus(modalEl)` on close. That helper (in `ui.js`) moves focus to the first focusable element inside, loops Tab/Shift+Tab within the modal so it can't leak to the page behind it, and restores focus to whatever triggered the modal when it closes. `app.js` also wires Esc to close whichever modal is open. Keep passing the trigger element (usually the clicked button) into `openModal` — it's what focus returns to. See `checks/builtin-lint.md` rule 6.
 
+For richer interaction recipes (copy-as-label-swap, optimistic-with-undo, tooltip timing, tab crossfade), see `reference/microinteractions.md`.
+
 ### Layout system
 
 Number of layouts, names, and behavior come from the spec (see "Choosing layouts" in
@@ -244,6 +246,75 @@ on either running.
   Falls back to calling the function directly — same result, no animation — on
   Firefox, older Safari, or with `prefers-reduced-motion` set. `app.js`'s tab wiring
   already does this; use it as the reference call site.
+
+### Nav patterns — break the reflex
+
+<!-- Nav archetypes adapted from Hallmark (github.com/Nutlope/hallmark), MIT. -->
+
+Wordmark-left + inline links + button-right (the exact shape in
+`templates/scaffold-base/index.html`) is the reflex the model reaches for first —
+and the single most recognizable "AI built this" tell. Prototypes are app-shells
+(dashboards, internal tools), not marketing pages, so pick a shape real products
+in that category actually ship instead of copying the scaffold nav verbatim:
+
+- **Command-palette-first (⌘K)** — use when the audience is keyboard-first and
+  navigation is "jump to X," not browsing a fixed link list (internal tools, dev/data products).
+  ```html
+  <header class="border-b border-hairline bg-surface">
+    <div class="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <span class="font-heading font-bold">{{PRODUCT_NAME}}</span>
+      <button class="rounded-proto border border-muted/30 px-3 py-2 text-sm text-ink2 flex items-center gap-2 hover:text-ink">
+        <span>Search or jump to…</span><kbd class="text-xs border border-muted/30 rounded px-1">⌘K</kbd>
+      </button>
+    </div>
+  </header>
+  ```
+- **Inline search pill** — use when search is a primary action but a couple of links
+  still earn a permanent spot (docs, catalogs, content libraries).
+  ```html
+  <header class="border-b border-muted/20 bg-surface">
+    <nav class="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+      <span class="font-heading font-bold">{{PRODUCT_NAME}}</span>
+      <button class="flex-1 min-w-[140px] max-w-sm rounded-proto border border-hairline bg-elevated px-3 py-2 text-sm text-ink2 flex items-center gap-2">
+        <span>Search…</span><kbd class="ml-auto text-xs">⌘K</kbd>
+      </button>
+      <a href="#" class="rounded-proto bg-accent text-accent-ink px-4 py-2 text-sm">New</a>
+    </nav>
+  </header>
+  ```
+- **Floating pill nav** — use when the surface beneath (hero, dashboard background)
+  can carry a blurred pill; reads modern-minimal rather than corporate.
+  ```html
+  <nav class="fixed inset-x-3 top-3 z-20 mx-auto max-w-fit flex flex-wrap justify-center items-center gap-4 rounded-proto border border-hairline bg-surface/80 backdrop-blur px-4 py-2 shadow-sm">
+    <span class="font-heading font-bold text-sm">{{PRODUCT_NAME}}</span>
+    <a href="#" class="text-sm text-ink2 hover:text-ink">Overview</a>
+    <a href="#" class="text-sm text-ink2 hover:text-ink">Reports</a>
+    <a href="#" class="rounded-proto bg-accent text-accent-ink px-3 py-1.5 text-sm">Get →</a>
+  </nav>
+  ```
+  Keep the link list short — `flex-wrap` is the 390px overflow escape hatch, not
+  license to add more; a pill spanning edge-to-edge is just a bar with rounded corners.
+- **Side-rail nav** — use when the product is a dashboard/tool with a handful of
+  top-level sections and the rail can carry the whole IA.
+  ```html
+  <div class="flex min-h-screen">
+    <nav class="hidden md:flex flex-col w-56 shrink-0 border-r border-hairline bg-surface p-4 gap-1">
+      <span class="font-heading font-bold mb-4">{{PRODUCT_NAME}}</span>
+      <a href="#" class="rounded-proto px-3 py-2 text-sm bg-accent/10 text-accent">Overview</a>
+      <a href="#" class="rounded-proto px-3 py-2 text-sm text-ink2 hover:bg-elevated">Reports</a>
+    </nav>
+    <main class="flex-1 min-w-0 px-4 sm:px-6 py-6"><!-- screen content --></main>
+  </div>
+  ```
+  `hidden md:flex` drops the rail at 390px — ship a top bar or drawer as the
+  mobile fallback, not a squeezed 56px column.
+
+**Accountability:** name the shape you picked in `DESIGN.md` ("Nav: side-rail,
+because…") — don't land on wordmark-left + inline links + button-right by default;
+land there only after deciding against the other three.
+
+We skip a footer catalog on purpose: prototypes are app-shell, not marketing pages,
+and are rarely footer-heavy enough to need one.
 
 ## Step 6: Build screens
 
