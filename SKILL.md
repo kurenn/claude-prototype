@@ -46,7 +46,7 @@ Before anything else, auto-install missing companions (idempotent, safe to re-ru
 ```
 bash ~/.claude/skills/prototype/ensure-deps.sh --yes
 ```
-Installs **impeccable** (deep design assessment) and **prompt-refiner** (Q&A → spec) — third-party companions from their marketplaces; idempotent and safe, but it fetches remote code (drop `--yes` to review first). If
+Installs **impeccable** (deep design assessment) and **prompt-refiner** (Q&A → spec) — third-party companions from their marketplaces; it fetches remote code (drop `--yes` to review first). If
 npx/Node or network is unavailable it prints guidance and continues — `/prototype` falls
 back to built-in checks and notes it in the final report. Then proceed to Step 1.
 
@@ -63,15 +63,14 @@ skill list (in `<system-reminder>` messages) and deferred-tool list (loadable vi
 | `teach-impeccable` (setup only) | Design direction (`DESIGN.md`) | Generate `DESIGN.md` inline |
 | `mcp__claude-in-chrome__*` (deferred MCP tools) | Screenshot + console QA | Local-server instructions + manual checklist |
 
-**If a skill is detected, invoke it** — not a preference. The fallback path is only for
-when auto-install genuinely failed (no npx/Node, no network). Shortcutting an available
-skill produces a worse prototype.
+**If a skill is detected, invoke it** — not a preference. The fallback is only for genuine
+auto-install failure (no npx/Node, no network). Shortcutting an available skill produces a
+worse prototype.
 
 Note: the `<system-reminder>` skill list is captured at session start and doesn't refresh
 mid-session. If preflight just installed a skill, it's on disk at `~/.claude/skills/<name>/`
-and invokable via Bash even if the Skill tool doesn't see it until next session — check the
-filesystem, not just the reminder. Never fail because an optional skill is missing; mention
-it in the final report as an enhancement path.
+and invokable via Bash even if the Skill tool lags a session — check the filesystem, not
+just the reminder. Never fail for a missing optional skill; note it in the final report.
 
 ## The phases
 
@@ -82,7 +81,9 @@ it in the final report as an enhancement path.
    before building — a design review, not a form.
 2. **Build (steps 5–6)** → `reference/build.md`. Scaffold from `templates/`, wire the visible
    control bar (theme + layout + persona + share + feedback), the data layer, interaction
-   states, and the layout system; then build one HTML file per screen.
+   states, and the layout system; then build one HTML file per screen. Before writing each
+   screen, self-score it with the pre-emit critique in `reference/assess.md`; any axis < 3
+   → revise before the next screen.
 3. **Assess (steps 7–8)** → `reference/assess.md`. Run impeccable (or `checks/builtin-lint.md`),
    fix findings, then browser QA via claude-in-chrome (or manual checklist).
 4. **Handoff (step 9)** — generate two files in the prototype:

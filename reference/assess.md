@@ -2,17 +2,15 @@
 
 Quality gate before handoff. Find issues, fix them, re-verify.
 
-## Step 7 pre-check: Pre-emit self-critique
+## Pre-emit self-critique (runs during Step 6, before Step 7)
 
 <!-- Pre-emit self-critique adapted from Hallmark (github.com/Nutlope/hallmark), MIT. -->
 
-Before emitting each screen (or the screen set as a whole), self-score it 1–5 on six axes —
-no tools, no rendering, just judgment against the brief. This is a cheap gate the building
-agent runs on its own planned output, before the lint (Step 7) and browser QA (Step 8)
-below. It complements, not replaces, the blind pairwise judge in
-`benchmark/design-judge.md`: this check is pre-emit and absolute (scored alone, against the
-brief); that judge is post-hoc and comparative (scored against another build, after
-rendering).
+Before writing each screen, score it 1–5 on six axes — no tools, no rendering, judgment
+against the brief only. Run this on your own planned output during Step 6, before Step 7
+(impeccable, or the builtin-lint fallback) and Step 8 (browser QA) below. (Distinct from the
+post-hoc pairwise judge in `benchmark/design-judge.md`: this runs pre-emit, scored alone
+against the brief.)
 
 | # | Axis | What you're scoring on this screen |
 |---|---|---|
@@ -21,11 +19,14 @@ rendering).
 | **C** | **Execution** | Are the details (spacing scale, focus states, empty/loading/error states, contrast) in spec, or is there sloppiness even where the layout is right? |
 | **D** | **Specificity** | Does this look like *this product's* screen — real domain data, terms, and workflows — or a generic admin/dashboard template that could belong to anyone? |
 | **E** | **Restraint** | Have you removed everything not earning its place — decorative cards, redundant labels, padding-for-padding's-sake? |
-| **F** | **Variety** | Does this screen share a structural fingerprint — same nav shape, same card grid, same layout — with another screen in this same prototype? Score by structural distance, not just color swaps. |
+| **F** | **Variety** | Shared nav / footer / control bar is required cohesion, not a fingerprint — score F on the content region: a dashboard, a detail view, and a settings screen must not be the same card-grid template with relabeled data. The first screen passes F trivially (nothing to compare yet). |
 
-**Gate:** any axis scoring below 3 on any screen → revise that screen now, before moving on
-to Step 7 (assess) and Step 8 (browser QA) below. Two passes is normal; three means
-re-check the brief, not the pixels.
+**Gate:** any axis scoring below 3 → revise before writing the next screen; all screens pass
+before Step 7. Two passes is normal; three means re-check the brief, not the pixels.
+
+**Stamp it:** record the six scores as an HTML comment at the top of each screen file,
+updated after any revision pass — e.g. `<!-- prototype · pre-emit: P4 H4 E3 S5 R4 V4 -->`
+(letters are axis initials: Philosophy, Hierarchy, Execution, Specificity, Restraint, Variety).
 
 ## Step 7: Assess
 
