@@ -390,6 +390,42 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
 .proto-toast.is-error   { background: rgb(190 60 60); border-color: rgb(190 60 60); color: rgb(255 248 245); }
 .proto-toast.is-success { background: rgb(40 120 80); border-color: rgb(40 120 80); color: rgb(245 255 250); }
 
+/* Undo-toast variant (ui.js's UI.undoToast) — the base rule above truncates the
+   *whole* toast with a single-line ellipsis, which would clip the trailing Undo
+   button off a long message. Here the container becomes a flex row instead: the
+   message (.proto-toast-msg) truncates on its own and the button never shrinks.
+   Gated on :has(.proto-toast-undo), not just the .has-undo class, so this layout
+   only ever applies while a real Undo button is actually present — state.js has
+   its own `.proto-toast`-reusing toast() that ui.js can't reach to keep in sync,
+   and this keeps a stale `.has-undo` class from mis-laying-out its plain toasts. */
+.proto-toast.has-undo:has(.proto-toast-undo) {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .75em;
+  white-space: normal; /* the message span below owns truncation now, not this container */
+}
+.proto-toast-msg {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0; /* let the flex item shrink below its content size so ellipsis can apply */
+}
+.proto-toast-undo {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  color: inherit;
+  cursor: pointer;
+  /* .proto-toast itself stays pointer-events:none (click-through at rest) —
+     this control opts back in so it alone can be clicked. */
+  pointer-events: auto;
+}
+
 /* Loading button (ui.js toggles .is-loading) */
 .is-loading { opacity: .75; cursor: wait; }
 .is-loading::after {

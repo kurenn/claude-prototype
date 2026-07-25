@@ -41,10 +41,15 @@ copyBtn.addEventListener('click', () => UI.copyButton(copyBtn, shareUrl));
 
 Ships as `UI.copyButton(btn, text, ms)` in `ui.js` — writes `text` to the clipboard
 (Clipboard API, falling back to a hidden-textarea + `execCommand('copy')` for
-`http://` contexts, same fallback `state.js`'s `copyShareUrl` already uses), then
+`http://` contexts, same fallback `state.js`'s `copyShareUrl` already uses — and,
+like that fallback, only swaps the label when the copy actually succeeded), then
 swaps the button's own `textContent` to a success label (default `"Copied!"`,
-override with `data-copy-success="…"`) for ~1.2s before reverting. Debounced so a
-double-click can't stack two reverts.
+override with `data-copy-success="…"`) for ~1.2s before reverting. Always copies on
+click — a re-click mid-window re-copies and re-arms the revert timer rather than
+being swallowed, so reverts never stack but a click never silently does nothing
+either. The button also gets `aria-live="polite"` (if it doesn't already have one)
+so the label swap — the *only* feedback here — is announced to screen readers, not
+just visible.
 
 ### Optimistic update with Undo
 
@@ -73,7 +78,9 @@ Ships as `UI.undoToast(message, onUndo, ms)` in `ui.js` — same `.proto-toast` 
 `UI.toast()` uses, with an inline Undo action appended. Calls `onUndo` if the user
 clicks Undo within the window (default 6s — longer than a normal toast's 1.6s dwell,
 because the user has to actually read the offer and decide); otherwise it just
-dismisses and the change stands.
+dismisses and the change stands. The dismiss timer pauses on hover or focus of the
+Undo button and re-arms on mouseleave/blur, so it can't time out mid-decision (WCAG
+2.2.1) — and Escape dismisses it early for anyone who's decided not to undo.
 
 ### Tooltip timing
 
@@ -84,9 +91,19 @@ them wait is just latency with no payoff.
 
 - **Mouse hover → 800ms delay.** Long enough that passing-through pointer movement
   never triggers it; short enough that a deliberate pause reads as instant.
-- **Keyboard focus → 0ms.** Show immediately on `focus`.
+- **Keyboard focus → 0ms.** Show immediately on `focus` — but only when that focus
+  came from the keyboard. `focus` also fires on mouse click (clicking a trigger
+  focuses it), so a naive `focus` listener shows the tooltip instantly on click too,
+  defeating the 800ms hover-intent delay above. Guard with `:focus-visible`.
 - Dismiss on `mouseleave` / `blur` / `Escape`. Cancel the pending hover timer on
   `mouseleave` before it fires, so a quick in-and-out never shows anything.
+- **WCAG 1.4.13 (content on hover/focus):** a tooltip shown this way must also be
+  hoverable (pointer can move onto the tooltip itself without it disappearing),
+  persistent (stays until dismissed, not on a timer), and dismissible (Escape, as
+  above). The snippet below covers timing/dismissal only — a full implementation
+  also needs `role="tooltip"` on the tooltip element and `aria-describedby` on the
+  trigger pointing to it; keep those out only if you're prototyping the visual
+  timing in isolation, not shipping the real thing.
 
 ```js
 function wireTooltip(trigger, tooltip) {
@@ -98,7 +115,9 @@ function wireTooltip(trigger, tooltip) {
     hoverTimer = setTimeout(show, 800);       // hover-intent delay
   });
   trigger.addEventListener('mouseleave', hide);
-  trigger.addEventListener('focus', show);     // instant — keyboard already committed
+  trigger.addEventListener('focus', () => {
+    if (trigger.matches(':focus-visible')) show(); // keyboard only — not a mouse click
+  });
   trigger.addEventListener('blur', hide);
   trigger.addEventListener('keydown', (e) => { if (e.key === 'Escape') hide(); });
 }
@@ -114,12 +133,15 @@ function wireTooltip(trigger, tooltip) {
 @media (prefers-reduced-motion: reduce) { .tooltip { transition: none; } }
 ```
 
-### Tab / panel crossfade via `grid-template-rows: 0fr → 1fr`
+### Height changes via `grid-template-rows`
 
 **Rationale:** animating `height` or `max-height` triggers layout on every frame and
 requires knowing the target height up front (measuring, `scrollHeight` hacks). A
 single-row CSS grid animating `grid-template-rows` from `0fr` to `1fr` animates
-height without ever measuring anything, and it composites cleanly.
+height without ever measuring anything — no `scrollHeight` hacks, just the
+doctrine-sanctioned way to animate a height change (see tell #11 below: it's still
+a layout property under the hood, so it isn't free, but it's the one height-adjacent
+transition that doesn't need JS to compute a target value).
 
 ```css
 .panel-collapse {
@@ -160,8 +182,12 @@ correctly — copy the pattern for any custom toast-like UI:
 - State changes animate `opacity` + `transform` only (`translate(-50%, 8px)` →
   `translate(-50%, 0)`) — never `top`/`margin`/`height`.
 - `pointer-events: none` at rest so an off-screen-transformed toast can't eat clicks
-  meant for the page underneath; the Undo-toast variant switches this to `auto` only
-  while a clickable action is showing.
+  meant for the page underneath. The Undo-toast variant never flips this on the
+  toast itself (that would risk leaving an invisible click-blocker if something ever
+  reset it late) — instead only the Undo `<button>` opts back into
+  `pointer-events: auto`. A child can receive clicks while its parent stays
+  `pointer-events: none`, so the toast stays click-through everywhere except the one
+  control that needs to be clickable.
 
 ### Silent success
 

@@ -47,11 +47,15 @@
       el.setAttribute('aria-live', 'polite');
       document.body.appendChild(el);
     }
+    // A still-armed undoToast() may have left its hover/focus-pause listeners on
+    // this (shared, reused) element — drop them so they can't hijack this toast's
+    // timer later (see undoToast()'s matching set-up below).
+    if (el._undoPause) { el.removeEventListener('mouseenter', el._undoPause); el._undoPause = null; }
+    if (el._undoArm)   { el.removeEventListener('mouseleave', el._undoArm);   el._undoArm = null; }
     el.textContent = msg;
-    el.classList.remove('is-error', 'is-success');
+    el.classList.remove('is-error', 'is-success', 'has-undo');
     if (type === 'error')   el.classList.add('is-error');
     if (type === 'success') el.classList.add('is-success');
-    el.style.pointerEvents = ''; // in case a still-visible undoToast() left this 'auto'
     el.classList.add('visible');
     clearTimeout(el._t);
     el._t = setTimeout(() => el.classList.remove('visible'), TOAST_MS);
@@ -81,35 +85,50 @@
       el.setAttribute('aria-live', 'polite');
       document.body.appendChild(el);
     }
+    // Drop a still-armed previous undo's hover/focus-pause listeners before
+    // rebuilding — they're closed over the old dismiss()/dismissMs and would
+    // otherwise stack on this shared, reused element across repeated calls.
+    if (el._undoPause) { el.removeEventListener('mouseenter', el._undoPause); el._undoPause = null; }
+    if (el._undoArm)   { el.removeEventListener('mouseleave', el._undoArm);   el._undoArm = null; }
+
     el.classList.remove('is-error', 'is-success');
     el.innerHTML = '';
-    el.appendChild(document.createTextNode(msg));
+    const msgEl = document.createElement('span');
+    msgEl.className = 'proto-toast-msg';
+    msgEl.appendChild(document.createTextNode(msg));
+    el.appendChild(msgEl);
+
+    const dismissMs = ms || 6000;
+
+    function dismiss() {
+      clearTimeout(el._t);
+      el.classList.remove('visible', 'has-undo');
+    }
+    function pause() { clearTimeout(el._t); } // hover/focus on the Undo control — don't dismiss out from under the user
+    function arm()   { clearTimeout(el._t); el._t = setTimeout(dismiss, dismissMs); }
 
     if (typeof onUndo === 'function') {
       const undoBtn = document.createElement('button');
       undoBtn.type = 'button';
-      undoBtn.className = 'proto-toast-undo';
+      undoBtn.className = 'proto-toast-undo'; // styled in styles.css, incl. pointer-events:auto
       undoBtn.textContent = 'Undo';
-      undoBtn.style.cssText =
-        'margin-left:.75em;padding:0;border:0;background:none;font:inherit;' +
-        'font-weight:600;text-decoration:underline;color:inherit;cursor:pointer;';
       undoBtn.addEventListener('click', () => {
         dismiss();
         onUndo();
       });
+      undoBtn.addEventListener('focus', pause);
+      undoBtn.addEventListener('blur', arm);
+      undoBtn.addEventListener('keydown', (e) => { if (e.key === 'Escape') dismiss(); });
       el.appendChild(undoBtn);
-      el.style.pointerEvents = 'auto'; // toast is click-through by default; this one has a button
-    }
-
-    function dismiss() {
-      clearTimeout(el._t);
-      el.classList.remove('visible');
-      el.style.pointerEvents = '';
+      el.classList.add('has-undo');
+      el._undoPause = pause;
+      el._undoArm = arm;
+      el.addEventListener('mouseenter', pause);
+      el.addEventListener('mouseleave', arm);
     }
 
     el.classList.add('visible');
-    clearTimeout(el._t);
-    el._t = setTimeout(dismiss, ms || 6000);
+    arm();
   }
 
   // ---------- LOADING BUTTON ----------
@@ -135,7 +154,10 @@
   // ---------- COPY TO CLIPBOARD (label swap) ----------
   // Portions adapted from Hallmark (MIT): the button's own label IS the feedback —
   // no toast for a copy action. Swaps `btn`'s textContent to a success label for
-  // ~1.2s, then reverts. Debounced so a double-click can't stack two reverts.
+  // ~1.2s, then reverts. Always copies on click — re-clicks re-copy (harmless,
+  // same text) and re-arm the revert timer (the old one is cleared, so reverts
+  // never stack). `is-copied` is a plain styling hook (like `.is-loading`
+  // elsewhere) if a build wants to visually differentiate the copied state.
   //
   //   UI.copyButton(btn, 'https://example.com/share/abc');
   //
@@ -143,16 +165,26 @@
   // by the delegated click listener below, no JS needed on the screen. Override the
   // success label with `data-copy-success="Link copied!"`.
   function copyButton(btn, text, ms) {
-    if (!btn || btn.dataset.copyActive === '1') return; // debounce double-click
-    const original = btn.textContent;
+    if (!btn) return;
+    // The label swap below is the only feedback (see module comment) — make it
+    // announced to screen readers too. Set synchronously, before the clipboard
+    // write resolves, so the live region is registered in time to catch it.
+    if (!btn.hasAttribute('aria-live')) btn.setAttribute('aria-live', 'polite');
+
     const successLabel = btn.dataset.copySuccess || 'Copied!';
     const revertMs = ms || 1200;
+    // Capture the pre-copy label only when the button isn't already showing the
+    // success state — otherwise a re-click mid-window (before the previous
+    // revert fires) would capture "Copied!" itself as the thing to revert to.
+    const original = btn.dataset.copyActive === '1' ? btn._copyOriginal : btn.textContent;
+    btn._copyOriginal = original;
 
     function swapLabel() {
       btn.dataset.copyActive = '1';
       btn.textContent = successLabel;
       btn.classList.add('is-copied');
-      setTimeout(() => {
+      clearTimeout(btn._copyT);
+      btn._copyT = setTimeout(() => {
         btn.textContent = original;
         btn.classList.remove('is-copied');
         btn.dataset.copyActive = '0';
@@ -168,9 +200,11 @@
       ta.style.opacity = '0';
       document.body.appendChild(ta);
       ta.select();
-      try { document.execCommand('copy'); } catch {}
+      let ok = false;
+      try { ok = document.execCommand('copy'); } catch {}
       document.body.removeChild(ta);
-      swapLabel();
+      btn.focus(); // ta.select() stole focus onto the textarea — give the ring back
+      if (ok) swapLabel(); // only claim success if the copy actually happened
     }
 
     if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -194,8 +228,10 @@
       return;
     }
 
-    // copy-to-clipboard — label swap only, no toast (see reference/microinteractions.md)
-    if (el.dataset.copy !== undefined) {
+    // copy-to-clipboard — label swap only, no toast (see reference/microinteractions.md).
+    // Truthy (not `!== undefined`) like the other attributes below — `data-copy=""`
+    // has nothing to copy, so skip it rather than writing an empty string.
+    if (el.dataset.copy) {
       e.preventDefault();
       copyButton(el, el.dataset.copy);
       return;
