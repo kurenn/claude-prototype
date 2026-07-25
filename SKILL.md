@@ -46,7 +46,7 @@ Before anything else, auto-install missing companions (idempotent, safe to re-ru
 ```
 bash ~/.claude/skills/prototype/ensure-deps.sh --yes
 ```
-Installs **impeccable** (deep design assessment) and **prompt-refiner** (Q&A → spec). If
+Installs **impeccable** (deep design assessment) and **prompt-refiner** (Q&A → spec) — third-party companions from their marketplaces; idempotent and safe, but it fetches remote code (drop `--yes` to review first). If
 npx/Node or network is unavailable it prints guidance and continues — `/prototype` falls
 back to built-in checks and notes it in the final report. Then proceed to Step 1.
 
@@ -77,7 +77,9 @@ it in the final report as an enhancement path.
 
 1. **Discover (steps 1–4)** → `reference/discovery.md`. Quick-vs-discovery mode, the 6-question
    Q&A, refine the spec (prompt-refiner if present), shape a per-prototype `DESIGN.md`.
-   Confirm a one-paragraph summary with the user before building.
+   Probe how it should **feel** (mood / physical scene), then present the committed **design
+   direction** (mood + named palette & type pairing + one signature move) and wait for a real yes-or-tweak (never self-approve)
+   before building — a design review, not a form.
 2. **Build (steps 5–6)** → `reference/build.md`. Scaffold from `templates/`, wire the visible
    control bar (theme + layout + persona + share + feedback), the data layer, interaction
    states, and the layout system; then build one HTML file per screen.
@@ -92,6 +94,11 @@ it in the final report as an enhancement path.
    offer Vercel deploy only if the user seems ready to share; point to `/qa-only` and `/design-review`
    for deeper passes.
 
+**Iterate (any time after the first build)** → `reference/iterate.md`. Proactively offer to refine
+any screen — ask which page and how it should change (feel, layout, content, a specific element),
+apply it to just that screen, re-verify, and loop until they're happy. A prototype earns its keep
+by being iterated, not shipped once.
+
 Subcommands (`variant`, `apply-feedback`) → `reference/subcommands.md`.
 
 ## Non-negotiable constraints
@@ -102,12 +109,12 @@ These are load-bearing — they're what separates this from generic AI output.
 - **Always-visible control bar.** A bottom-center segmented control showing every theme + layout + persona option at once, plus share + feedback — never a click-to-reveal pill. Reviewers judge options they can see.
 - **The control bar never wraps.** `flex-wrap: nowrap` + `overflow-x: auto` is load-bearing: a two-line bar reads as broken, and once one thing looks broken the reviewer doubts everything else.
 - **Feedback is always on.** The 💬 button ships enabled on every screen — no URL flags, no hidden modes.
-- **Ask before building.** The user sees and approves the one-paragraph summary first. Discovery prevents generic output.
+- **Ask before building — a hard gate.** Never write a screen until the user gives a real yes (or tweak) to the committed **design direction**. This holds in *every* mode — a rich brief or Quick mode does not waive it. Don't self-approve or infer consent from a detailed brief: a brief says *what*, the confirm settles *how it looks*. Discovery prevents generic output.
 - **Never lorem ipsum.** Realistic, domain-matched content only — fake-looking content reads as "this isn't real."
 - **No build tools** (webpack, vite, npm). Tailwind CDN + vanilla JS only — load-bearing for "anyone can clone and run it."
 - **Respect scope.** 4 screens asked → 4 screens shipped. Extra screens are scope creep.
 - **Don't shortcut an available skill.** If `prompt-refiner` / `impeccable` / `claude-in-chrome` is in the session, using it is required, not optional.
-- **One question per turn** during discovery — conversational, not a form.
+- **One topic per turn** during discovery — conversational, not a form (tone and how it should *feel* are one topic).
 - **No hardcoded paths or user names** — this is open source.
 
 ### Never ship without (check on every screen before assess)
@@ -117,11 +124,12 @@ repeatedly caught them being dropped when their detail lived only in `reference/
 how-to is still in `reference/build.md` / `reference/assess.md` — but the rule lives here.
 
 - **No horizontal scroll at 390px — including toolbars.** Not just tables (`.proto-table-wrap`): search bars, filter-chip rows, and header action clusters must wrap (`.proto-actions` / `flex-wrap`) so no primary action lands off-screen. A clipped "Approve"/"Book" button is a blocker.
-- **Color restraint — one accent, no gradient fills.** No multi-hue card faces, no purple/violet-on-black, no gradient text. Generic gradients are the #1 "AI-generated" tell and read as off-brand on a serious product.
-- **a11y floor.** `:focus-visible` rings defined (Tailwind's reset drops them); every modal carries `role="dialog"` + `aria-modal`.
+- **Color restraint — one accent, no gradient fills** (a single-hue neutral wash — the `.media` image placeholder — is the one sanctioned exception). No multi-hue card faces, no purple/violet-on-black, no gradient text. Generic gradients are the #1 "AI-generated" tell and read as off-brand on a serious product.
+- **a11y floor.** The scaffold ships `:focus-visible` rings + `aria-live` toasts. Every modal carries `role="dialog"` + `aria-modal`, moves focus into itself on open, traps Tab, and restores focus on close; Esc closes.
 
 ## References
-- Phase detail: `reference/discovery.md` · `reference/build.md` · `reference/assess.md` · `reference/subcommands.md`
+- Phase detail: `reference/discovery.md` · `reference/build.md` · `reference/assess.md` · `reference/iterate.md` · `reference/subcommands.md`
+- Design menus (tone → pairing / palette) + workbench: `reference/type-pairings.md` · `reference/color-palettes.md` · `design-lab/index.html`
 - Scaffold templates: `templates/scaffold-base/` (control-bar markup + script order live here)
 - Feedback overlay: `templates/feedback-overlay/`
 - Handoff doc templates: `templates/demo-docs/`

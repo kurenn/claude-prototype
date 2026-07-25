@@ -10,25 +10,32 @@ First message to the user:
 
 > **Quick or Discovery?**
 > - **Quick** — I'll scaffold a prototype with sensible defaults in about a minute. You describe it in one or two sentences.
-> - **Discovery** — I'll ask you 5–7 questions (tone, inspiration, audience, scope, content) to get the vibe right before I build.
+> - **Discovery** — I'll ask about 6 questions (tone &amp; feeling, inspiration, audience, scope, content) to get the vibe right before I build.
 
 If the user already has a rich brief (multiple paragraphs, attached references), skip
-the question and go straight to discovery. If they say "quick", collapse the Q&A into a
-single combined prompt.
+the *mode* question and go straight to design-shaping — but still ask the tone &amp; feeling
+clarifier and **confirm the committed direction before building**. A rich brief settles
+*what* to build, never *how it looks* — that still needs a yes. If they say "quick",
+collapse the Q&A into a single combined prompt (that still ends in the direction confirm).
 
 ## Step 2: Discovery Q&A
 
 Ask one at a time, conversational, not as a form:
 
 1. **What are you prototyping?** — one-sentence product summary. Drives content, not just structure.
-2. **Tone?** — presets: *playful · corporate · technical · editorial · bold-experimental · minimal*. Free-text welcome.
+2. **Tone & feeling?** — a tone preset (*playful · corporate · technical · editorial · bold-experimental · minimal*) **and** one line on how it should *feel* to use: picture the person, the place, and the mood (e.g. "an SRE glancing at incident severity at 2am in a dim room," or "a homeowner browsing on the couch on a Sunday"). The scene forces committed choices a category word can't. Tone selects the recommended **font pairing** (`reference/type-pairings.md`) and **color palette** (`reference/color-palettes.md`): auto-pick in Quick mode; recommend and offer to adjust in Discovery mode.
 3. **Inspiration** — URLs or images that capture the vibe. "Share 1–3 references, or skip." WebFetch public URLs for mood notes (palette words, typography feel, layout density); read images via multimodal. Use as vibes context only — never copy.
 4. **Audience & use case** — *sales demo · internal review · client pitch · design exploration*.
 5. **Scope** — how many screens, what's the core flow. Drives SPA-vs-multi-page.
 6. **Content** — *real (user provides) · realistic placeholder · loose lorem-ish*. Default to realistic placeholder; never actual lorem ipsum.
 
-After answers, confirm a one-paragraph summary before building — the cheap
-course-correction point.
+After answers, present the committed **design direction** back before building — the
+mood/scene, the named palette + type pairing, and one **signature move** that will make it
+memorable — as a short paragraph, and wait for an explicit yes-or-tweak (never build on a
+self-assumed approval). This is the cheap course-correction
+point; in Discovery mode treat it like a design review, not a form — and in Quick mode still show
+the direction in one line for a fast yes. After building, keep iterating per screen
+(`reference/iterate.md`).
 
 ## Step 3: Refine the spec
 
@@ -110,8 +117,10 @@ a sales pitch page or marketing landing is **brand**. It changes which impeccabl
 
 Generate inline with these defaults (or run `$impeccable shape "<spec>"` if impeccable is
 loaded — it now finds PRODUCT.md and won't trigger `teach`):
-- **Color** — one accent, one neutral ramp (9 steps), one surface. Each theme remaps the ramp.
-- **Typography** — one heading + one body font (Google Fonts). Scale: 12 / 14 / 16 / 20 / 24 / 32 / 48.
-- **Spacing** — 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64.
-- **Radius** — 0 / 4 / 8 / 16 across the theme moods.
-- **Motion** — 150ms ease-out default; reveal-on-scroll only where it earns attention.
+- **Color** — pick the palette for the tone from `reference/color-palettes.md` and write its values into `DESIGN.md` and the theme token blocks (`--surface` / `--elevated` / `--elevated-2` / `--ink` / `--ink2` / `--ink3` / `--muted` / `--hairline` / `--accent` / `--accent-ink`). That file owns the doctrine (tinting, strategy, category-reflex check, dark-mode elevation, anti-slop bans) — don't restate it here.
+- **Typography** — choose the pairing for the tone from `reference/type-pairings.md` and write the families into `DESIGN.md` + the `{{HEADING_FONT}}` / `{{BODY_FONT}}` (+ mono) tokens. That file owns the doctrine (scale, reflex-reject list, polish) — don't restate it here; add a third **mono/utility** family when the product is data- or code-heavy.
+- **Spacing** — 4pt scale `4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 96` (shipped as `--space-1…9`), laid out with `gap` not per-element margins. **Rhythm**: tight within a group (8–12px), generous between sections (48–96px) — never uniform padding everywhere. Whitespace is a design element.
+- **Depth** — subtle shadow scale (`--shadow-sm/md/lg`; "if you clearly see it, it's too strong") + a semantic z-index scale (`--z-dropdown … --z-tooltip`, never `9999`). Dark themes elevate with lighter surfaces (`--elevated` / `--elevated-2`), not shadow — set `--shadow-*` to `none` there.
+- **Radius** — 0 / 4 / 8 / 12 across the theme moods (the scaffold's per-theme `--radius`; `docs/DESIGN.md` deliberately uses 0/4/8 for that site).
+- **Motion** — ease-out only (`--ease-out-quart` for UI, `--ease-out-expo` for reveals; never the default `ease` for transitions, no bounce/elastic — plain `linear` is reserved for continuous loops like spinners/shimmer). Durations 150 / 250 / 400ms (`--motion-fast/-/-slow`), exits ~75% of entrances. Animate transform + opacity only; heights via `grid-template-rows: 0fr→1fr`. `prefers-reduced-motion` is mandatory. Scroll-driven effects (`animation-timeline`) and View Transitions go behind a reduced-motion + Firefox fallback. Pacing by tone: technical/minimal snappy, corporate/editorial calm, playful/bold expressive.
+- **Signature move** — one memorable, on-brief detail that makes it *not generic*: a distinctive nav, an editorial hero, a considered data-viz treatment, a motion moment, a typographic flourish. Name it in `DESIGN.md` and make sure at least one screen delivers it. If you can't name the signature move, the design is still a template.

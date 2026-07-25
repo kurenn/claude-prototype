@@ -3,56 +3,366 @@
  * Every color = CSS var (RGB channels, space-separated, no commas) so Tailwind's
  * `<alpha-value>` works: bg-accent/50, text-ink/70, etc.
  * Flip themes by changing [data-theme] on <html>.
+ *
+ * Pick the palette per tone from reference/color-palettes.md. Tint every neutral
+ * (OKLCH chroma .005–.015) — never flat gray, #000, or #fff. Dark themes elevate
+ * with lighter surfaces (not shadow) + a desaturated accent. These three are tinted
+ * starting points; a build replaces them with the chosen palette's themes.
  */
 
 html[data-theme="studio"] {
-  --surface:  252 252 250;
-  --elevated: 255 255 255;
-  --accent:    20  20  20;
-  --muted:    120 120 120;
-  --ink:       15  15  15;
-  --ink2:      90  90  90;
+  --surface:  250 248 244;   /* warm off-white, tinted (was flat 252 252 250) */
+  --elevated: 255 254 250;
+  --elevated-2: 255 255 252;
+  --accent:    30  27  22;
+  --muted:    120 116 108;   /* warm neutral, never flat gray */
+  --ink:       26  23  18;
+  --ink2:      92  87  79;
+  --ink3:     130 125 116;
+  --hairline: 224 220 212;
+  --accent-ink: 250 248 244;
+  --status-error: 190 60 60;  /* ~5:1 on this theme's light surfaces */
   --radius: 12px;
 }
 
 html[data-theme="terminal"] {
-  --surface:   10  12  16;
-  --elevated:  18  22  30;
-  --accent:    80 255 180;
-  --muted:     80  95 115;
-  --ink:      220 230 240;
-  --ink2:     150 170 190;
+  --surface:   18  24  21;   /* warm-green graphite, not near-black */
+  --elevated:  24  31  27;
+  --elevated-2: 34  43  38;
+  --accent:   132 198 156;   /* desaturated phosphor green, not neon */
+  --muted:     74  86  79;
+  --ink:      224 230 221;
+  --ink2:     150 166 152;
+  --ink3:     118 130 120;
+  --hairline:  46  54  49;
+  --accent-ink: 18  24  21;
+  /* Lighter than --status-error on the other themes — the darker red fails ~3.2:1
+     against this theme's dark surface for small text; this variant holds ~6.5:1. */
+  --status-error: 248 113 113;
   --radius: 2px;
+  --shadow-sm: none; --shadow-md: none; --shadow-lg: none;  /* dark elevates via surface */
 }
 
 html[data-theme="mono"] {
-  --surface:  255 255 255;
-  --elevated: 245 245 245;
-  --accent:    30  30  30;
-  --muted:    180 180 180;
-  --ink:       20  20  20;
-  --ink2:     110 110 110;
+  --surface:  252 252 253;   /* whisper-cool, never pure #fff */
+  --elevated: 247 247 249;
+  --elevated-2: 240 240 243;
+  --accent:    29  28  32;
+  --muted:    174 173 178;
+  --ink:       29  28  32;
+  --ink2:     100 100 107;
+  --ink3:     130 130 136;
+  --hairline: 222 222 226;
+  --accent-ink: 252 252 253;
+  --status-error: 190 60 60;  /* ~5:1 on this theme's light surfaces */
   --radius: 0;
 }
 
-/* Smooth theme transitions */
-html { transition: background-color .3s ease; }
-body { transition: background-color .3s ease, color .3s ease; }
+/* Type scale — committed 1.25 major third (fixed rem for UI; hero uses --text-display clamp).
+   Floor defaults: the per-prototype DESIGN.md may retune values, but keep one committed ratio.
+   Pick the tone's font pairing from reference/type-pairings.md. */
+:root {
+  --text-xs:      .75rem;   /* 12 · captions, legal, meta labels */
+  --text-sm:      .875rem;  /* 14 · secondary UI, table meta */
+  --text-base:    1rem;     /* 16 · body (never smaller) */
+  --text-lg:      1.25rem;  /* 20 · lead, subhead */
+  --text-xl:      1.563rem; /* 25 · h4 */
+  --text-2xl:     1.953rem; /* 31 · h3 */
+  --text-3xl:     2.441rem; /* 39 · h2 */
+  --text-4xl:     3.052rem; /* 49 · h1 */
+  --text-display: clamp(2.5rem, 6vw, 4rem); /* hero headline only */
 
-/* Respect reduced motion */
-@media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
+  /* Motion — ease-out only; never `ease` / linear / bounce. */
+  --ease-out-quart: cubic-bezier(.25, 1, .5, 1);  /* UI, controls, toasts */
+  --ease-out-expo:  cubic-bezier(.16, 1, .3, 1);  /* reveals, larger moves */
+  --motion-fast: 150ms;
+  --motion:      250ms;
+  --motion-slow: 400ms;
+
+  /* Spacing — 4pt scale. Use `gap`, not per-element margins. Rhythm: tight
+     in-group (--space-2/3), generous between sections (--space-8/9). */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+
+  /* Depth — subtle shadow scale (light) + semantic z-index. Dark themes set
+     --shadow-* to none and elevate with --elevated / --elevated-2 instead. */
+  --shadow-sm: 0 1px 2px rgb(20 30 24 / .05);
+  --shadow-md: 0 2px 4px rgb(20 30 24 / .06), 0 4px 12px rgb(20 30 24 / .05);
+  --shadow-lg: 0 4px 8px rgb(20 30 24 / .07), 0 12px 28px rgb(20 30 24 / .08);
+  --z-dropdown: 200;
+  --z-sticky:   400;
+  --z-modal:    600;
+  --z-toast:    800;
+  --z-tooltip: 1000;
+  --z-feedback: 1100; /* review overlay — above all prototype UI */
 }
 
-/* Reveal-on-scroll (applied by app.js via IntersectionObserver) */
+/* Typographic polish — floor defaults; apply on top of the chosen pairing. */
+h1, h2, h3 { text-wrap: balance; }
+p          { text-wrap: pretty; }
+body       { font-optical-sizing: auto; }
+.tabular, [data-tabular] { font-variant-numeric: tabular-nums; } /* numeric cells / KPIs */
+.eyebrow   { text-transform: uppercase; letter-spacing: .1em; font-size: var(--text-xs); }
+
+/* Baseline card — subtle shadow in light; dark themes drop it (--shadow-* none) and lift
+   via --elevated surface contrast. Builds may extend .card, but keep depth a whisper. */
+.card {
+  background: rgb(var(--elevated));
+  border: 1px solid rgb(var(--muted) / .18);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+
+/* Shared components — a small set every build can extend beyond .card, so
+ * KPI strips / filter rows / tables / forms don't get reinvented from scratch
+ * per prototype. Tokens only (surface/elevated/ink/accent/hairline/space/radius/
+ * shadow) — no gradients, no colors outside the one accent + the existing
+ * success/error status pair already used by .proto-toast. Builds may restyle
+ * these, but keep them token-driven so a theme swap doesn't break them. */
+
+/* .stat — KPI tile. Group 2-4 in a .proto-grid row. */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  background: rgb(var(--elevated));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.stat-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: rgb(var(--ink2));
+}
+.stat-value {
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  color: rgb(var(--ink));
+  font-variant-numeric: tabular-nums; /* also covered by .tabular if applied directly */
+}
+.stat-delta {
+  font-size: var(--text-sm);
+  color: rgb(var(--ink2));
+}
+
+/* .chip — filter pill / tag / status label. `.is-active` for a selected filter;
+   `.is-muted` for a disabled/inactive one. Same "is-" state prefix as
+   .is-loading / .is-error / .is-success elsewhere in this file. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: .3rem .7rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--hairline));
+  background: rgb(var(--surface));
+  color: rgb(var(--ink2));
+  font-size: var(--text-xs);
+  line-height: 1;
+  white-space: nowrap;
+}
+.chip.is-active {
+  background: rgb(var(--accent));
+  border-color: rgb(var(--accent));
+  color: rgb(var(--accent-ink));
+}
+.chip.is-muted { opacity: .6; }
+
+/* .table — put on the <table> itself, inside the existing .proto-table-wrap
+   (that wrapper only handles horizontal overflow; this handles the look). */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.table th,
+.table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid rgb(var(--hairline));
+}
+.table th {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-weight: 600;
+  color: rgb(var(--ink2));
+  background: rgb(var(--elevated-2));
+}
+.table tbody tr:last-child td { border-bottom: 0; }
+@media (hover: hover) {
+  .table tbody tr:hover { background: rgb(var(--muted) / .06); }
+}
+
+/* .form-field — label + control + optional hint/error, stacked. Pairs with the
+   "form state persistence" + "inline error on blur" guidance in reference/build.md. */
+.form-field { display: flex; flex-direction: column; gap: var(--space-1); }
+.form-field > label {
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: rgb(var(--ink));
+}
+.form-field input,
+.form-field select,
+.form-field textarea {
+  padding: .55rem .75rem;
+  border-radius: var(--radius);
+  border: 1px solid rgb(var(--hairline));
+  background: rgb(var(--elevated));
+  color: rgb(var(--ink));
+  font: inherit;
+}
+.form-field .hint {
+  font-size: var(--text-xs);
+  color: rgb(var(--ink2));
+}
+/* Error state reuses the --status-error token, same as .proto-toast.is-error. */
+.form-field.has-error input,
+.form-field.has-error select,
+.form-field.has-error textarea {
+  border-color: rgb(var(--status-error));
+}
+.form-field .error { font-size: var(--text-xs); color: rgb(var(--status-error)); }
+
+/* Interaction floor — Tailwind's reset drops focus rings; ship one globally, plus a press
+   micro-interaction. Keep custom :hover styles behind @media (hover:hover) so they don't
+   stick on touch. :where() keeps specificity 0 so product styles win. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
+  outline: 2px solid rgb(var(--accent));
+  outline-offset: 2px;
+}
+:where(button:not([disabled])):active { transform: translateY(1px); }
+
+/* Imagery — initials avatar + aspect-ratio media placeholder. Prefer these over flat
+   color-block "photos". Icons: copy inline SVG from reicon.dev (MIT) at one weight.
+   .media API: drop an <img> inside and it fills the box, no other markup changes —
+   `<div class="media"><img src="assets/images/…" alt="…"></div>`. Leave it empty (or
+   add data-scene, below) and the wash/scene placeholder shows instead. Real photos are
+   the goal for photo-forward products (marketplaces, listings, profiles) — see
+   reference/build.md "Real imagery" before shipping a placeholder in one of those. */
+.avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; border-radius: 999px;
+  background: rgb(var(--accent)); color: rgb(var(--accent-ink, var(--surface)));
+  font-weight: 600; font-size: .85rem; letter-spacing: .02em; flex: none;
+}
+.media {
+  position: relative;
+  aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius); overflow: hidden;
+  background: linear-gradient(135deg, rgb(var(--accent) / .18), rgb(var(--muted) / .12));
+}
+.media > img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+/* Scene placeholders — a better-than-glyph fallback for when real photos aren't in
+   hand yet. Add data-scene to an *empty* .media (never alongside a real <img> — the
+   photo should always win). Three tasteful, generic silhouettes cut from the wash via
+   mask-image, so they inherit the theme instead of looking like clip art:
+   - "landscape"  — venues, real estate, travel, any outdoor/place listing.
+   - "portrait"   — profile / person cards where an initials .avatar reads too small.
+   - "still-life" — marketplace products, objects, anything shot on a surface.
+   These are still placeholders, not a substitute for asking the user for real images. */
+.media[data-scene]::before {
+  content: "";
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgb(var(--accent) / .38), rgb(var(--muted) / .28));
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center 65%; mask-position: center 65%;
+  -webkit-mask-size: 58%; mask-size: 58%;
+}
+.media[data-scene="landscape"]::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='72' cy='28' r='10'/%3E%3Cpath d='M0 70 L25 45 L45 62 L62 38 L100 70 Z'/%3E%3Cpath d='M0 82 L20 65 L40 78 L58 60 L100 82 L100 100 L0 100 Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='72' cy='28' r='10'/%3E%3Cpath d='M0 70 L25 45 L45 62 L62 38 L100 70 Z'/%3E%3Cpath d='M0 82 L20 65 L40 78 L58 60 L100 82 L100 100 L0 100 Z'/%3E%3C/svg%3E");
+}
+.media[data-scene="portrait"]::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='36' r='18'/%3E%3Cpath d='M14 100 C14 74 30 60 50 60 C70 60 86 74 86 100 Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='36' r='18'/%3E%3Cpath d='M14 100 C14 74 30 60 50 60 C70 60 86 74 86 100 Z'/%3E%3C/svg%3E");
+}
+.media[data-scene="still-life"]::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='50' cy='82' rx='38' ry='8'/%3E%3Crect x='30' y='34' width='40' height='46' rx='10'/%3E%3Ccircle cx='50' cy='30' r='16'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='50' cy='82' rx='38' ry='8'/%3E%3Crect x='30' y='34' width='40' height='46' rx='10'/%3E%3Ccircle cx='50' cy='30' r='16'/%3E%3C/svg%3E");
+}
+
+/* Smooth theme transitions */
+html { transition: background-color .3s var(--ease-out-quart); }
+body { transition: background-color .3s var(--ease-out-quart), color .3s var(--ease-out-quart); }
+
+/* Respect reduced motion — stop transitions and decorative motion, but keep the loading
+   spinner turning (blanking it mid-ring looks broken) and force reveals visible. The
+   `*` selector doesn't reach the ::view-transition-* pseudo tree (it's a separate tree,
+   not matched by the universal selector), so that gets its own override below. `.reveal`
+   needs `!important` too: it's equal specificity to (and comes before, in source order)
+   the base `.reveal { opacity: 0 }` rule further down, which would otherwise win. */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { transition-duration: .01ms !important; }
+  .reveal { opacity: 1 !important; transform: none !important; }
+  .skeleton { animation: none; }   /* static shimmer is fine; spinner keeps turning as feedback */
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) { animation: none !important; }
+}
+
+/* Reveal-on-scroll — opt-in; app.js observes any `.reveal` element and adds `.visible`
+   the first time it enters the viewport (IntersectionObserver, with a reduced-motion
+   and no-IO fallback — see the comment above app.js's `revealEls` block). Nothing
+   moves unless you add class="reveal" to the element. */
 .reveal {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity .6s ease, transform .6s ease;
+  transition: opacity .6s var(--ease-out-expo), transform .6s var(--ease-out-expo);
 }
 .reveal.visible {
   opacity: 1;
   transform: none;
+}
+
+/* Modal (app.js toggles the `open` class + aria-hidden on [data-modal] — this is the
+   display half of that contract; every prototype needs one, so it ships here rather
+   than being reinvented per-build). Prototype-specific modal content still lives in
+   each screen's HTML; this only handles show/hide + the dim backdrop + entry motion.
+   Uses visibility (not display:none) so the opacity fade actually runs both ways —
+   display:none can't be transitioned, it just snaps. The scrim is a fixed black, not
+   an --ink-derived token: --ink flips to a near-white value in dark themes, which
+   would invert the backdrop into a near-white scrim over dark surfaces. */
+[data-modal] {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgb(0 0 0 / .45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--motion-fast) var(--ease-out-quart), visibility 0s linear var(--motion-fast);
+  overflow-y: auto;
+}
+[data-modal].open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--motion-fast) var(--ease-out-quart), visibility 0s linear;
+}
+@media (prefers-reduced-motion: reduce) { [data-modal] { transition: none; } }
+
+/* Same-doc View Transitions — opt-in; wrap a DOM update in UI.withViewTransition()
+   (ui.js) and, where the browser supports the API, the swap cross-fades instead of
+   snapping. Unsupported browsers (Firefox, older Safari) never generate these pseudo-
+   elements at all, so this rule is inert there — the fallback in ui.js is what actually
+   keeps the update working, this is just the transition's look where it fires. */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: var(--motion);
+  animation-timing-function: var(--ease-out-quart);
 }
 
 /* Toast (state.js + ui.js use this) */
@@ -61,7 +371,7 @@ body { transition: background-color .3s ease, color .3s ease; }
   bottom: 5rem;
   left: 50%;
   transform: translate(-50%, 8px);
-  z-index: 50;
+  z-index: var(--z-toast);
   padding: .55rem 1rem;
   border-radius: 999px;
   background: rgb(var(--ink));
@@ -69,7 +379,7 @@ body { transition: background-color .3s ease, color .3s ease; }
   border: 1px solid rgb(var(--ink));
   font-size: .8rem;
   opacity: 0;
-  transition: opacity .2s ease, transform .2s ease;
+  transition: opacity .2s var(--ease-out-quart), transform .2s var(--ease-out-quart);
   pointer-events: none;
   white-space: nowrap;
   max-width: 90vw;
@@ -133,7 +443,7 @@ body { transition: background-color .3s ease, color .3s ease; }
 }
 .empty-state h3 {
   color: rgb(var(--ink));
-  font-family: inherit;   /* use the prototype's heading font, not a hardcoded one */
+  font-family: inherit;   /* inherits body; add class="font-heading" in markup for the display face */
   font-weight: 500;
   font-size: 1.25rem;
   margin-bottom: .5rem;
@@ -148,7 +458,7 @@ body { transition: background-color .3s ease, color .3s ease; }
   bottom: .9rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 40;
+  z-index: var(--z-sticky);
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -171,7 +481,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgb(var(--muted) / .3);
-  box-shadow: 0 8px 24px rgb(0 0 0 / .15);
+  box-shadow: var(--shadow-lg);
   font-size: .72rem;
   color: rgb(var(--ink2));
   pointer-events: auto;
@@ -234,7 +544,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
   border: 0;
   background: transparent;
   cursor: pointer;
-  transition: background .15s ease, color .15s ease;
+  transition: background .15s var(--ease-out-quart), color .15s var(--ease-out-quart);
   font: inherit;
   white-space: nowrap;
   line-height: 1;
@@ -262,7 +572,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
    Mobile: always 1 col. Tablet: 2. Desktop: 2 or 3 depending on layout. */
 .proto-grid {
   display: grid;
-  gap: 1.25rem;
+  gap: var(--space-5);
   grid-template-columns: repeat(1, minmax(0, 1fr));
 }
 @media (min-width: 640px) {
@@ -281,7 +591,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
   position: fixed;
   bottom: 5rem;
   right: 1rem;
-  z-index: 45;
+  z-index: var(--z-modal);
   width: min(22rem, calc(100vw - 2rem));
   max-height: 60vh;
   overflow: auto;
@@ -289,7 +599,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
   border-radius: 12px;
   background: rgb(var(--elevated));
   border: 1px solid rgb(var(--muted) / .2);
-  box-shadow: 0 10px 30px rgb(0 0 0 / .15);
+  box-shadow: var(--shadow-lg);
   display: none;
 }
 .proto-history.visible { display: block; }

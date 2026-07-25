@@ -17,7 +17,12 @@ node_modules/
 examples/**/screenshots/
 examples/**/feedback/applied/
 
-# Tier 3 design-judge scratch
-benchmark/results/
+# Tier 3 design-judge scratch — ignore raw builds/screenshots, keep curated .md summaries
+benchmark/results/*
+!benchmark/results/*.md
 */.shots/
 */.ovprobe.html
+.gstack/
+
+# Scratch prototypes built to exercise/test the skill — not shipped output
+test-output/

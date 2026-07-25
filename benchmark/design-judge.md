@@ -92,6 +92,7 @@ with a one-sentence justification grounded in what's visible:
 | **Content quality** | Real domain copy and plausible numbers; **no lorem, no "John Doe", no placeholder labels** |
 | **Cohesion** | Screens feel like one product; themes/layouts hold together |
 | **Layout integrity** | Nothing occluded, clipped, overlapping, or wrapping badly — including the fixed control bar over page content |
+| **Distinctiveness** | One memorable, on-brief signature move you can name (a distinctive nav, an editorial hero, a data-viz treatment); a template has none |
 | **Gut check** | "Would I put this in front of a stakeholder as-is?" |
 
 > **Clipping caveat:** judge "clipped at the right edge" only on **≥768px** shots, or via the

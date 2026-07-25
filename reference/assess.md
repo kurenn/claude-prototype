@@ -47,10 +47,13 @@ If claude-in-chrome tools are present:
 4. Resize to 375 and screenshot the top 2–3 pages for mobile spot-checks.
 5. Read console on each page with `onlyErrors: true, pattern: "error|Error|failed|Failed"` — any error fails the check and must be fixed before shipping.
 6. Save under `<slug>/screenshots/` with names like `index-ivory-1440.png`, `category-obsidian-375.png`.
+7. **Keyboard-nav + screen-reader spot-check** — on any page with a modal, drive it by keyboard, not the mouse: open with Enter/Space on the trigger, confirm focus lands inside the modal, press Tab repeatedly and confirm it loops within the modal (never reaches the page behind it), press Shift+Tab from the first focusable element and confirm it wraps to the last, then press Esc and confirm focus returns to the trigger. Use `read_page` (or the accessibility tree) to confirm the modal exposes `role="dialog"` + `aria-modal="true"` and that its accessible name/label is non-empty — that's what a screen reader announces on open. One modal instance covers the pattern; you don't need to repeat this per screen.
 
 If tools are absent, print:
 ```
 cd <slug> && python3 serve.py
 # then open http://localhost:8000
 ```
-Plus a manual checklist: desktop / tablet / mobile, every theme, click every button.
+Plus a manual checklist: desktop / tablet / mobile, every theme, click every button, and — for
+any modal — Tab through it with the mouse untouched: focus should land inside on open, loop
+without escaping to the page behind it, and return to the trigger button on Esc.

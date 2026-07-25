@@ -4,6 +4,8 @@ The single-page landing site for [`claude-prototype`](https://github.com/kurenn/
 
 This folder is a self-contained static site. No build step.
 
+> **Note:** this page is hand-built, not scaffold-generated, and predates the design-audits doctrine (PR #11). It keeps a few deliberate departures — no-shadow elevation, its own 1.27 type scale — documented in `DESIGN.md`. Anything that was just drift rather than a choice (bare `ease` transitions) has been brought into line with the doctrine's ease-out convention.
+
 ## Run locally
 
 Three options. Pick one.

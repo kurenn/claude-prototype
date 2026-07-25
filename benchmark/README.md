@@ -66,8 +66,8 @@ and compare:
 
 Run all three briefs through both. Average the scores. The candidate should be **≥** the
 baseline on output quality. Because LLM output varies run-to-run, do 2–3 runs per brief
-per side and compare averages, not single runs. Record results in `results/` (gitignored
-scratch is fine) so trends are visible across skill versions.
+per side and compare averages, not single runs. Record a curated `.md` summary in `results/`
+(committed; raw builds/screenshots are gitignored) so trends are visible across skill versions.
 
 ---
 
@@ -117,7 +117,12 @@ benchmark/check-overflow.sh <prototype-dir>  # objective: no horizontal overflow
   test for progressive disclosure's one real risk — detail in `reference/` getting skipped.
 
 Taste is noisy: n=1/brief shows direction, not proof. For a real claim, render 2–3 builds
-per side per brief and compare win-rate. Record runs in `results/` (gitignored).
+per side per brief and compare win-rate. Record a curated `.md` summary in `results/` (committed).
+
+**Doing this to spec (n=2–3, full-length briefs, plus a design-diversity/monoculture
+check) is a multi-build effort, not a five-minute script run — see `rebench.md` for the
+exact repeatable procedure, including why a shortcut run (e.g. n=1 or scoped-down screen
+counts) doesn't satisfy the spec and what a real run costs.**
 
 ---
 
@@ -143,6 +148,9 @@ output quality is a regression regardless of how lean it made the skill.
 - `render.sh` — render a prototype dir to desktop + tablet screenshots (Tier 3).
 - `check-overflow.sh` — objective horizontal-overflow guard at a true 390px viewport (exits non-zero on overflow).
 - `design-judge.md` — blind pairwise design-quality rubric (Tier 3).
+- `rebench.md` — the exact repeatable procedure for a to-spec A/B re-run (n=2–3, full-length
+  briefs, plus the design-diversity/monoculture check) using worktrees + this directory's
+  scripts. Read this before re-running the benchmark across a skill change.
 - `baseline.json` — pre-refactor trigger-time cost, for the comparison.
 - `briefs/` — three fixed briefs (SaaS dashboard, marketplace, fintech) to generate from.
-- `results/` — gitignored scratch for recorded A/B runs.
+- `results/` — committed `.md` A/B summaries (raw builds / screenshots gitignored).

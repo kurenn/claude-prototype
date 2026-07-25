@@ -267,7 +267,7 @@
             </div>
             <p>${escapeHtml(c.note)}</p>
             <small>${escapeHtml(c.element_text || c.selector)}</small>
-            <a data-fb-goto href="${c.shareable_url}">open ↗</a>
+            <a data-fb-goto href="${escapeHtml(c.shareable_url)}">open ↗</a>
           </li>
         `).join('')}
       </ul>
