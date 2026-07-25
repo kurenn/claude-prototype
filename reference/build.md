@@ -260,54 +260,50 @@ in that category actually ship instead of copying the scaffold nav verbatim:
 - **Command-palette-first (⌘K)** — use when the audience is keyboard-first and
   navigation is "jump to X," not browsing a fixed link list (internal tools, dev/data products).
   ```html
-  <header class="border-b border-hairline bg-surface">
-    <div class="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <span class="font-heading font-bold">{{PRODUCT_NAME}}</span>
-      <button class="rounded-proto border border-muted/30 px-3 py-2 text-sm text-ink2 flex items-center gap-2 hover:text-ink">
-        <span>Search or jump to…</span><kbd class="text-xs border border-muted/30 rounded px-1">⌘K</kbd>
-      </button>
-    </div>
-  </header>
+  <div class="border-b border-hairline bg-surface mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+    <span class="font-heading font-bold">{{PRODUCT_NAME}}</span>
+    <button class="rounded-proto border border-muted/30 px-3 py-2 text-sm text-ink2 flex items-center gap-2 hover:text-ink">
+      <span>Search or jump to…</span><kbd class="text-xs border border-muted/30 rounded-proto px-1">⌘K</kbd>
+    </button>
+  </div>
   ```
+  Wire the trigger to a `[data-modal]` command palette via `openModal` (focus trap ships free — see "Modal focus trap" above) and add a `⌘K` / `Ctrl+K` keydown listener in `app.js`; a dead ⌘K hint fails the dead-end sweep.
 - **Inline search pill** — use when search is a primary action but a couple of links
   still earn a permanent spot (docs, catalogs, content libraries).
   ```html
-  <header class="border-b border-muted/20 bg-surface">
-    <nav class="mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
-      <span class="font-heading font-bold">{{PRODUCT_NAME}}</span>
-      <button class="flex-1 min-w-[140px] max-w-sm rounded-proto border border-hairline bg-elevated px-3 py-2 text-sm text-ink2 flex items-center gap-2">
-        <span>Search…</span><kbd class="ml-auto text-xs">⌘K</kbd>
-      </button>
-      <a href="#" class="rounded-proto bg-accent text-accent-ink px-4 py-2 text-sm">New</a>
-    </nav>
-  </header>
+  <nav class="border-b border-hairline bg-surface mx-auto max-w-6xl px-4 py-3 flex flex-wrap items-center justify-between gap-3">
+    <span class="font-heading font-bold">{{PRODUCT_NAME}}</span>
+    <button class="flex-1 min-w-[140px] max-w-sm rounded-proto border border-hairline bg-elevated px-3 py-2 text-sm text-ink2 flex items-center gap-2 hover:text-ink">
+      <span>Search…</span><kbd class="ml-auto text-xs">⌘K</kbd>
+    </button>
+    <a href="#" class="rounded-proto bg-accent text-accent-ink px-4 py-2 text-sm">New</a>
+  </nav>
   ```
-- **Floating pill nav** — use when the surface beneath (hero, dashboard background)
-  can carry a blurred pill; reads modern-minimal rather than corporate.
+  Same wiring as the command-palette trigger above — a dead search box fails the same sweep.
+- **Floating pill nav** — use when the surface beneath is a dashboard background
+  (or hero) that can carry a blurred pill; reads modern-minimal rather than corporate.
   ```html
-  <nav class="fixed inset-x-3 top-3 z-20 mx-auto max-w-fit flex flex-wrap justify-center items-center gap-4 rounded-proto border border-hairline bg-surface/80 backdrop-blur px-4 py-2 shadow-sm">
+  <nav class="fixed inset-x-3 top-3 z-20 mx-auto max-w-fit flex flex-wrap justify-center items-center gap-4 rounded-proto border border-hairline bg-surface/80 backdrop-blur px-4 py-2 shadow-[var(--shadow-sm)]">
     <span class="font-heading font-bold text-sm">{{PRODUCT_NAME}}</span>
     <a href="#" class="text-sm text-ink2 hover:text-ink">Overview</a>
     <a href="#" class="text-sm text-ink2 hover:text-ink">Reports</a>
-    <a href="#" class="rounded-proto bg-accent text-accent-ink px-3 py-1.5 text-sm">Get →</a>
+    <a href="#" class="rounded-proto bg-accent text-accent-ink px-3 py-1.5 text-sm">New report</a>
   </nav>
   ```
-  Keep the link list short — `flex-wrap` is the 390px overflow escape hatch, not
-  license to add more; a pill spanning edge-to-edge is just a bar with rounded corners.
+  `fixed` leaves the flow — give the page's first block `pt-20` (more if the pill wraps at 390px) or the pill covers your h1. Keep the link list short — `flex-wrap` is the 390px overflow escape hatch, not license to add more; a pill spanning edge-to-edge is just a bar with rounded corners.
 - **Side-rail nav** — use when the product is a dashboard/tool with a handful of
   top-level sections and the rail can carry the whole IA.
   ```html
   <div class="flex min-h-screen">
-    <nav class="hidden md:flex flex-col w-56 shrink-0 border-r border-hairline bg-surface p-4 gap-1">
+    <nav class="hidden md:flex md:sticky md:top-0 md:h-screen md:overflow-y-auto flex-col w-56 shrink-0 border-r border-hairline bg-surface p-4 gap-1">
       <span class="font-heading font-bold mb-4">{{PRODUCT_NAME}}</span>
-      <a href="#" class="rounded-proto px-3 py-2 text-sm bg-accent/10 text-accent">Overview</a>
+      <a href="#" class="rounded-proto px-3 py-2 text-sm bg-accent/10 text-accent" aria-current="page">Overview</a>
       <a href="#" class="rounded-proto px-3 py-2 text-sm text-ink2 hover:bg-elevated">Reports</a>
     </nav>
     <main class="flex-1 min-w-0 px-4 sm:px-6 py-6"><!-- screen content --></main>
   </div>
   ```
-  `hidden md:flex` drops the rail at 390px — ship a top bar or drawer as the
-  mobile fallback, not a squeezed 56px column.
+  `hidden md:flex` drops the rail at 390px — ship a top bar or drawer as the mobile fallback, not a squeezed 56px column; `md:sticky` keeps the rail in view as the page scrolls.
 
 **Accountability:** name the shape you picked in `DESIGN.md` ("Nav: side-rail,
 because…") — don't land on wordmark-left + inline links + button-right by default;
