@@ -7,26 +7,38 @@ Quality gate before handoff. Find issues, fix them, re-verify.
 <!-- Pre-emit self-critique adapted from Hallmark (github.com/Nutlope/hallmark), MIT. -->
 
 Before writing each screen, score it 1–5 on six axes — no tools, no rendering, judgment
-against the brief only. Run this on your own planned output during Step 6, before Step 7
-(impeccable, or the builtin-lint fallback) and Step 8 (browser QA) below. (Distinct from the
-post-hoc pairwise judge in `benchmark/design-judge.md`: this runs pre-emit, scored alone
-against the brief.)
+against the brief only. **Score as a hostile reviewer hunting for why this screen is
+generic — not as its author.** Every axis starts at **3**; a 4 or 5 must be *earned* by a
+specific reason a skeptic would accept ("the KPI row wins the squint test — it's ~2× the
+weight of everything around it"), never "it looks fine." If you can't name why an axis beats
+a 3, it's a 3 — and **if every axis lands 4–5, you are not looking hard enough**: name the
+single weakest axis on every screen and the concrete flaw behind it. Runs on your own planned
+output during Step 6, before Step 7 and Step 8 below. (Distinct from the post-hoc pairwise
+judge in `benchmark/design-judge.md`: this is pre-emit, scored alone against the brief.)
 
 | # | Axis | What you're scoring on this screen |
 |---|---|---|
 | **A** | **Philosophy** | Is there a clear point of view for how this screen serves its user's task — or is it just a layout with widgets dropped in? |
-| **B** | **Hierarchy** | In 2 seconds, can you tell what's primary, secondary, tertiary — the one action or number that matters vs. supporting chrome? |
-| **C** | **Execution** | Are the details (spacing scale, focus states, empty/loading/error states, contrast) in spec, or is there sloppiness even where the layout is right? |
+| **B** | **Hierarchy** | In 2 seconds, can you tell what's primary vs. supporting — the one action or number that matters? A flat wall of equal-weight cards, or data viz you have to hunt for, caps this at **2**. |
+| **C** | **Execution** | Score against what Step 7 will *mechanically* catch: real contrast **including on data viz** (faint funnel/bar/chart fills are the classic self-critique miss), focus/empty/loading/error states, no dead buttons, no 390px overflow, no control clipped at 768. A sub-4.5:1 chart, a detached panel leaving a dead zone, or a clipped tab caps Execution at **2** — even if the layout is otherwise right. |
 | **D** | **Specificity** | Does this look like *this product's* screen — real domain data, terms, and workflows — or a generic admin/dashboard template that could belong to anyone? |
 | **E** | **Restraint** | Have you removed everything not earning its place — decorative cards, redundant labels, padding-for-padding's-sake? |
 | **F** | **Variety** | Shared nav / footer / control bar is required cohesion, not a fingerprint — score F on the content region: a dashboard, a detail view, and a settings screen must not be the same card-grid template with relabeled data. The first screen passes F trivially (nothing to compare yet). |
 
-**Gate:** any axis scoring below 3 → revise before writing the next screen; all screens pass
-before Step 7. Two passes is normal; three means re-check the brief, not the pixels.
+**Gate:** any axis below 3 → revise before writing the next screen; all screens pass before
+Step 7. Two passes is normal; three means re-check the brief, not the pixels.
 
-**Stamp it:** record the six scores as an HTML comment at the top of each screen file,
-updated after any revision pass — e.g. `<!-- prototype · pre-emit: P4 H4 E3 S5 R4 V4 -->`
-(letters are axis initials: Philosophy, Hierarchy, Execution, Specificity, Restraint, Variety).
+**Stamp it:** record the six scores as an HTML comment atop each screen file, updated after any
+revision — e.g. `<!-- prototype · pre-emit: P4 H4 E3 S5 R4 V4 -->` (axis initials
+P/H/E/S/R/V) — and name the weakest axis in a word.
+
+**Reconcile after Step 7 — this is what keeps the score honest.** Once builtin-lint / impeccable
+has run, compare each screen's findings against its stamp. Any finding that contradicts the stamp
+(you stamped E4 but lint found a contrast failure, dead button, or overflow) proves the critique
+was too lenient: lower that stamp, fix the issue, and score the *remaining* screens harder on that
+axis. A pre-emit critique that never disagrees with the later lint isn't critiquing — it's
+rubber-stamping (the exact failure `benchmark/results/design-ab-2026-07-25.md` caught: the build
+that self-scored 4–5 across the board was the one a blind judge ranked weakest).
 
 ## Step 7: Assess
 
