@@ -2,6 +2,32 @@
 
 Quality gate before handoff. Find issues, fix them, re-verify.
 
+## Pre-emit self-critique (runs during Step 6, before Step 7)
+
+<!-- Pre-emit self-critique adapted from Hallmark (github.com/Nutlope/hallmark), MIT. -->
+
+Before writing each screen, score it 1–5 on six axes — no tools, no rendering, judgment
+against the brief only. Run this on your own planned output during Step 6, before Step 7
+(impeccable, or the builtin-lint fallback) and Step 8 (browser QA) below. (Distinct from the
+post-hoc pairwise judge in `benchmark/design-judge.md`: this runs pre-emit, scored alone
+against the brief.)
+
+| # | Axis | What you're scoring on this screen |
+|---|---|---|
+| **A** | **Philosophy** | Is there a clear point of view for how this screen serves its user's task — or is it just a layout with widgets dropped in? |
+| **B** | **Hierarchy** | In 2 seconds, can you tell what's primary, secondary, tertiary — the one action or number that matters vs. supporting chrome? |
+| **C** | **Execution** | Are the details (spacing scale, focus states, empty/loading/error states, contrast) in spec, or is there sloppiness even where the layout is right? |
+| **D** | **Specificity** | Does this look like *this product's* screen — real domain data, terms, and workflows — or a generic admin/dashboard template that could belong to anyone? |
+| **E** | **Restraint** | Have you removed everything not earning its place — decorative cards, redundant labels, padding-for-padding's-sake? |
+| **F** | **Variety** | Shared nav / footer / control bar is required cohesion, not a fingerprint — score F on the content region: a dashboard, a detail view, and a settings screen must not be the same card-grid template with relabeled data. The first screen passes F trivially (nothing to compare yet). |
+
+**Gate:** any axis scoring below 3 → revise before writing the next screen; all screens pass
+before Step 7. Two passes is normal; three means re-check the brief, not the pixels.
+
+**Stamp it:** record the six scores as an HTML comment at the top of each screen file,
+updated after any revision pass — e.g. `<!-- prototype · pre-emit: P4 H4 E3 S5 R4 V4 -->`
+(letters are axis initials: Philosophy, Hierarchy, Execution, Specificity, Restraint, Variety).
+
 ## Step 7: Assess
 
 **Detection:** look for `impeccable` in the available-skills list. `teach-impeccable`
@@ -28,7 +54,7 @@ PRODUCT.md/DESIGN.md — don't pass them manually:
 Collect findings, fix them, re-run until clean. Commit each fix batch atomically.
 
 If `impeccable` is genuinely absent (auto-install failed — no npx/Node/network), run the
-built-in checker in `checks/builtin-lint.md` (20 rules: purple gradients, gradient text,
+built-in checker in `checks/builtin-lint.md` (purple gradients, gradient text,
 low contrast, dead buttons/links, 375px overflow, console errors, missing alt text, nested
 cards, lorem ipsum, placeholder names, scope/screen count, build tooling, theme integrity,
 URL round-trip, etc.). Produce `LINT.md`, fix all errors, re-verify. Note in the output:
