@@ -82,14 +82,18 @@ a `-w390` window-size screenshot looked clipped. Swap `src=` per screen. Delete 
 For each brief, the judge compares A vs B across these lenses and picks **A / B / tie**
 with a one-sentence justification grounded in what's visible:
 
+<!-- Slop gates adapted from Hallmark (github.com/Nutlope/hallmark), MIT. -->
+
 | Lens | What "better" means |
 |---|---|
 | **Visual hierarchy** | Eye lands on the right thing first; clear primary vs secondary; no flat wall of equal-weight elements |
 | **Spacing & rhythm** | Consistent gaps, aligned edges, breathing room; not cramped, not sparse |
 | **Typography** | Sensible scale, readable line-length, restrained weights; not 6 sizes fighting |
 | **Color discipline** | Restrained palette, purposeful accent, sufficient contrast; **no random gradients, no AI-slop purple-on-black** |
-| **Component craft** | Cards/tables/charts/buttons feel intentional; states and affordances read clearly |
+| **Component craft** | Cards/tables/charts/buttons feel intentional |
+| **Input-state craft** | Inputs and buttons in the same row share height; error/disabled states, where shown, read clearly without breaking the layout |
 | **Content quality** | Real domain copy and plausible numbers; **no lorem, no "John Doe", no placeholder labels** |
+| **Chrome authenticity** | No hand-redrawn browser/phone/IDE chrome standing in for a real screenshot; no fabricated proof claims (uptime %, "trusted by N teams"); in-product demo data should look plausible, not sourced |
 | **Cohesion** | Screens feel like one product; themes/layouts hold together |
 | **Layout integrity** | Nothing occluded, clipped, overlapping, or wrapping badly — including the fixed control bar over page content |
 | **Distinctiveness** | One memorable, on-brief signature move you can name (a distinctive nav, an editorial hero, a data-viz treatment); a template has none |
@@ -98,6 +102,16 @@ with a one-sentence justification grounded in what's visible:
 > **Clipping caveat:** judge "clipped at the right edge" only on **≥768px** shots, or via the
 > true-390 probe (§1b). A sub-500px `render.sh` screenshot that looks clipped is almost always
 > the headless-clamp artifact, **not** a real defect — confirm with the probe before scoring it.
+
+> **Input-state caveat:** `render.sh` captures a static initial-state screenshot, and the
+> judge sees only that screenshot — it never interacts with the page. Focus-ring reflow
+> (does the border widen on `:focus`?) and error-appearance shove (does an error message
+> push sibling content down when it appears?) are not observable from a static shot, so
+> don't score them here; a judge asked to guess at them produces a hallucinated verdict.
+> Those dynamic checks belong to `checks/builtin-lint.md` rule 27, which inspects the CSS
+> directly. **Input-state craft** in this table is scored on what a still image actually
+> shows: shared height between inputs/buttons in a row, and whether any error/disabled
+> state that happens to be visible in that one frame reads clearly without breaking layout.
 
 ### 4. Aggregate
 

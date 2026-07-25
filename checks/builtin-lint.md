@@ -152,6 +152,307 @@ grep -i "signature" <prototype>/DESIGN.md
 ```
 Flag if absent.
 
+<!-- Slop gates adapted from Hallmark (github.com/Nutlope/hallmark), MIT. -->
+
+---
+
+## Contrast — button & fill
+
+### 22. Button text ≈ fill contrast
+Rule 3 checks text against the *page* background — but a button's own fill can still
+swallow its label (e.g. `--ink` text on a `--accent` fill that computes to nearly the
+same lightness). Reuse rule 3's contrast math, this time pairing the button's text
+color against its own fill, per theme.
+- For every button/CTA-like element (`.btn`, `[type="submit"]`, anything with a solid
+  `bg-accent`-style fill), find the applied text token and the fill token, per theme.
+- Run the same luminance → ratio math as rule 3 for that pair: ≥4.5:1 for normal text,
+  ≥3:1 for large/bold (≥18px bold or ≥24px regular).
+- Walk every theme — a token pairing that passes in one theme (e.g. `--accent` /
+  `--accent-ink`) can fail in another if a theme redefines one side without the other.
+
+```
+grep -rE 'class="[^"]*bg-accent[^"]*text-(ink[23]?|muted)([" /]|$)' <prototype>/ --include="*.html"
+grep -rE 'class="[^"]*text-(ink[23]?|muted)[^"]*bg-accent' <prototype>/ --include="*.html"
+```
+
+Also read every `.btn`/CTA rule in `styles.css` and check its `color:` token against its
+`background:` token (the grep is HTML-only).
+
+**Fix:** pair every `bg-accent` fill with `text-accent-ink` (never `text-ink` /
+`text-muted`), and confirm `--accent-ink` clears the ratio against `--accent` in every
+theme's token block.
+
+---
+
+## Layout & grid
+
+### 23. `minmax(0, 1fr)` on image/media grid tracks
+Grid tracks holding an `<img>`, `<picture>`, or `.media` block need `minmax(0, 1fr)`, not
+bare `1fr`. Bare `1fr` resolves to `minmax(auto, 1fr)` — the `auto` minimum takes the
+image's intrinsic width as the track floor, which can blow the layout past the viewport
+on phones.
+
+```
+grep -rn "grid-template-columns" <prototype>/ --include="*.css" --include="*.html"
+```
+
+For each match with a bare `1fr` (not already wrapped in `minmax(0, …)`), check whether
+that grid's children include an image or `.media` block. If so, flag it.
+
+**Fix:** wrap the track — `1fr` → `minmax(0, 1fr)`.
+
+### 24. `overflow-wrap: anywhere` on display headings
+Long unbroken strings (compound product names, uppercase brand names, URLs) in a large
+heading have no break opportunity at small viewports and overflow at 390px. This is a
+**build-content** risk, not a property every heading needs — a short, ordinary headline
+(the scaffold's own `{{HERO_HEADLINE}}`) has nothing to break on and isn't a finding.
+
+```
+grep -rEn "<h1|class=\"[^\"]*(hero|display|section__title)" <prototype>/ --include="*.html"
+```
+
+For each match, don't flag on the class/tag alone. Flag only when **either**:
+- the heading's actual text contains a long unbroken token (a URL, hash, slug, or
+  compound-word string ≥ ~20 characters with no space/hyphen break opportunity), **or**
+- `benchmark/check-overflow.sh <prototype-dir> 390` confirms that screen overflows at
+  390px.
+For a flagged heading, confirm its CSS rule sets `overflow-wrap: anywhere` (or
+`word-break: break-word`) and, if it's a grid/flex item, `min-width: 0`.
+
+**Fix:** add `overflow-wrap: anywhere;` to the display-heading selector(s) in `styles.css`.
+(The scaffold itself doesn't ship this baseline yet — that's tracked as a separate
+follow-up, not something this rule should paper over by flagging every heading.)
+
+### 25. All-caps heading line-height floor
+Uppercase glyphs have no descenders, so their cap-tops sit at the very top of the line
+box. Below `line-height: 1.0`, a wrapped all-caps heading's second line visibly collides
+with the first line's baseline or trailing punctuation.
+
+```
+grep -rnB2 -A2 "text-transform:\s*uppercase" <prototype>/ --include="*.css"
+```
+
+Flag any match where the same rule (or an inherited `line-height` / `--lh-tight`) is
+below `1.0` on a display-size element.
+
+**Fix:** bump `line-height` to ≥1.0 (1.02–1.08 recommended) for that selector, or drop
+the uppercase transform on headings that can wrap.
+
+### 26. Flex vertical-centering baseline
+`align-items: stretch` is the flex box's **initial value** (not something a row
+"inherits" from a parent) — so an unstyled flex row defaults to it. In a nav, toolbar,
+CTA cluster, or icon+text row that mixes a fixed-height element (icon, avatar, badge,
+button) with a text sibling, that default lets the taller child stretch and breaks the
+shared baseline. This rule targets **interactive bars**, not every flex container on the
+page — a flex row with same-height text-only children has nothing to break.
+
+```
+grep -rEn 'class="[^"]*\bflex\b[^"]*"' <prototype>/ --include="*.html"
+```
+
+Narrow matches to nav bars, toolbars, CTA clusters, and icon+text rows (skip generic
+layout flex containers). For each, confirm `items-center` (Tailwind) or
+`align-items: center` (custom CSS) is present. Also check `line-height: 1` on the row
+(or its icon/text children) — a default `line-height` taller than the icon's box adds
+invisible vertical padding that misaligns the baseline even with `align-items: center` set.
+
+**Fix:** add `items-center` (or `align-items: center`) to the row, and `line-height: 1`
+where a default line-height is throwing off the visual center.
+
+---
+
+## Forms & inputs
+
+### 27. Input-state craft
+Inputs are where "almost right" UIs lose. Fail on **any** of:
+- **Focus changes border width** — default / hover / focus / error must all keep the
+  same `border-width`. Focus should read via `box-shadow` / `outline` /
+  `background-color`, never a wider border (that reflows layout). A `border: 2px solid …`
+  declared fresh inside a `:focus`/`:focus-visible` block is the same violation even when
+  it's not spelled `border-width` — it's still a width change that reflows.
+- **Input height ≠ adjacent button height** — inputs and buttons in the same row must
+  share one base height (44px floor).
+- **Helper/error text slot collapses on a build-introduced field** — a field the build
+  adds needs a reserved `min-height` on its `.hint` / `.error` slot (even when empty) if
+  the error text appearing shifts sibling content. The scaffold's own `.form-field .hint`
+  / `.error` (see `styles.css`) are a **sanctioned baseline** — they follow the
+  inline-error-on-blur pattern documented in `reference/build.md` and are not a finding
+  by themselves; a scaffold `min-height` baseline is tracked separately. Flag a
+  build-introduced field only when it both lacks reserved space *and* its error's
+  appearance visibly shoves sibling content.
+- **Disabled is opacity-only** — disabled state needs `opacity` **and**
+  `cursor: not-allowed` **and** the native `disabled` attribute (or
+  `aria-disabled="true"`).
+
+```
+grep -rnB6 "border-width" <prototype>/ --include="*.css" | grep -E ':(focus|focus-visible|hover)'
+grep -rn "\.hint\|\.error" <prototype>/ --include="*.css"
+grep -rnE "\[disabled\]|:disabled" <prototype>/ --include="*.css" -A2
+```
+
+The first grep looks 6 lines back from every `border-width` declaration for a
+`:focus` / `:focus-visible` / `:hover` selector opening — real (multiline, formatted)
+CSS almost never puts the selector and the declaration on one line, so a line-anchored
+`:focus\s*\{[^}]*border-width` pattern never matches actual files. Make sure this covers
+`:focus-visible`, not just `:focus` — many builds use `:focus-visible` exclusively.
+
+**Fix:** move focus indication off `border-width` (and off any border shorthand that
+changes width); equalize input/button heights; reserve `min-height` on a build-introduced
+hint/error slot that shoves layout; add `cursor: not-allowed` + the `disabled` attribute
+alongside opacity.
+
+---
+
+## Token & content discipline
+
+### 28. Inline color outside the token block
+Every color must flow from a `:root` / `[data-theme]` token — a raw hex, `rgb()`, or
+`oklch()` literal anywhere else means the palette was improvised mid-build instead of
+chosen once. This rule binds on **colors the build introduces** — flag any literal not
+already present in `templates/scaffold-base/css/styles.css` or
+`templates/feedback-overlay/feedback.css`.
+
+**Sanctioned platform literals — do not flag** (they ship in the scaffold on purpose):
+the modal scrim `[data-modal] { background: rgb(0 0 0 / .45) }` (deliberately not
+ink-derived — dark themes would invert it into a light scrim); the
+`.proto-toast.is-error` / `.is-success` status fills; `--shadow-*` values inside the
+token blocks; anything in `css/feedback.css` or under `#proto-controls` (review chrome,
+not product UI).
+
+```
+grep -rnE '((style|fill|stroke)="[^"]*#[0-9a-fA-F]{3,8}|\[#[0-9a-fA-F]{3,8}\])' <prototype>/ --include="*.html"
+grep -rnE "(color|background(-color)?|border(-(top|right|bottom|left))?(-color)?|fill|stroke):\s*[^;]*(#[0-9a-fA-F]{3,8}|rgba?\([^)]*\)|hsla?\([^)]*\)|oklch\([^)]*\))" <prototype>/ --include="*.css" | grep -vE "var\(--|:root|\[data-theme"
+```
+
+The HTML grep is deliberately narrow: a bare `#[0-9a-fA-F]{3,8}` also matches numeric
+entities (`&#8212;`) and `#anchor` hrefs, so it's constrained to `style=`/`fill=`/`stroke=`
+attribute values and bracketed Tailwind arbitrary-value classes (`[#hex]`). The CSS grep
+now covers `border` shorthand and sides (`border-left`, `border-color`, …), not just
+`border(-color)?` — the old pattern missed `border-left: 3px solid #e64545`, a real
+literal, entirely.
+
+**Fix:** lift the value into the token block as a new named `--variable`, or replace it
+with an existing token.
+
+### 29. No re-drawn browser / phone / IDE chrome
+A hand-built fake browser toolbar (URL pill + traffic-light dots), phone frame (rounded
+rectangle + notch), or IDE chrome (file tabs + sidebar around a code block) reads as set
+decoration, not product — and is one of the strongest "this is AI-generated" tells.
+
+```
+grep -rniE "(browser-bar|url-bar|traffic-light|window-dots|phone-notch|fake-browser|mock-browser|ide-chrome|editor-chrome|terminal-chrome)" <prototype>/ --include="*.html" --include="*.css"
+```
+
+The grep only catches self-labeling class names — a hand-built toolbar that isn't named
+`fake-browser` etc. sails through with near-zero recall. Where claude-in-chrome is
+available (already within this file's stated verification bar — line 3), visually check
+each screenshot for a traffic-light dot triplet or a URL pill sitting above content; that
+catches re-drawn chrome the grep can't name.
+
+**Fix:** use a real screenshot inside a `<picture>` / `<figure>`, or drop the chrome and
+let the content stand on its own.
+
+### 30. No invented precise metrics
+A suspiciously precise, unsourced stat presented as real ("99.98% uptime", "10,432
+active users", "trusted by 12,000+ teams") fabricates facts about the product. This
+applies to **marketing/proof claims** — uptime %, social-proof counts, comparison
+stats ("3x faster") — sitting outside the product surface (hero, footer, testimonial
+strip). It does **not** apply to in-product demo data inside KPI tiles, tables, or
+charts — rules 11–13 require that data look plausible and realistic, and a plausible
+number like a `42.5%` chart value or a `.stat-value` tile is exactly what those rules
+ask for, not a violation of this one.
+
+```
+grep -rniE "(9[0-9](\.[0-9]{1,2})?\s*%\s*(uptime|sla|accuracy)|[0-9]{1,3},[0-9]{3}\+?\s+([a-z]+\s+){0,2}(users|customers|teams|downloads|members)|[0-9]+[x×]\s*(faster|cheaper|better))" <prototype>/ --include="*.html"
+```
+
+The previous pattern both false-negatived on its own example (an adjective between the
+count and the noun — "10,432 **active** users" — broke a bare `,[0-9]{3}\+?\s*(users|…)`
+match) and false-positived on ordinary chart/KPI data (any `NN.N%` value, in-product or
+not, matched). The replacement requires an uptime/SLA/accuracy word after a 90s-range
+percentage, allows up to two adjectives between a count and its noun, and adds the
+"Nx faster/cheaper/better" comparison-stat shape — all scoped to the marketing-claim
+context this rule is actually about.
+
+**Fix:** replace with a labelled placeholder ("metric to confirm") or rebuild the
+section without the proof slot — don't invent a number to fill a stat-led layout.
+
+---
+
+## Named tells
+
+### 31. No italic display headers
+Italic on `h1`–`h6`, a hero title, wordmark, or stat figure is a top AI tell. Headers are
+roman; emphasis comes from weight, accent color, or a drawn underline.
+
+```
+grep -rnE "font-style:\s*italic" <prototype>/ --include="*.css"
+grep -rnE "<h[1-6][^>]*>.*(<em>|<i>)" <prototype>/ --include="*.html"
+grep -rnE '<h[1-6][^>]*class="[^"]*\bitalic\b' <prototype>/ --include="*.html"
+```
+
+The likeliest real case — a Tailwind `italic` utility class straight on the heading tag
+(`<h1 class="italic …">`) — was missing from the original two greps entirely; the third
+grep catches it. Note the second grep is same-line only (it won't catch an `<em>`/`<i>`
+wrapping heading text that spans multiple lines in the markup).
+
+**Fix:** drop `italic` / `<em>` / `<i>` from headings; reserve italics for inline
+emphasis inside running body copy only.
+
+### 32. No eyebrow/tag left of the heading
+A small eyebrow/tag/number placed in a column to the left (or right) of the section
+heading — tag-left, header-right — is a templated-SaaS tell, regardless of class name.
+**Not bypassable by "match the reference"** — if a reference design ships this pattern,
+flatten it in the new build anyway.
+
+```
+grep -rnE 'class="[^"]*(eyebrow|kicker|pretitle)[^"]*"' <prototype>/ --include="*.html"
+grep -rnE "grid-template-columns:\s*(auto\s+1fr|minmax\([^)]*\)\s+minmax\([^)]*\)|[0-9.]+fr\s+[0-9.]+fr)" <prototype>/ --include="*.css"
+```
+
+For any header/wrapper containing both an eyebrow and a heading, confirm it's
+single-column (`display: block`, `flex-direction: column`, or
+`grid-template-columns: 1fr`) — not a multi-column row.
+
+**Fix:** stack the eyebrow directly above the heading in the same column; never
+side-by-side.
+
+### 33. One icon set, no emoji-as-icon
+Icons drawn from more than one library on the same page, or emoji (✨ 🚀 ⚡ 🔥 🎯 ✅) used
+as feature/step/pricing-tier **icons**, is an AI-default tell. This is a companion check
+to the reicon.dev single-weight rule in [`reference/build.md`](../reference/build.md) —
+that rule covers *weight*; this one covers *library and emoji mixing*. It targets
+emoji standing in for a product icon, not every emoji character in the build.
+
+**Do not flag** anything under `#proto-controls` or in `css/feedback.css` — the
+scaffold's own control bar uses 🔗/💬 as review-chrome affordances (`index.html`'s
+Share/Feedback buttons), not product feature icons, and is sanctioned as-is.
+
+`✓` / `✕` (U+2600–27BF) are ambiguous — they're legitimate as inline status glyphs
+(a checklist mark, a close button) as often as they're a lazy icon substitute. Treat a
+match there as needing human eyeballing in context, not an automatic fail.
+
+The arrow range (U+2190–21FF) from the original pattern has been dropped entirely — it
+was a port invention with no basis in the hallmark source this rule is adapted from.
+The hallmark check bans emoji standing in for feature/step icons; it does not ban
+typographic arrows. A `→` used inline as a link affordance or `↑ 12%` as a KPI delta
+are legitimate typography, not slop, and shouldn't fail this rule.
+
+```
+grep -rniE "(feather-icons|lucide|heroicons|material-icons|font-awesome|phosphor-icons)" <prototype>/ --include="*.html"
+grep -rnP "[\x{1F300}-\x{1FAFF}\x{2600}-\x{27BF}]" <prototype>/ --include="*.html"
+```
+
+`-P` (PCRE) isn't available on every `grep` (notably BSD grep on macOS without a PCRE
+build). Where `-P` fails, fall back to a literal alternation for the common
+feature-icon offenders:
+```
+grep -rn "✨\|🚀\|⚡\|🔥\|🎯\|✅" <prototype>/
+```
+
+**Fix:** pick one icon source (reicon.dev, one weight) for the whole prototype; replace
+emoji-as-icon with an inline SVG, or drop the icon and lead with typography.
+
 ## Report format
 
 Produce `LINT.md` at the prototype root:
@@ -159,7 +460,7 @@ Produce `LINT.md` at the prototype root:
 ```markdown
 # Lint Report — {{timestamp}}
 
-**Rules checked:** 21  ·  **Passing:** N  ·  **Findings:** M
+**Rules checked:** 33  ·  **Passing:** N  ·  **Findings:** M
 
 ## Errors (N)
 
