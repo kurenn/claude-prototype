@@ -1,9 +1,19 @@
-# Re-bench: `main` vs `design-audits`, done to spec
+# Re-bench: baseline vs candidate, done to spec
 
 This is the exact, repeatable procedure for a real A/B claim between two skill versions —
 not the shortcuts `results/capstone-2026-07.md` had to take (n=1, 2 scoped screens). It
 exists so re-running the benchmark is cheap enough to actually happen, instead of getting
 re-scoped down again under session-length pressure.
+
+**"Baseline" and "candidate" are roles, not fixed branches.** Baseline = the skill as it
+shipped before the change under test; candidate = the commit/branch that carries the
+change. Plug the two commits into the setup below.
+
+> **This run (anti-slop port, 2026-07):** baseline = `d90c031` (main + PR #11, before the
+> port), candidate = `c0a4c7f` (current main, +927 lines across 9 files: pre-emit
+> self-critique, precise slop gates 22–33, microinteraction pack, anti-fingerprint navs,
+> enriched inspiration/study step, scaffold typography hardening). The old `design-audits`
+> branch this file first targeted is now merged into `main` and deleted — do not use it.
 
 **This file is the procedure. It is not itself a benchmark run.** Running it in full is
 2 sides × 3 briefs × 2–3 builds = 12–18 `/prototype` builds, each a multi-screen build —
@@ -40,8 +50,8 @@ and the "Cost" section below for what a real run costs.
   `../bench-*` dirs (same footgun if this repo happens to live under `~/.claude/skills/`):
 
   ```bash
-  git worktree add /tmp/rebench-2026-XX/bench-main main
-  git worktree add /tmp/rebench-2026-XX/bench-candidate design-audits
+  git worktree add /tmp/rebench-2026-XX/bench-baseline  d90c031   # baseline commit
+  git worktree add /tmp/rebench-2026-XX/bench-candidate c0a4c7f   # candidate commit
   ```
 
 - Both worktrees' `SKILL.md` declare `name: prototype` in frontmatter — that name, not
@@ -53,7 +63,7 @@ and the "Cost" section below for what a real run costs.
   disk for the duration of the run:
 
   ```bash
-  # in /tmp/rebench-2026-XX/bench-main/SKILL.md,      change `name: prototype` -> `name: prototype-main`
+  # in /tmp/rebench-2026-XX/bench-baseline/SKILL.md,  change `name: prototype` -> `name: prototype-baseline`
   # in /tmp/rebench-2026-XX/bench-candidate/SKILL.md, change `name: prototype` -> `name: prototype-candidate`
   ```
 
@@ -61,16 +71,16 @@ and the "Cost" section below for what a real run costs.
   Code environment:
 
   ```bash
-  ln -s /tmp/rebench-2026-XX/bench-main      ~/.claude/skills/prototype-main
+  ln -s /tmp/rebench-2026-XX/bench-baseline  ~/.claude/skills/prototype-baseline
   ln -s /tmp/rebench-2026-XX/bench-candidate ~/.claude/skills/prototype-candidate
   ```
 
-  Restart Claude Code (or `/help`) and confirm **both** `prototype-main` and
+  Restart Claude Code (or `/help`) and confirm **both** `prototype-baseline` and
   `prototype-candidate` appear as distinct entries before starting any builds — that's
   the check that the frontmatter edit above actually took, not just that the symlinks
-  exist. From here, `/prototype-main` builds with `main`'s SKILL.md and
-  `/prototype-candidate` builds with `design-audits`'s — same session, no ambiguity about
-  which version produced which folder.
+  exist. From here, `/prototype-baseline` builds with the baseline commit's SKILL.md and
+  `/prototype-candidate` builds with the candidate commit's — same session, no ambiguity
+  about which version produced which folder.
 
   > Do **not** symlink either one to the plain `~/.claude/skills/prototype` name while
   > benchmarking — that's the name your own daily driver may resolve to, and a stray
@@ -79,18 +89,21 @@ and the "Cost" section below for what a real run costs.
 
 ## 1. Build matrix
 
-For **each** of the 3 briefs in `benchmark/briefs/` (`saas-dashboard.md`,
-`marketplace.md`, `fintech-app.md`), for **each** side (`main`, `candidate`), generate
-**2–3 independent builds** — fresh Claude Code session per build, same brief text pasted
-verbatim, Quick mode, **do not scope the screen count down**. Build the number of screens
-the brief specifies (4 / 3 / 4), not a subset.
+For **each** brief in `benchmark/briefs/` (`onboarding-agentic.md` — the anchor for the
+2026-07 run — plus `saas-dashboard.md`, `marketplace.md`, `fintech-app.md`), for **each**
+side (`baseline`, `candidate`), generate **2–3 independent builds** — fresh Claude Code
+session per build, same brief text pasted verbatim, Quick mode, **do not scope the screen
+count down**. Build the number of screens the brief specifies (4 / 4 / 3 / 4), not a
+subset. A run may anchor on a single brief (e.g. `onboarding-agentic.md` at n=3) for the
+first pass and add the standard three for the full cross-brief claim.
 
 ```
 /tmp/rebench-2026-XX/
-  main/pulse-1/  main/pulse-2/  main/pulse-3/
-  main/tend-1/   main/tend-2/   main/tend-3/
-  main/ledger-1/ main/ledger-2/ main/ledger-3/
-  candidate/pulse-1/ ... (same layout)
+  baseline/onboard-1/ baseline/onboard-2/ baseline/onboard-3/
+  baseline/pulse-1/   baseline/pulse-2/   baseline/pulse-3/
+  baseline/tend-1/    baseline/tend-2/    baseline/tend-3/
+  baseline/ledger-1/  baseline/ledger-2/  baseline/ledger-3/
+  candidate/onboard-1/ ... (same layout)
 ```
 
 That's up to 18 builds (3 briefs × 2 sides × 3 runs). Each build is its own Claude Code
@@ -123,7 +136,7 @@ done
 ```
 
 Then, per `design-judge.md`, for each brief pair up **all** matching-index build pairs
-(main/pulse-1 vs candidate/pulse-1, main/pulse-2 vs candidate/pulse-2, ...). For every
+(baseline/pulse-1 vs candidate/pulse-1, baseline/pulse-2 vs candidate/pulse-2, ...). For every
 pair:
 
 1. Copy both `.shots/` sets into neutral `A/` and `B/` folders — **never named
@@ -145,16 +158,26 @@ exactly the kind of close call (`Ledgerline 3–2`) the capstone run flagged as 
 
 ## 4. Monoculture / design-diversity check
 
-The design-audits skill's `type-pairings.md` and `color-palettes.md` both claim explicit
+The candidate skill's `type-pairings.md` and `color-palettes.md` both claim explicit
 anti-monoculture rotation: "a menu of one produces a monoculture — two 'technical'
 prototypes would come out twins." This is a testable claim, not a mechanical scoring
 check, so `score-output.sh` can't verify it — this run does it directly.
 
+> **Note for the 2026-07 run:** the type/palette rotation menus predate the anti-slop port
+> — they landed in PR #11 (`design-audits`), which is *also* the baseline (`d90c031`). So
+> both sides carry identical type/palette rotation guidance, and the font/hue half of this
+> check will read near-equal on both sides by construction — that is expected, not a
+> finding. What the port newly adds for diversity is the **anti-fingerprint nav catalog**
+> (`reference/build.md`). So for this run, extend the per-build record below with the **nav
+> shape** each build chose (reflex wordmark+links+button vs. ⌘K / search-pill / floating /
+> side-rail), and read the diversity delta there — that is the dimension the candidate is
+> actually supposed to move.
+
 This reuses the step-1 build matrix — it is not an additional round of builds. Step 1
 already produced 2–3 fresh-session, same-brief builds per side per brief
-(`candidate/<brief>-1..3` and `main/<brief>-1..3`), which is exactly the input this check
-needs. Only build something new if a matrix slot from step 1 had to be rebuilt (e.g. it
-failed Tier 1 in step 2).
+(`candidate/<brief>-1..3` and `baseline/<brief>-1..3`), which is exactly the input this
+check needs. Only build something new if a matrix slot from step 1 had to be rebuilt (e.g.
+it failed Tier 1 in step 2).
 
 **Procedure:**
 
@@ -172,12 +195,15 @@ failed Tier 1 in step 2).
    tone) as a second data point, not because one brief settles it. Two briefs × 2–3 builds
    is enough to say "the rotation guidance works" or "it doesn't" without a third
    dimension of variance to control for.
-5. Do the same comparison on the existing `main/<brief>-1..3` builds for at least one
-   brief, as the control — `main` has no equivalent rotation guidance, so builds
-   converging there isn't a bug, it's the expected baseline the candidate is supposed to
-   improve on. If `main` *also* diversifies on its own (LLM sampling variance alone),
-   that's worth knowing too: it would mean the rotation files are lower-leverage than
-   assumed.
+5. Do the same comparison on the existing `baseline/<brief>-1..3` builds for at least one
+   brief, as the control. For **type/palette**, the baseline carries the same rotation
+   menus (see the run note above), so expect it to diversify about as much as the candidate
+   — near-equal there is the expected result, not a regression. For **nav shape**, the
+   baseline has *no* anti-fingerprint catalog, so baseline builds converging on the reflex
+   wordmark+links+button nav is the expected control; the candidate improving on that (more
+   distinct nav shapes across its builds) is the diversity signal this run is looking for.
+   If the baseline *also* diversifies its navs on sampling variance alone, that's worth
+   knowing — it would mean the nav catalog is lower-leverage than assumed.
 
 Record the raw comparison (a small table: build → font pairing → palette family → named
 signature move) in the results file, not just a pass/fail — the "why" is the useful part
@@ -214,15 +240,15 @@ documents the procedure and makes it cheap to *start*, rather than executing it 
 
 ```bash
 # setup (once)
-git worktree add /tmp/rebench-2026-XX/bench-main main
-git worktree add /tmp/rebench-2026-XX/bench-candidate design-audits
-# edit name: prototype -> prototype-main / prototype-candidate in each worktree's SKILL.md
-ln -s /tmp/rebench-2026-XX/bench-main      ~/.claude/skills/prototype-main
+git worktree add /tmp/rebench-2026-XX/bench-baseline  d90c031   # baseline commit
+git worktree add /tmp/rebench-2026-XX/bench-candidate c0a4c7f   # candidate commit
+# edit name: prototype -> prototype-baseline / prototype-candidate in each worktree's SKILL.md
+ln -s /tmp/rebench-2026-XX/bench-baseline  ~/.claude/skills/prototype-baseline
 ln -s /tmp/rebench-2026-XX/bench-candidate ~/.claude/skills/prototype-candidate
 # restart Claude Code / run /help, confirm both names appear before building
 
 # per build (repeat per brief × side × run)
-/prototype-main         # or /prototype-candidate — paste a benchmark/briefs/*.md verbatim, Quick mode
+/prototype-baseline     # or /prototype-candidate — paste a benchmark/briefs/*.md verbatim, Quick mode
 
 # per build, once generated
 benchmark/score-output.sh <dir> --json
