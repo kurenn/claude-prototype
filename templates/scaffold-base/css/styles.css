@@ -105,7 +105,7 @@ html[data-theme="mono"] {
 }
 
 /* Typographic polish — floor defaults; apply on top of the chosen pairing. */
-h1, h2, h3 { text-wrap: balance; }
+h1, h2, h3 { text-wrap: balance; overflow-wrap: anywhere; } /* balance ragged lines; anywhere lets a long unbroken token (URL / slug / ID) wrap instead of overflowing at 390px — builtin-lint rule 24 */
 p          { text-wrap: pretty; }
 body       { font-optical-sizing: auto; }
 .tabular, [data-tabular] { font-variant-numeric: tabular-nums; } /* numeric cells / KPIs */
@@ -225,6 +225,7 @@ body       { font-optical-sizing: auto; }
 .form-field .hint {
   font-size: var(--text-xs);
   color: rgb(var(--ink2));
+  min-height: 1lh; /* reserve the message slot so an error appearing on blur doesn't shove layout — builtin-lint rule 27 */
 }
 /* Error state reuses the --status-error token, same as .proto-toast.is-error. */
 .form-field.has-error input,
@@ -232,7 +233,7 @@ body       { font-optical-sizing: auto; }
 .form-field.has-error textarea {
   border-color: rgb(var(--status-error));
 }
-.form-field .error { font-size: var(--text-xs); color: rgb(var(--status-error)); }
+.form-field .error { font-size: var(--text-xs); color: rgb(var(--status-error)); min-height: 1lh; }
 
 /* Interaction floor — Tailwind's reset drops focus rings; ship one globally, plus a press
    micro-interaction. Keep custom :hover styles behind @media (hover:hover) so they don't
