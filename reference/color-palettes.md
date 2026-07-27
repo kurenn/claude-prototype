@@ -28,6 +28,12 @@ each deliberately dodges its category-reflex cliché. Preview them live in `desi
   `elevated-2`), not shadow; desaturate the accent; drop body weight a notch.
 - **Category-reflex check**: if the palette is guessable from the domain (finance→navy/gold,
   health→teal/white, crypto→neon, dev-tool→blue-on-black), rework it.
+- **AI-editorial reflex check — passing the category-reflex check above is NOT enough.** A warm
+  cream/paper or warm-carbon ground + a display serif + one lone amber/terracotta/oxblood accent is
+  its own cross-domain "a machine made this" tell, independent of domain — a podcast site that
+  dodges Spotify-green can still land squarely here. **editorial and ledger below sit inside this
+  cluster** — picking either is allowed, but the *composition* then MUST break the template (see
+  lint rule 34, "AI-editorial composition") or it reads as templated-AI-editorial no matter the hue.
 
 ## The menu — one strong start per tone (rotate the hue)
 

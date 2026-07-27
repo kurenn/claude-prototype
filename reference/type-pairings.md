@@ -35,9 +35,15 @@ data/code-heavy).
 | **quiet** | Instrument Sans *(one family, weights only)* | same family | IBM Plex Mono *(metadata/eyebrows only)* | hushed, bone-quiet minimal |
 
 **Watch the new reflexes.** Space Grotesk (technical) and Fraunces (editorial) are now the *common*
-pick for their tone — fine, but rotate to an alternate when you can. Avoid **Geist**: it is Vercel's
-own typeface, so using it for a "reads like Vercel" brief copies the category leader — the opposite
-of distinctive.
+pick for their tone — fine, but rotate to an alternate when you can. A third, cross-tone reflex:
+**a display serif set on a warm cream/paper or warm-carbon ground with an amber/terracotta/oxblood
+accent** (Fraunces or Newsreader are the usual picks here) is now a reflex **pairing** in its own
+right — see the AI-editorial reflex check in `reference/color-palettes.md`. It's still usable, but
+only if the composition breaks the editorial-template shape (lint rule 34, "AI-editorial
+composition" in `checks/builtin-lint.md`) — the eyebrow → hairline rule → oversized-serif-headline
+hero and the equal-weight card wall — otherwise it reads as templated no matter which serif you
+pick. Avoid **Geist**: it is Vercel's own typeface, so using it for a "reads like Vercel" brief
+copies the category leader — the opposite of distinctive.
 
 **Family variants — same tone, different register.** Three presets sit inside an existing tone as a
 deliberate alternate, not a replacement. **ledger** (editorial) swaps the Instrument Serif / Newsreader
