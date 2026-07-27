@@ -25,16 +25,29 @@ data/code-heavy).
 | Tone | Display (rotate) | Body | Mono / utility | Reads as |
 |---|---|---|---|---|
 | **technical** | Space Grotesk · Hanken Grotesk · Schibsted Grotesk | IBM Plex Sans / Public Sans | JetBrains Mono / IBM Plex Mono | dev-tool, precise |
+| **carbon** | IBM Plex Sans *(600 head / 400 body — one family, weights only)* | same family | IBM Plex Mono *(dense data tables)* | enterprise IT, systematic |
 | **corporate** | Plus Jakarta Sans · Outfit · Onest | Public Sans / Source Sans 3 | — | trustworthy B2B, not-Inter |
 | **editorial** | Instrument Serif · Newsreader · Fraunces | Newsreader / DM Sans | — | magazine, literary |
+| **ledger** | Newsreader | Public Sans | IBM Plex Mono *(filing/reference numbers only)* | regulated record, filing-cabinet formal |
 | **playful** | Bricolage Grotesque · Gabarito · Syne | Work Sans / DM Sans | — | friendly, contemporary |
 | **bold-experimental** | Syne · Unbounded · Archivo | Archivo | Space Mono | high-contrast, confident |
 | **minimal** | Manrope · Instrument Sans · Hanken Grotesk *(one family, weights only)* | same family | — | quiet, Swiss |
+| **quiet** | Instrument Sans *(one family, weights only)* | same family | IBM Plex Mono *(metadata/eyebrows only)* | hushed, bone-quiet minimal |
 
 **Watch the new reflexes.** Space Grotesk (technical) and Fraunces (editorial) are now the *common*
 pick for their tone — fine, but rotate to an alternate when you can. Avoid **Geist**: it is Vercel's
 own typeface, so using it for a "reads like Vercel" brief copies the category leader — the opposite
 of distinctive.
+
+**Family variants — same tone, different register.** Three presets sit inside an existing tone as a
+deliberate alternate, not a replacement. **ledger** (editorial) swaps the Instrument Serif / Newsreader
+/ Fraunces rotation for Newsreader heads + Public Sans body: Newsreader reads as a screen-native
+newspaper serif (record, not boutique-Didone drama), and Public Sans is the U.S. federal interface
+face — exact for a regulated document. **carbon** (technical) swaps the grotesque-display rotation
+for IBM Plex Sans throughout, weights only — Carbon's own systematic face, dense data over developer
+flourish. **quiet** (minimal) commits to Instrument Sans alone, a quiet neo-grotesque — deliberately
+not Geist, and not reaching for the menu's already-common Public Sans / Hanken Grotesk either. All
+three (plus IBM Plex Mono) are Google Fonts and already off the reflex-reject list below.
 
 Free-text tones: map to the nearest row or combine deliberately (e.g. "warm + technical" → a
 grotesque display with a humanist body like IBM Plex Sans). One family in several weights often
