@@ -95,3 +95,17 @@ cd <slug> && python3 serve.py
 Plus a manual checklist: desktop / tablet / mobile, every theme, click every button, and — for
 any modal — Tab through it with the mouse untouched: focus should land inside on open, loop
 without escaping to the page behind it, and return to the trigger button on Esc.
+
+## Definition of done
+
+Before declaring the prototype done, verify all three — if any is missing, assess did not
+happen, and building is not finished. Go back and do it before Step 9/Ship:
+
+- [ ] **Every screen carries a pre-emit self-critique stamp** — `<!-- prototype · pre-emit: … -->`
+  atop the file, reflecting the score it actually earned (not a rubber-stamped 4–5 across the board).
+- [ ] **`LINT.md` exists** (or impeccable's `audit`/`critique` genuinely ran) **and its errors are
+  fixed** — not just produced and left unread.
+- [ ] **The reconcile-after-lint pass ran** — stamps updated wherever lint contradicted them, and
+  the remaining screens scored harder on that axis per the "Reconcile after Step 7" rule above.
+
+A prototype missing any of these has skipped assess, however finished the screens look.

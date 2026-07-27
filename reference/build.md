@@ -367,3 +367,11 @@ Don't silently ship placeholders for a photo-forward product and hope no one not
 flat wash (bare `.media`, no attribute) → initials `.avatar` (people only, never for
 objects or places). For a photo-forward product, landing on anything below "real
 photo" without having asked the user first is the bug this section exists to prevent.
+
+---
+
+**Building is not the last step.** After the screens exist you are ~60% done — Step 7
+(assess, `reference/assess.md`) is mandatory, not optional. A prototype with no `LINT.md`
+(or an impeccable audit that actually ran) and no per-screen pre-emit self-critique stamp
+is **unfinished**: do not proceed to handoff or ship until both exist and their findings
+are fixed.

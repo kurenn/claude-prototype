@@ -114,7 +114,7 @@ These are load-bearing — they're what separates this from generic AI output.
 - **Never lorem ipsum.** Realistic, domain-matched content only — fake-looking content reads as "this isn't real."
 - **No build tools** (webpack, vite, npm). Tailwind CDN + vanilla JS only — load-bearing for "anyone can clone and run it."
 - **Respect scope.** 4 screens asked → 4 screens shipped. Extra screens are scope creep.
-- **Don't shortcut an available skill.** If `prompt-refiner` / `impeccable` / `claude-in-chrome` is in the session, using it is required, not optional.
+- **Don't shortcut an available skill.** If `prompt-refiner` / `impeccable` / `claude-in-chrome` is in the session, using it is required, not optional — and never ship without the assess artifacts (LINT.md + self-critique stamps).
 - **One topic per turn** during discovery — conversational, not a form (tone and how it should *feel* are one topic).
 - **No hardcoded paths or user names** — this is open source.
 
