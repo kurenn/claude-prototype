@@ -4,6 +4,19 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Not found · {{PRODUCT_NAME}}</title>
+  <script>
+    // Anti-FOUC: apply the stored theme before first paint so navigation doesn't flash.
+    // Keep the theme name + dark fallback in sync with js/theme.js (THEMES / DARK_THEME).
+    (function () {
+      try {
+        var t = localStorage.getItem('proto-theme');
+        if (t) { document.documentElement.setAttribute('data-theme', t); return; }
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.setAttribute('data-theme', 'terminal'); // DARK_THEME in theme.js
+        }
+      } catch (e) {}
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family={{HEADING_FONT}}:wght@500;700&family={{BODY_FONT}}:wght@400;500&display=swap" rel="stylesheet" />

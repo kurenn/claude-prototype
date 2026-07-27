@@ -6,6 +6,20 @@
   <title>{{PRODUCT_NAME}}</title>
   <meta name="description" content="{{ONE_LINE_PITCH}}" />
 
+  <script>
+    // Anti-FOUC: apply the stored theme before first paint so navigation doesn't flash.
+    // Keep the theme name + dark fallback in sync with js/theme.js (THEMES / DARK_THEME).
+    (function () {
+      try {
+        var t = localStorage.getItem('proto-theme');
+        if (t) { document.documentElement.setAttribute('data-theme', t); return; }
+        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+          document.documentElement.setAttribute('data-theme', 'terminal'); // DARK_THEME in theme.js
+        }
+      } catch (e) {}
+    })();
+  </script>
+
   <!-- Fonts: pick a pairing by tone from reference/type-pairings.md (off the reflex-reject list).
        {{HEADING_FONT}}/{{BODY_FONT}} are the chosen pair; add a mono family for data/code-heavy
        products. Load only the weights you actually use. -->

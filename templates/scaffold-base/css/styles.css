@@ -58,6 +58,14 @@ html[data-theme="mono"] {
   --radius: 0;
 }
 
+/* Anti-FOUC: paint the base background/text from these render-blocking tokens
+   immediately, instead of waiting on Tailwind CDN's runtime-generated `bg-surface`
+   utility. `<link rel="stylesheet" href="css/styles.css">` blocks rendering, so
+   this resolves before first paint (once the inline <head> script has set
+   data-theme); `<body class="bg-surface text-ink">` then reapplies the same
+   values redundantly once Tailwind loads — no visible change, no flash. */
+html { background-color: rgb(var(--surface)); color: rgb(var(--ink)); }
+
 /* Type scale — committed 1.25 major third (fixed rem for UI; hero uses --text-display clamp).
    Floor defaults: the per-prototype DESIGN.md may retune values, but keep one committed ratio.
    Pick the tone's font pairing from reference/type-pairings.md. */
