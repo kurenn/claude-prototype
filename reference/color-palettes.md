@@ -43,6 +43,13 @@ Green on a warm off-white / warm graphite, no blue-on-black.
 - **Light:** `#f9f7ef · #fefcf6 · #fffefa · #292620 · #5b5851 · #838079 · #e1ded5 · #f0ede4 · #267b4c · #f5fcf7`
 - **Dark:** `#15140f · #1f1e19 · #292822 · #eae8e1 · #adaba3 · #88867f · #35332c · #26241e · #7fb390 · #0f1912`
 
+### carbon — IBM blue on cool graphite · restrained
+Cool blue-gray neutrals (IBM Carbon's own ramp) with blue-60 `#0f62fe` as the one functional
+accent — not technical's warm pine, and not the dev-tool blue-on-near-black or Inter-rounded-cards
+SaaS reflex.
+- **Light:** `#f2f4f8 · #f8fafd · #fdfeff · #121619 · #4d5358 · #697077 · #dde1e6 · #e6eaf0 · #0f62fe · #f7faff`
+- **Dark:** `#21272a · #2d3438 · #394045 · #f2f4f8 · #c1c7cd · #878d96 · #3d454b · #2a3135 · #0f62fe · #f7faff`
+
 ### corporate — aubergine on warm stone · restrained
 Confident and human, zero boardroom navy.
 - **Light:** `#fbf6f2 · #fffcf8 · #fffefb · #2d2824 · #605955 · #88827e · #e5ded9 · #f2ebe6 · #853a77 · #fef8fc`
@@ -52,6 +59,12 @@ Confident and human, zero boardroom navy.
 Deliberately the opposite of terracotta-on-cream.
 - **Light:** `#f2f6fa · #f9fcff · #fcffff · #1b2025 · #4e5359 · #767b81 · #d8dde3 · #e6ecf2 · #c93029 · #fff9f8`
 - **Dark:** `#0f1216 · #181c21 · #23272c · #e9edf2 · #aaaeb4 · #82878c · #2c3136 · #1f2328 · #d86353 · #150a08`
+
+### ledger — oxblood stamp on warm ivory · restrained
+Warm filing-room ivory, not editorial's cool signal-red on newsprint — oxblood shows up only as a
+stamp/flag chip, never a hero fill; hairline-ruled rows and columns read like a ledger sheet.
+- **Light:** `#f4eee1 · #faf6ec · #fdfbf4 · #1e1a15 · #4a443b · #7a7264 · #ddd4c2 · #ece4d3 · #9a2f22 · #fdf6f2`
+- **Dark:** `#17130e · #201b14 · #2a241b · #ece4d5 · #aca392 · #837a68 · #352e23 · #241e16 · #cc6252 · #1a0d09`
 
 ### playful — marigold on periwinkle paper · committed
 One warm pop against a cool ground, not candy chaos. Accent is a **fill** (button bg + dark text); darken for text links.
@@ -68,6 +81,12 @@ Even the grays are a tinted ink-blue; the accent is a deeper shade of the same h
 - **Light:** `#f7f9fc · #fcfeff · #feffff · #181b1e · #4d5054 · #777b7e · #dde0e3 · #edf0f4 · #2e4a67 · #fafcfe`
 - **Dark:** `#0c0f11 · #16191b · #202326 · #eceff1 · #a5a8ab · #7e8084 · #2b2e32 · #1d2023 · #a5bad1 · #0c1014`
 
+### quiet — warm bone monochrome · restrained
+Warm bone paper instead of minimal's cool ink-blue; the "accent" is a monochrome inversion of the
+surface, not a second hue. No card chrome, oversized whitespace, one near-invisible hairline.
+- **Light:** `#f8f6f1 · #fcfaf6 · #fefdfa · #26231f · #5c5750 · #8c867d · #e2ded6 · #f0ece4 · #3c2e24 · #faf7f2`
+- **Dark:** `#161411 · #1f1c18 · #292520 · #ede8e0 · #b0a99f · #847e75 · #342f29 · #26221d · #e9e3d9 · #181512`
+
 Free-text tones: map to the nearest row or shift the hue deliberately; keep the tinting + one-accent discipline.
 
 ## Anti-slop — never ship these
@@ -77,8 +96,11 @@ default** (the #1 tell) · gray text on a colored ground (use a tint of the grou
 
 ## Contrast (verified, WCAG)
 
-Body `ink` on `surface` clears 4.5:1 in both themes for all six. Two honest flags:
+Body `ink` on `surface` clears 4.5:1 in both themes for all nine. Three honest flags:
 - **`ink3`** (tertiary — timestamps, placeholders, captions) is AA-*Large* only in light mode.
   Never set body copy in it; use `ink2` for anything essential.
 - **playful marigold / bold lime** accents are **fill** roles (button background + `accent-ink`
   on top, which pass). As a text link on the surface they fail — darken to ~L0.55 for that use.
+- **carbon**'s blue-60 `accent` is verified as the button-fill pairing (with `accent-ink` on top).
+  In **dark mode**, use blue-40 `#78a9ff` for text *links* instead — the fill's own contrast isn't
+  tuned for underlined body copy.
