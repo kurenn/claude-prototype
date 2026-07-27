@@ -453,6 +453,43 @@ grep -rn "✨\|🚀\|⚡\|🔥\|🎯\|✅" <prototype>/
 **Fix:** pick one icon source (reicon.dev, one weight) for the whole prototype; replace
 emoji-as-icon with an inline SVG, or drop the icon and lead with typography.
 
+### 34. AI-editorial composition
+Dodging the obvious purple-gradient slop (rule 1) and the domain's own category reflex
+(a podcast site skipping Spotify-green) isn't enough on its own — a build can still land
+squarely in the "tasteful AI editorial" cluster, which is now its own cross-domain
+"a machine made this" tell. Flag any of:
+- a small-caps letterspaced **eyebrow → hairline rule → oversized serif display
+  headline** hero, especially with a large empty adjacent column;
+- a row of **≥3 equal-weight, identically-styled outlined/bordered cards** with no
+  size or weight hierarchy (a "card wall");
+- the DESIGN.md-named **signature move buried below** a generic serif hero, instead of
+  the signature move *being* the hero.
+
+This rule is **part-heuristic**, like rules 29 and 32 — grep finds candidate structure,
+but confirming "oversized," "equal-weight," "no hierarchy," and "buried below" needs a
+screenshot or DOM read (via claude-in-chrome), not just text matching.
+
+```
+grep -rnE 'class="[^"]*\beyebrow\b[^"]*"' <prototype>/ --include="*.html"
+grep -rnE "<hr\b|class=\"[^\"]*(hairline|rule)[^\"]*\"" <prototype>/ --include="*.html"
+grep -rniE "font-family:\s*[\"']?(Fraunces|Newsreader|Instrument Serif|Playfair)" <prototype>/ --include="*.css"
+```
+
+Where an `.eyebrow` and an `<hr>`/hairline sit immediately above an `h1` styled with a
+display serif, check the screenshot for a large empty column beside that hero — that's
+the eyebrow→rule→giant-serif template. Separately, scan any row of siblings sharing one
+card-like class chain (the same `rounded-* + border` chain rule 4 checks): ≥3 with
+identical border weight, radius, and padding and no dominant card is a card wall. Finally,
+`grep -i "signature" <prototype>/DESIGN.md` (rule 21), then read the DOM order — does the
+section implementing that signature move sit below a generic eyebrow/serif hero, or does
+the hero *be* the signature move?
+
+**Fix:** lead with the signature move instead of parking it below a generic hero; give one
+card in any card row real dominance (size, weight, or position) instead of shipping ≥3
+identical siblings; break the eyebrow → hairline rule → oversized-serif template — vary
+the hero shape, drop the hairline, or size the headline down and let something else carry
+the page.
+
 ## Report format
 
 Produce `LINT.md` at the prototype root:
@@ -460,7 +497,7 @@ Produce `LINT.md` at the prototype root:
 ```markdown
 # Lint Report — {{timestamp}}
 
-**Rules checked:** 33  ·  **Passing:** N  ·  **Findings:** M
+**Rules checked:** 34  ·  **Passing:** N  ·  **Findings:** M
 
 ## Errors (N)
 
