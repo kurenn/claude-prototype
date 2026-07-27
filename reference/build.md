@@ -329,10 +329,15 @@ One HTML file per screen. Each screen:
 ### Real imagery for photo-forward products
 
 Marketplaces, listings, and profiles can't demo credibly on placeholders — a reviewer
-clicks into a listing expecting a photo, and a gradient tile reads as unfinished. Before
-building any screen in one of these categories, **ask the user for a handful of images**
-(3–8 covers most demos: a few products/venues/listings + a couple of profile photos).
-Don't silently ship placeholders for a photo-forward product and hope no one notices.
+clicks into a listing expecting a photo, and a gradient tile reads as unfinished. **This
+fires whenever real imagery would materially change credibility — not only the named
+categories, and regardless of `register`:** a `brand`/landing page that shows things off
+(podcast covers, portfolio work, product shots, team photos) is cover-relevant too, so
+don't let "it's just a landing page" skip it. Before building any such screen, **ask the
+user for a handful of images** (3–8 covers most demos: a few products/venues/listings/covers
++ a couple of profile photos). Don't silently ship placeholders for a photo-forward product
+and hope no one notices — and even when the chosen imagery stance is typographic or
+placeholder, **wire the `.media` hook** so real art can drop in later without a rebuild.
 
 1. **Ask, then wait.** One message: "This prototype is photo-forward — can you drop 3–8
    images into `assets/images/` (or share paths/links), or should I use placeholders for
