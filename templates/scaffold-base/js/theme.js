@@ -4,6 +4,11 @@
  * Works with visible segmented controls: `<button data-theme-option="<name>">`
  * Applies data-theme on <html>, persists to localStorage, respects URL param
  * and prefers-color-scheme on first visit.
+ *
+ * The inline anti-FOUC script in every screen's <head> duplicates the
+ * localStorage/prefers-color-scheme lookup below (minus the URL param) so the
+ * theme paints before first render — keep it in sync with THEMES / DARK_THEME
+ * whenever either changes here.
  */
 (function () {
   const THEMES = ['studio', 'terminal', 'mono']; // edit to match your DESIGN.md
