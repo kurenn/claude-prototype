@@ -72,10 +72,12 @@
        Kept distinct from #proto-controls' name (app-controls): two elements can't share
        one active view-transition-name. Also set in css/styles.css; inline wins if both. -->
   <!-- list→detail hero morph convention (dormant until you add these attrs; vt.js + css wire it):
-         list card:   <a href="listing-42.html" data-vt-item="42"><img data-vt-hero src="…" alt="…"></a>
-         detail page: <main data-vt-detail="42"> … <img data-vt-hero src="…" alt="…"> … </main>
-       Only the clicked item is named (vt.js does this on pageswap/pagereveal) — never
-       statically name every card. Tune vt.js's idFromUrl() to your detail-URL scheme. -->
+         list card:   <a href="listing-42.html" data-vt-item="listing-42"><img data-vt-hero src="…" alt="…"></a>
+         detail page: <main data-vt-detail="listing-42"> … <img data-vt-hero src="…" alt="…"> … </main>
+       The id MUST equal vt.js's idFromUrl() output for that URL — the default is the whole
+       last path segment before ".html" (/listing-42.html → "listing-42"), not just its
+       trailing number. Only the clicked item is named (vt.js does this on pageswap/pagereveal)
+       — never statically name every card. Tune vt.js's idFromUrl() to your detail-URL scheme. -->
   <header class="border-b border-muted/20" style="view-transition-name: app-header">
     <nav class="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
       <a href="index.html" class="font-heading text-lg font-bold tracking-tight">{{PRODUCT_NAME}}</a>

@@ -308,20 +308,25 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
 /* Respect reduced motion — stop transitions and decorative motion, but keep the loading
    spinner turning (blanking it mid-ring looks broken) and force reveals visible. The
    `*` selector doesn't reach the ::view-transition-* pseudo tree (it's a separate tree,
-   not matched by the universal selector), so it gets its own override below: clamping every
-   VT animation to ~1ms drops the directional slide + list→detail hero "fly" but lets the
-   root crossfade still complete cleanly (opacity isn't vestibular-triggering). Cross-document
-   transitions fire regardless of this media query, so this clamp is what tames them; the
-   same-doc UI.withViewTransition path (ui.js) already no-ops entirely under reduced motion.
+   not matched by the universal selector), so it gets its own override below.
+   Clamping animation-duration alone isn't enough: the root fade-in also carries a 90ms
+   animation-delay (from the directional-slide timing further down), and a duration clamp
+   doesn't touch delay — the result is a ~90ms blank flash before the sliver of crossfade,
+   not a kept crossfade. So delay gets clamped too, AND the root gets its own explicit,
+   clean 120ms linear crossfade (reusing the vt-fade-out/vt-fade-in keyframes) instead of
+   inheriting the directional-slide animation list at 1ms. Cross-document transitions fire
+   regardless of this media query, so this is what tames them; the same-doc
+   UI.withViewTransition path (ui.js) already no-ops entirely under reduced motion.
    `.reveal` needs `!important` too: it's equal specificity to (and comes before, in source
    order) the base `.reveal { opacity: 0 }` rule further down, which would otherwise win. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; }
   .reveal { opacity: 1 !important; transform: none !important; }
   .skeleton { animation: none; }   /* static shimmer is fine; spinner keeps turning as feedback */
-  ::view-transition-group(*),
-  ::view-transition-old(*),
-  ::view-transition-new(*) { animation-duration: 1ms !important; }  /* drop the fly, keep the crossfade */
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
+    animation-duration: 1ms !important; animation-delay: 0ms !important; }
+  ::view-transition-old(root) { animation: 120ms linear both vt-fade-out !important; }
+  ::view-transition-new(root) { animation: 120ms linear both vt-fade-in !important; }
 }
 
 /* Reveal-on-scroll — opt-in; app.js observes any `.reveal` element and adds `.visible`
@@ -384,8 +389,13 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
 /* Chrome isolation — persistent chrome gets its own name so its snapshot is lifted out of
    the root and holds still (doesn't slide/fade) across navigations: the #1 "VT bolted on
    wrong" tell. Two elements can't share one active name, so header and the control bar get
-   DISTINCT names (index.html sets the same two names inline as a visible builder hook). */
-header          { view-transition-name: app-header; }
+   DISTINCT names (index.html sets the same two names inline as a visible builder hook).
+   Scoped to `body > header` — the direct top-level header only, NOT bare `header` — so this
+   doesn't also match an unrelated `<header>` elsewhere in the page (the feedback overlay's
+   injected panel has its own `<header>`, and a builder's `<article><header>` would too).
+   Two elements can't share one active view-transition-name; if a second `header` on the
+   page picked this up, the whole transition would abort. */
+body > header   { view-transition-name: app-header; }
 #proto-controls { view-transition-name: app-controls; }
 
 /* Directional root slide (upgrade from the default crossfade) — old page fades fast + drifts
@@ -395,13 +405,29 @@ header          { view-transition-name: app-header; }
 @keyframes vt-fade-out{ to{opacity:0} } @keyframes vt-fade-in{ from{opacity:0} }
 @keyframes vt-slide-out{ to{transform:translateX(-2%)} } @keyframes vt-slide-in{ from{transform:translateX(2%)} }
 
+/* Same-document swaps (ui.js UI.withViewTransition — tab/filter/persona swaps) must
+   crossfade, not inherit the directional page-nav slide above: both produce the same
+   ::view-transition-*(root) pseudos, so without this override a same-doc swap would slide
+   sideways like a page navigation, which reads wrong for an in-place UI update. Scoped
+   with a root class — not view-transition `types` — because cross-browser support for
+   `types` is too uneven to rely on yet; ui.js adds `.vt-same-doc` to <html> only for the
+   lifetime of the transition, then removes it. */
+:root.vt-same-doc::view-transition-old(root){ animation:150ms var(--ease-out-quart) both vt-fade-out; }
+:root.vt-same-doc::view-transition-new(root){ animation:150ms var(--ease-out-quart) both vt-fade-in; }
+:root.vt-same-doc::view-transition-image-pair(root){ border-radius:0; }
+
 /* list→detail hero morph — inert until the builder adds the data-attrs (data-vt-item /
    data-vt-detail + data-vt-hero) AND vt.js names the clicked hero `hero-<id>` on nav (only
-   the clicked one). The `*` matches every named group incl. root; on root the radius/clip is
-   a harmless brief corner-round — tune during live QA if you don't want it. */
+   the clicked one). The `*` matches every named group incl. root/header/controls; those
+   three get a `border-radius:0` exclusion below (a rounded corner briefly clipping the
+   header/control-bar chrome into a "notch" every navigation reads as a bug, not a morph) —
+   the rounding here is meant for actual hero-<id> morphs only. */
 ::view-transition-group(*){ animation-duration:.35s; animation-timing-function:cubic-bezier(.2,0,0,1); }
 ::view-transition-image-pair(*){ border-radius:var(--radius,12px); overflow:clip; }
 ::view-transition-old(*), ::view-transition-new(*){ object-fit:cover; }   /* kills the aspect-ratio "taffy" stretch on the morphing image */
+::view-transition-image-pair(root),
+::view-transition-image-pair(app-header),
+::view-transition-image-pair(app-controls){ border-radius:0; }
 
 /* Toast (state.js + ui.js use this) */
 .proto-toast {

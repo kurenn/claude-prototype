@@ -64,7 +64,7 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 - `<html data-theme="<default>" data-layout="<default>" data-persona="<default>">` with spec defaults. `data-persona` here is cosmetic before first paint — `persona.js` overwrites it on load from `PERSONAS[0]` (URL param → localStorage → array order), so the array order is what actually governs the default; keep them in agreement.
 - The inline anti-FOUC `<script>` from `scaffold-base/index.html`'s `<head>`, copied verbatim onto every screen, placed before the stylesheet `<link>`s and the Tailwind CDN script — it sets `data-theme` from localStorage/`prefers-color-scheme` before first paint so navigating between screens on a non-default theme doesn't flash.
 - `<script src="js/vt.js"></script>` in `<head>`, **non-deferred**, right after the anti-FOUC script and before the Tailwind CDN script — it wires cross-document View Transitions (`pagereveal` fires before first paint, so a deferred/body-end load would miss it). This is separate from the body-end script list below.
-- The persistent `<header>` and `#proto-controls` bar each carry a distinct `view-transition-name` (`app-header` / `app-controls`, set in both `styles.css` and inline) so the chrome holds still across navigations. Keep the two names distinct on any screen where both exist.
+- The persistent `<header>` and `#proto-controls` bar each carry a distinct `view-transition-name` (`app-header` / `app-controls`, set in both `styles.css` and inline) so the chrome holds still across navigations. Keep the two names distinct on any screen where both exist. `styles.css` scopes the name to `body > header` (the top-level header only, a direct child of `<body>`) — not bare `header` — so it doesn't also pick up an unrelated nested `<header>` (the feedback overlay's panel has its own, and a builder's `<article><header>` would too); a second element claiming the same name aborts the whole transition.
 - Tailwind CDN + inline config extending CSS vars so `bg-surface`, `text-accent`, `border-muted` work.
 - The visible control bar (below) — not a click-to-reveal pill.
 - Scripts loaded in this order at the end of `<body>`: `state.js` → `theme.js` → `layout.js` → `data.js` → `persona.js` → `ui.js` → `app.js` → `feedback.js`. Data loads before persona (persona reads it); ui before app (app may call `UI.toast`).
@@ -249,8 +249,9 @@ on either running.
   UI.withViewTransition(() => selectTab(name));
   ```
   Falls back to calling the function directly — same result, no animation — on
-  Firefox, older Safari, or with `prefers-reduced-motion` set. `app.js`'s tab wiring
-  already does this; use it as the reference call site.
+  older Safari or with `prefers-reduced-motion` set (Firefox shipped same-document support
+  in Firefox 144 — it's *cross-document* View Transitions, below, that Firefox still lacks).
+  `app.js`'s tab wiring already does this; use it as the reference call site.
 
 ### Page transitions (View Transitions)
 
@@ -260,36 +261,43 @@ transition: `@view-transition { navigation: auto }` in `styles.css` opts in ever
 and `js/vt.js` (loaded **non-deferred in `<head>`**, after the anti-FOUC script, before the
 Tailwind CDN script — `pagereveal` fires before the incoming page's first paint, so a
 deferred or body-end load would miss it) drives the optional hero morph. **Graceful
-degradation:** browsers without the API (Firefox, mid-2026) just do a plain instant
-navigation — never gate correctness on the transition running.
+degradation:** browsers without *cross-document* View Transition support (Firefox, mid-2026
+— same-document support shipped separately, in Firefox 144, and already works via
+`UI.withViewTransition` above) just do a plain instant navigation — never gate correctness
+on the transition running.
 
 **List → detail hero morph** (opt-in; the machinery ships dormant). When a prototype has a
 list of things that open a detail page, you can make the clicked thumbnail *morph* into the
 detail hero. Wire four attributes and the rest is automatic:
 
 - **List card** — the link wraps the thumbnail: `data-vt-item="<id>"` on the `<a>`,
-  `data-vt-hero` on the image inside it.
+  `data-vt-hero` on the image inside it. **`<id>` must equal what `idFromUrl` extracts from
+  the `href`** — with the default regex that's the *whole* last path segment before `.html`,
+  not just a trailing number:
   ```html
-  <a href="listing-42.html" data-vt-item="42"><img data-vt-hero src="assets/images/listing-42.jpg" alt="Sunlit loft"></a>
+  <a href="listing-42.html" data-vt-item="listing-42"><img data-vt-hero src="assets/images/listing-42.jpg" alt="Sunlit loft"></a>
   ```
 - **Detail page** — the page root carries the id, and its hero image is tagged:
   ```html
-  <main data-vt-detail="42">
+  <main data-vt-detail="listing-42">
     <img data-vt-hero src="assets/images/listing-42.jpg" alt="Sunlit loft">
     …
   </main>
   ```
 - **Tune `idFromUrl` in `vt.js`** to your detail-URL scheme. The default matches the last
-  path segment before `.html` (`/listing-42.html` → `42`); change the regex for `?id=<id>`,
-  `/p/<slug>`, etc. (The detail page can skip the URL guess entirely — it reads its id from
-  `data-vt-detail`.)
+  path segment before `.html` (`/listing-42.html` → `listing-42`); change the regex for
+  `?id=<id>`, `/p/<slug>`, etc. (The detail page can skip the URL guess entirely — it reads
+  its id from `data-vt-detail`.) Whatever scheme you pick, the id must be a valid CSS
+  identifier/attribute-selector value and unique on the page — a duplicate `data-vt-item`
+  just means the first match in document order wins, silently.
 
 **Gotchas (all handled by the shipped machinery — don't undo them):**
 
 - **Only the clicked item is named.** `vt.js` sets `view-transition-name: hero-<id>` on just
   the clicked card (on `pageswap`) and the matching detail hero (on `pagereveal`), then clears
   it when the transition finishes. Do **not** statically put a `view-transition-name` on every
-  card — duplicate active names throw and kill the transition.
+  card — duplicate active names abort the transition (console error), not just that element's
+  animation.
 - **Persistent chrome must hold still.** The `<header>` (`app-header`) and `#proto-controls`
   (`app-controls`) get their own view-transition-names so they don't slide with the page.
   Two chrome elements can't share one active name — keep the two names distinct on any screen
@@ -301,8 +309,10 @@ detail hero. Wire four attributes and the rest is automatic:
 - **Don't morph text or differently-shaped things.** Reserve the hero morph for the same
   image (thumb → hero). Two differently-shaped or text elements sharing a name just smears —
   let those crossfade with the root transition instead.
-- **Reduced motion** drops the directional slide + hero fly and keeps a clean fade
-  (`prefers-reduced-motion` clamp in `styles.css`).
+- **Reduced motion** drops the directional slide + hero fly and keeps a clean, short root
+  crossfade — no blank flash — via the explicit `prefers-reduced-motion` override in
+  `styles.css` (clamping animation-duration alone isn't enough; the root fade-in also
+  carries an animation-delay that needs clamping, or you get a flash of blank page instead).
 
 ### Nav patterns — break the reflex
 

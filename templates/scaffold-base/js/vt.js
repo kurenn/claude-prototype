@@ -11,18 +11,33 @@
   }
   window.addEventListener('pageswap', function (e) {
     if (!e.viewTransition || reduce) return;
-    var id = (document.querySelector('[data-vt-detail]')||{}).dataset && document.querySelector('[data-vt-detail]').dataset.vtDetail
-             || idFromUrl(e.activation.entry.url);
-    var el = id && heroFor(id); if (!el) return;
+    // Destination id first: matches the clicked card via data-vt-item, or a
+    // "related detail" link elsewhere on this page — so detail→detail nav names
+    // the clicked card, not this page's own hero. Fall back to this page's own
+    // data-vt-detail id (e.g. detail→list back-nav, where no destination id matches).
+    var destId = idFromUrl(e.activation.entry.url);
+    var destEl = destId && heroFor(destId);
+    var selfEl = document.querySelector('[data-vt-detail]');
+    var selfId = selfEl && selfEl.dataset.vtDetail;
+    var id = destEl ? destId : selfId;
+    var el = destEl || (id && heroFor(id));
+    if (!el) return;
     set(el, 'hero-'+id);
-    e.viewTransition.finished.finally(function(){ set(el,''); });   // bfcache-safe cleanup
+    function clear(){ set(el,''); }
+    e.viewTransition.finished.then(clear, clear);   // bfcache-safe cleanup; .then(f,f) — finished rejects when skipped
   });
   window.addEventListener('pagereveal', function (e) {
     if (!e.viewTransition || reduce) return;
+    // Own id first — the incoming page IS the detail. Fall back to guessing the
+    // previous page's id from the referring URL (e.g. detail→list back-nav).
+    // Guard navigation.activation: it throws in Safari 18.2-18.3, which fires
+    // pagereveal with a live root transition but has no window.navigation.
     var self = document.querySelector('[data-vt-detail]');
-    var id = (self && self.dataset.vtDetail) || idFromUrl(navigation.activation.from.url);
+    var act = window.navigation && navigation.activation;
+    var id = (self && self.dataset.vtDetail) || (act && act.from && idFromUrl(act.from.url)) || null;
     var el = id && heroFor(id); if (!el) return;
     set(el, 'hero-'+id);
-    e.viewTransition.ready.finally(function(){ set(el,''); });      // free name before next nav
+    function clear(){ set(el,''); }
+    e.viewTransition.ready.then(clear, clear);      // free name before next nav; .then(f,f) — ready rejects when skipped
   });
 })();
