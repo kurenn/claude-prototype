@@ -427,9 +427,13 @@
     if (container.dataset.skeletonActive === '1') return;
     container.dataset.stashedContent = container.innerHTML;
     const skeletonMarkup = Array.from({ length: count }, () => template).join('');
-    container.dataset.skeletonMarkup = skeletonMarkup;
     container.dataset.skeletonActive = '1';
     container.innerHTML = skeletonMarkup;
+    // Store the DOM-SERIALIZED skeleton, not the source string. Setting innerHTML
+    // normalizes whitespace/attribute formatting, so the source string never equals
+    // what the DOM reports back — hideSkeletons' equality guard below would then
+    // never match and the region would stay stuck showing skeletons forever.
+    container.dataset.skeletonMarkup = container.innerHTML;
   }
 
   function hideSkeletons(container) {
