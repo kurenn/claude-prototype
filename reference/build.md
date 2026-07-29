@@ -458,7 +458,7 @@ depends on a tier. **`prefers-reduced-motion` wins over every tier**, expressive
 |---|---|---|---|---|---|
 | **calm** | fast crossfade only (~130ms, no slide) | **off** | render instantly (visible end-state) | off | **kept** (`:active` press, hover, focus) |
 | **standard** *(default)* | crossfade + directional slide | on | as authored (sparing) | off | kept |
-| **expressive** | crossfade + directional slide | on | `--spring` easing + richer distance/duration | `.reveal` upgraded to scroll-driven where supported | kept |
+| **expressive** | crossfade + directional slide | on | `.enter`: `--spring` + richer distance/duration · `.reveal`: as standard unless scroll-driven | `.reveal` upgraded to scroll-driven where supported | kept |
 
 - **calm** — for dense tools/dashboards/data apps. Suppresses the directional slide (CSS
   overrides `::view-transition-*(root)` to a short fade), the hero morph (`vt.js` early-returns

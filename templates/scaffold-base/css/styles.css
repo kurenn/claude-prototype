@@ -90,11 +90,13 @@ html { background-color: rgb(var(--surface)); color: rgb(var(--ink)); }
   --ease-in-out-strong: cubic-bezier(.77, 0, .175, 1); /* on-screen moves (A→B, reposition) */
   --ease-ios:       cubic-bezier(.32, .72, 0, 1);      /* drawers / sheets / slide-overs */
   /* Spring — expressive motion tier only (html[data-motion="expressive"] applies it to
-     .enter / key entrances). Gentle overshoot (~2–3%), never a trampoline. cubic-bezier
-     fallback here overshoots via a >1 control point; the linear() @supports override below
-     shapes the settle precisely. Reserved for entrances — reduced motion neutralizes it
-     (the global block clamps transition-duration, so the curve never runs). */
-  --spring: cubic-bezier(.22, 1.02, .36, 1);
+     .enter / key entrances). Gentle overshoot (~2%), never a trampoline. This cubic-bezier
+     is the actual fallback where linear() isn't supported, so it has to genuinely spring —
+     P1's y=1.25 control point produces the ~2% peak; the linear() @supports override below
+     shapes the settle precisely where it IS supported. Reserved for entrances — reduced
+     motion neutralizes it (the global block clamps transition-duration, so the curve never
+     runs). */
+  --spring: cubic-bezier(.3, 1.25, .5, 1);
   /* Duration scale, keyed to importance/distance — a finer-grained companion to the coarse
      --motion-* scale below. BOTH are live: new work reaches for --dur-*, existing components
      keep --motion-*; don't diverge the shared ones. Rough mapping:
@@ -521,9 +523,31 @@ html[data-motion="calm"]::view-transition-new(root){ animation: 130ms linear bot
    no scroll-driven effect (app.js also short-circuits the reveal observer under calm). The
    :active press, hover, and focus micro-interactions are deliberately NOT touched — those are
    feedback, not friction. (Loading/Speed is a SEPARATE control; untouched here.) */
-html[data-motion="calm"] .enter,
+
+/* calm — .enter: neutralize only the ENTRANCE, not the whole transition. A blanket
+   `transition: none` here would also kill any LATER state change that reuses .enter's own
+   opacity/transform transition (e.g. a hover/press effect on an element that also carries
+   .enter) — that element would snap instead of ease, eroding the "micro-interactions kept"
+   promise above. So `transition` itself is left alone (still the base .enter rule's
+   var(--dur-base) var(--ease-out-quart)); only `transition-delay` is zeroed (disarms the
+   stagger) and this @starting-style pins the "before mount" values to the SAME as the
+   end-state (opacity:1, transform:none) instead of the global @starting-style's opacity:0 /
+   translateY(8px). Start === end means there's nothing for the transition to interpolate at
+   mount, so the element still renders at its end-state instantly — but the transition stays
+   armed for whatever comes after. */
+html[data-motion="calm"] .enter {
+  transition-delay: 0s;
+}
+@starting-style {
+  html[data-motion="calm"] .enter { opacity: 1; transform: none; }
+}
+
+/* calm — .reveal: this blanket `transition: none` stays (unlike .enter above). .reveal has no
+   hover/press use, and killing its transition is load-bearing against a pre-JS fade — it must
+   snap to its visible end-state the instant `.visible` is added (by app.js, or the
+   reduced-motion/no-IO fallback), with no lingering transition to fight. */
 html[data-motion="calm"] .reveal {
-  transition: none;   /* also resets the .enter stagger delay to 0 */
+  transition: none;
   animation: none;
   opacity: 1;
   transform: none;
@@ -536,6 +560,9 @@ html[data-motion="calm"] .reveal {
 html[data-motion="expressive"] .enter {
   transition: opacity var(--dur-slow) var(--spring),
               transform var(--dur-slow) var(--spring);
+  /* the shorthand above resets transition-delay to 0 — re-declare it after, or the staggered
+     entrance (style="--i:0|1|2…") collapses and every sibling mounts simultaneously. */
+  transition-delay: calc(min(var(--i, 0), 8) * 40ms);
 }
 @starting-style {
   html[data-motion="expressive"] .enter { opacity: 0; transform: translateY(14px); }
@@ -544,12 +571,22 @@ html[data-motion="expressive"] .enter {
 /* expressive — .reveal upgraded to scroll-driven where supported. Gated on BOTH
    prefers-reduced-motion: no-preference (reduced motion never gets it — the global block forces
    .reveal visible) AND @supports (animation-timeline: view()); everywhere else .reveal keeps its
-   plain IntersectionObserver-driven transition (rules above). The scroll animation wins the
-   cascade over app.js's `.reveal.visible { opacity: 1 }`, so the two coexist safely. */
+   plain IntersectionObserver-driven transition (rules above).
+   No `opacity: 0` declared here — that's deliberate, not an oversight. When the ViewTimeline is
+   ACTIVE, the `reveal-scroll` animation's `both` fill mode already owns the hidden pre-entry
+   state (the `from` keyframe holds opacity 0 until the entry range is reached), so redeclaring
+   it would be redundant. But the timeline can be INACTIVE — no scrollable overflow on the page,
+   or an `overflow: hidden` ancestor breaks it — in which case the animation never actually
+   applies. If `opacity: 0` were set directly on this higher-specificity selector, it would beat
+   the base `.reveal.visible { opacity: 1 }` rule forever and the content would be stuck
+   invisible. Without it, an inactive timeline falls through to the plain cascade: base
+   `.reveal { opacity: 0 }` + `.reveal.visible { opacity: 1 }`, with app.js's
+   IntersectionObserver (still running under expressive) as the working safety net that flips
+   `.visible`. `transition: none` here means that fallback reveal snaps instead of easing —
+   an acceptable trade for never getting stuck invisible. */
 @media (prefers-reduced-motion: no-preference) {
   @supports (animation-timeline: view()) {
     html[data-motion="expressive"] .reveal {
-      opacity: 0;
       transform: none;                 /* the keyframes own transform now */
       transition: none;                /* the scroll timeline drives it, not the transition */
       animation: reveal-scroll linear both;

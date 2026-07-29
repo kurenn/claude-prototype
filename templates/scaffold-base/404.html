@@ -18,7 +18,10 @@
           document.documentElement.setAttribute('data-theme', 'terminal'); // DARK_THEME in theme.js
         }
         // Motion tier gates transition intensity — set before first paint (see index.html).
-        document.documentElement.setAttribute('data-motion', localStorage.getItem('proto-motion') || 'standard');
+        // Validate against the known tiers first — tampered/stale localStorage should never
+        // set a garbage data-motion value.
+        var m = localStorage.getItem('proto-motion');
+        document.documentElement.setAttribute('data-motion', (m === 'calm' || m === 'expressive') ? m : 'standard');
       } catch (e) {}
     })();
   </script>

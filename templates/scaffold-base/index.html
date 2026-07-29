@@ -22,7 +22,10 @@
         // Motion tier gates transition intensity. It MUST be on <html> before first paint:
         // `pagereveal` fires before the incoming page paints, so the ::view-transition-*
         // rules resolve against whatever data-motion is set here — same reason as theme.
-        document.documentElement.setAttribute('data-motion', localStorage.getItem('proto-motion') || 'standard');
+        // Validate against the known tiers first — tampered/stale localStorage should never
+        // set a garbage data-motion value.
+        var m = localStorage.getItem('proto-motion');
+        document.documentElement.setAttribute('data-motion', (m === 'calm' || m === 'expressive') ? m : 'standard');
       } catch (e) {}
     })();
   </script>
