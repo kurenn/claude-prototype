@@ -88,7 +88,7 @@ shown, keep it up at least **500ms** (it can't blink out). `UI.withLoader` bakes
 UI.withLoader(
   () => UI.fakeCall('read'),            // the "work"
   { show: () => region.setAttribute('aria-busy','true'),   // fires only if work outlasts 300ms
-    hide: () => region.setAttribute('aria-busy','false') } // fires no sooner than 500ms after show
+    hide: () => region.setAttribute('aria-busy','false') } // never fires if show didn't; otherwise no sooner than 500ms after it
 );
 ```
 

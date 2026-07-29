@@ -6,6 +6,8 @@
  *     then fires the configured action (navigation, modal, toast).
  *   - `[data-toast="Sent"]` on a button → click fires a toast with that text.
  *   - `[data-confirm="Really delete?"]` → click shows browser confirm first.
+ *   - `[data-retry]` on a `.state--error` button → click replays the nearest region's
+ *     loader by default (never dead markup); wire it to the real retry in a shipped build.
  *
  * Pair with empty-state sections: `<div data-empty-when="<persona>"> ... </div>`
  * hidden unless the current persona matches.
@@ -82,13 +84,14 @@
     const minVis = o.minVisible == null ? 500 : o.minVisible;
     let shownAt = 0;
     const t = setTimeout(function () { shownAt = Date.now(); o.show && o.show(); }, delay);
-    return Promise.resolve().then(work).then(finish, function (e) { finish(); throw e; });
+    // Reject arm resolves AFTER finish()'s min-visible wait (not before) — a `.catch`
+    // that paints an error face never fires while the loader is still up.
+    return Promise.resolve().then(work).then(finish, function (e) { return Promise.resolve(finish()).then(function () { throw e; }); });
     function finish() {
       clearTimeout(t);
-      if (shownAt) {
-        const left = minVis - (Date.now() - shownAt);
-        if (left > 0) return new Promise(function (r) { setTimeout(function () { o.hide && o.hide(); r(); }, left); });
-      }
+      if (!shownAt) return; // loader never appeared (sub-`delay` work) — nothing to hide/announce
+      const left = minVis - (Date.now() - shownAt);
+      if (left > 0) return new Promise(function (r) { setTimeout(function () { o.hide && o.hide(); r(); }, left); });
       o.hide && o.hide();
     }
   }
@@ -98,7 +101,10 @@
   // the control bar to this and restores the persisted value on load.
   const SPEED_KEY = 'proto-speed';
   function setSpeed(mode) {
-    if (SPEED[mode] == null) return;
+    // Whitelist, not a SPEED[mode] lookup — an inherited/garbage persisted value
+    // (old localStorage, a stale URL param) falls back to 'real' instead of
+    // silently producing a NaN multiplier downstream in fakeLatency().
+    if (['instant', 'real', 'slow'].indexOf(mode) === -1) mode = 'real';
     speedMode = mode;
     try { localStorage.setItem(SPEED_KEY, mode); } catch (e) {}
     document.querySelectorAll('[data-speed-option]').forEach(function (btn) {
@@ -331,7 +337,7 @@
   document.addEventListener('click', (e) => {
     // In feedback pin-mode, let the overlay capture the click — don't fire loading/nav/confirm.
     if (document.body.classList.contains('proto-fb-active')) return;
-    const el = e.target.closest('[data-loading], [data-toast], [data-confirm], [data-copy]');
+    const el = e.target.closest('[data-loading], [data-toast], [data-confirm], [data-copy], [data-retry]');
     if (!el) return;
 
     // confirm — must come first, can cancel other actions
@@ -347,6 +353,25 @@
     if (el.dataset.copy) {
       e.preventDefault();
       copyButton(el, el.dataset.copy);
+      return;
+    }
+
+    // retry — default demo behavior so `[data-retry]` is never dead markup: re-run
+    // the nearest region's loader (its `[data-skeleton-on-load]` ancestor, or the
+    // `.state`/`.state--error` box itself as a fallback) through the engine, so
+    // Retry → loading → content is demoable out of the box. `hasAttribute`, not a
+    // truthy dataset check — `data-retry` is a boolean attribute with no value.
+    // A shipped prototype should replace this with real retry/refetch logic that
+    // preserves input (see reference/build.md → "The state matrix").
+    if (el.hasAttribute('data-retry')) {
+      e.preventDefault();
+      const region = el.closest('[data-skeleton-on-load]') || el.closest('.state');
+      if (region) {
+        const count = parseInt(region.dataset.skeletonCount, 10) || 3;
+        fakeLoad(region, null, { count: count });
+      } else {
+        replayLoading();
+      }
       return;
     }
 

@@ -195,6 +195,12 @@ one icon + title + body + a single action button. Wire the empties off personas
 </div>
 ```
 
+`[data-retry]` isn't dead markup out of the box — `ui.js` ships a default delegated click
+handler that replays the nearest region's loader (its `[data-skeleton-on-load]` ancestor, or
+the `.state`/`.state--error` box itself) through the timing engine, so Retry → loading is
+demoable without any wiring. A real prototype should still replace this with logic that
+re-runs the actual failed call and preserves input — the default is a stand-in, not the fix.
+
 `checks/builtin-lint.md` rule 35 (state-matrix completeness) flags a primary collection
 region that ships only the happy path — no empty state, no error affordance nearby.
 

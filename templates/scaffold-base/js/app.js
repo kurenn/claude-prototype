@@ -106,10 +106,15 @@
     tab:   (v) => v && selectTab(v),
   });
 
-  // Page-load skeletons — any container marked `data-skeleton-on-load`
+  // Page-load skeletons — any container marked `data-skeleton-on-load`. No explicit
+  // `data-skeleton-duration` → null duration, so fakeLoad/fakeLatency('read') picks
+  // the jittered, speed-scaled timing (Instant genuinely shows no skeleton, Replay
+  // matches first-load timing). An explicit `data-skeleton-duration` still pins it
+  // (back-compat).
   document.querySelectorAll('[data-skeleton-on-load]').forEach(container => {
     const count = parseInt(container.dataset.skeletonCount, 10) || 3;
-    const duration = parseInt(container.dataset.skeletonDuration, 10) || 700;
+    const raw = container.dataset.skeletonDuration;
+    const duration = raw == null ? null : (parseInt(raw, 10) || 700);
     window.UI?.fakeLoad?.(container, duration, { count });
   });
 
