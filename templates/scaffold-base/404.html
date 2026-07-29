@@ -1,19 +1,24 @@
 <!doctype html>
-<html lang="en" data-theme="studio" data-layout="3col" data-persona="default">
+<html lang="en" data-theme="studio" data-layout="3col" data-persona="default" data-motion="standard">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Not found · {{PRODUCT_NAME}}</title>
   <script>
-    // Anti-FOUC: apply the stored theme before first paint so navigation doesn't flash.
-    // Keep the theme name + dark fallback in sync with js/theme.js (THEMES / DARK_THEME).
+    // Anti-FOUC: apply the stored theme + motion tier before first paint so navigation
+    // doesn't flash and the incoming page's transition CSS resolves at the right intensity.
+    // Keep the theme name + dark fallback in sync with js/theme.js (THEMES / DARK_THEME),
+    // and the motion default in sync with js/motion.js (DEFAULT_TIER).
     (function () {
       try {
         var t = localStorage.getItem('proto-theme');
-        if (t) { document.documentElement.setAttribute('data-theme', t); return; }
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        if (t) {
+          document.documentElement.setAttribute('data-theme', t);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
           document.documentElement.setAttribute('data-theme', 'terminal'); // DARK_THEME in theme.js
         }
+        // Motion tier gates transition intensity — set before first paint (see index.html).
+        document.documentElement.setAttribute('data-motion', localStorage.getItem('proto-motion') || 'standard');
       } catch (e) {}
     })();
   </script>
@@ -60,5 +65,6 @@
 
   <script src="js/state.js"></script>
   <script src="js/theme.js"></script>
+  <script src="js/motion.js"></script>
 </body>
 </html>

@@ -25,7 +25,12 @@
   const revealEls = document.querySelectorAll('.reveal');
   if (revealEls.length) {
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion || typeof IntersectionObserver !== 'function') {
+    // calm motion tier: scroll-driven effects are off — show reveals immediately (the CSS
+    // also forces `.reveal` to its visible end-state under [data-motion="calm"]). expressive
+    // upgrades `.reveal` to a scroll-driven animation in CSS; the observer path below still
+    // adds `.visible` there, but the animation wins the cascade, so it's harmless.
+    const calm = document.documentElement.dataset.motion === 'calm';
+    if (reduceMotion || calm || typeof IntersectionObserver !== 'function') {
       revealEls.forEach(el => el.classList.add('visible'));
     } else {
       const io = new IntersectionObserver((entries) => {

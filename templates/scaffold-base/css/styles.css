@@ -89,6 +89,12 @@ html { background-color: rgb(var(--surface)); color: rgb(var(--ink)); }
   --ease-out-expo:  cubic-bezier(.16, 1, .3, 1);       /* reveals, larger on-enter moves */
   --ease-in-out-strong: cubic-bezier(.77, 0, .175, 1); /* on-screen moves (A→B, reposition) */
   --ease-ios:       cubic-bezier(.32, .72, 0, 1);      /* drawers / sheets / slide-overs */
+  /* Spring — expressive motion tier only (html[data-motion="expressive"] applies it to
+     .enter / key entrances). Gentle overshoot (~2–3%), never a trampoline. cubic-bezier
+     fallback here overshoots via a >1 control point; the linear() @supports override below
+     shapes the settle precisely. Reserved for entrances — reduced motion neutralizes it
+     (the global block clamps transition-duration, so the curve never runs). */
+  --spring: cubic-bezier(.22, 1.02, .36, 1);
   /* Duration scale, keyed to importance/distance — a finer-grained companion to the coarse
      --motion-* scale below. BOTH are live: new work reaches for --dur-*, existing components
      keep --motion-*; don't diverge the shared ones. Rough mapping:
@@ -124,6 +130,18 @@ html { background-color: rgb(var(--surface)); color: rgb(var(--ink)); }
   --z-toast:    800;
   --z-tooltip: 1000;
   --z-feedback: 1100; /* review overlay — above all prototype UI */
+}
+
+/* Precise spring settle where linear() easing is supported (Chrome 113+ / Safari 17.2+ /
+   FF 112+). Peaks at ~1.025 (a ~2.5% overshoot) then settles to 1 — gentle, not bouncy.
+   Falls back to the cubic-bezier --spring above where linear() isn't supported. */
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --spring: linear(
+      0, 0.104 3.4%, 0.386 8.7%, 0.727 15%, 0.928 20.4%, 1.006 24.3%,
+      1.025 30%, 1.022 37.9%, 1.004 50%, 0.997 61.5%, 1
+    );
+  }
 }
 
 /* Typographic polish — floor defaults; apply on top of the chosen pairing. */
@@ -477,6 +495,73 @@ body > header   { view-transition-name: app-header; }
 ::view-transition-image-pair(root),
 ::view-transition-image-pair(app-header),
 ::view-transition-image-pair(app-controls){ border-radius:0; }
+
+/* ---- Motion tiers — html[data-motion="calm|standard|expressive"] (default standard) ----
+   Gate motion INTENSITY by context: a dense dashboard with cinematic morphs is friction; a
+   landing page with only a crossfade under-delivers. The skill DECIDES the tier from register
+   + tone + screen types and records it in DESIGN.md (reference/discovery.md → "Motion tier");
+   js/motion.js applies it on <html> (set pre-paint by the anti-FOUC script so the incoming
+   page's transition CSS resolves correctly) and the control bar demos it.
+
+   `standard` is the default and adds NOTHING here — it's every VT / .enter / .reveal rule
+   above, unmodified. `calm` strips motion down to feedback-only; `expressive` dials entrances
+   up a touch. The global prefers-reduced-motion block higher up wins over ALL tiers (including
+   expressive): its !important VT + `.reveal, .enter` overrides beat these non-important rules,
+   and expressive's scroll-driven reveal is gated behind `prefers-reduced-motion: no-preference`
+   so it never applies under reduced motion at all. */
+
+/* calm — dense tools/dashboards. Root nav transition = a fast crossfade ONLY: drop the
+   directional vt-slide-* (keep a short ~130ms fade). vt.js also early-returns the list→detail
+   hero morph under calm, so only the root crossfade remains. Higher specificity than the bare
+   `::view-transition-*(root)` defaults, so it wins; still non-!important, so reduced motion wins. */
+html[data-motion="calm"]::view-transition-old(root){ animation: 130ms linear both vt-fade-out; }
+html[data-motion="calm"]::view-transition-new(root){ animation: 130ms linear both vt-fade-in; }
+
+/* calm — .enter and .reveal render at their visible end-state instantly: no entrance animation,
+   no scroll-driven effect (app.js also short-circuits the reveal observer under calm). The
+   :active press, hover, and focus micro-interactions are deliberately NOT touched — those are
+   feedback, not friction. (Loading/Speed is a SEPARATE control; untouched here.) */
+html[data-motion="calm"] .enter,
+html[data-motion="calm"] .reveal {
+  transition: none;   /* also resets the .enter stagger delay to 0 */
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+/* expressive — marketing/landing/pitch. Everything standard does, PLUS a --spring easing and a
+   slightly richer distance/duration on .enter (the key mount entrance). The @starting-style
+   override outranks the base one by specificity. Reduced motion still neutralizes it (the global
+   block clamps transition-duration + forces the end state, so the spring curve never runs). */
+html[data-motion="expressive"] .enter {
+  transition: opacity var(--dur-slow) var(--spring),
+              transform var(--dur-slow) var(--spring);
+}
+@starting-style {
+  html[data-motion="expressive"] .enter { opacity: 0; transform: translateY(14px); }
+}
+
+/* expressive — .reveal upgraded to scroll-driven where supported. Gated on BOTH
+   prefers-reduced-motion: no-preference (reduced motion never gets it — the global block forces
+   .reveal visible) AND @supports (animation-timeline: view()); everywhere else .reveal keeps its
+   plain IntersectionObserver-driven transition (rules above). The scroll animation wins the
+   cascade over app.js's `.reveal.visible { opacity: 1 }`, so the two coexist safely. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    html[data-motion="expressive"] .reveal {
+      opacity: 0;
+      transform: none;                 /* the keyframes own transform now */
+      transition: none;                /* the scroll timeline drives it, not the transition */
+      animation: reveal-scroll linear both;
+      animation-timeline: view();
+      animation-range: entry 5% cover 30%;
+    }
+  }
+}
+@keyframes reveal-scroll {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
 
 /* Toast (state.js + ui.js use this) */
 .proto-toast {

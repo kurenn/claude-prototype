@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="studio" data-layout="3col" data-persona="default">
+<html lang="en" data-theme="studio" data-layout="3col" data-persona="default" data-motion="standard">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -7,15 +7,22 @@
   <meta name="description" content="{{ONE_LINE_PITCH}}" />
 
   <script>
-    // Anti-FOUC: apply the stored theme before first paint so navigation doesn't flash.
-    // Keep the theme name + dark fallback in sync with js/theme.js (THEMES / DARK_THEME).
+    // Anti-FOUC: apply the stored theme + motion tier before first paint so navigation
+    // doesn't flash and the incoming page's transition CSS resolves at the right intensity.
+    // Keep the theme name + dark fallback in sync with js/theme.js (THEMES / DARK_THEME),
+    // and the motion default in sync with js/motion.js (DEFAULT_TIER).
     (function () {
       try {
         var t = localStorage.getItem('proto-theme');
-        if (t) { document.documentElement.setAttribute('data-theme', t); return; }
-        if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+        if (t) {
+          document.documentElement.setAttribute('data-theme', t);
+        } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
           document.documentElement.setAttribute('data-theme', 'terminal'); // DARK_THEME in theme.js
         }
+        // Motion tier gates transition intensity. It MUST be on <html> before first paint:
+        // `pagereveal` fires before the incoming page paints, so the ::view-transition-*
+        // rules resolve against whatever data-motion is set here — same reason as theme.
+        document.documentElement.setAttribute('data-motion', localStorage.getItem('proto-motion') || 'standard');
       } catch (e) {}
     })();
   </script>
@@ -139,6 +146,19 @@
           <button class="proto-seg" data-persona-option="empty"   aria-pressed="false">Empty</button>
         </div>
       </div>
+      <!-- Motion tier: gate transition/entrance intensity (data-motion on <html>).
+           calm = crossfade only, no hero morph, instant enters (micro-interactions kept);
+           standard = default; expressive = scroll-driven reveals + spring entrances.
+           Short labels keep the busy bar one row. The skill DECIDES this from context and
+           records it in DESIGN.md (discovery.md "Motion tier"); this only demos it. js/motion.js. -->
+      <div class="proto-bar-section">
+        <span class="proto-bar-label">Motion</span>
+        <div class="proto-seg-group">
+          <button class="proto-seg" data-motion-option="calm"       aria-pressed="false">Calm</button>
+          <button class="proto-seg" data-motion-option="standard"   aria-pressed="true">Std</button>
+          <button class="proto-seg" data-motion-option="expressive" aria-pressed="false">Exp</button>
+        </div>
+      </div>
       <!-- Loading: demo the (transient) fake-latency loading. ⟳ Replay re-runs the
            page's load choreography; Speed scales every simulated latency. Compact by
            design — the bar must stay one row (it scrolls, never wraps). See js/loading.js. -->
@@ -161,6 +181,7 @@
 
   <script src="js/state.js"></script>
   <script src="js/theme.js"></script>
+  <script src="js/motion.js"></script>
   <script src="js/layout.js"></script>
   <script src="js/data.js"></script>
   <script src="js/persona.js"></script>
