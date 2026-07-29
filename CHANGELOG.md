@@ -1,5 +1,23 @@
 # Changelog
 
+## v0.4.0 — 2026-07-29
+
+### Motion tiers
+- **Motion is now a context-suggested stance** (#49). The skill picks **calm / standard /
+  expressive** from register + tone + screen types, states it in `DESIGN.md` (like the
+  signature-move / icon / imagery stances), and gates transition intensity off
+  `html[data-motion="…"]`:
+  - **calm** (dashboards, dense tools) — a fast root crossfade only: no directional slide, no
+    list→detail hero morph, instant `.enter`/`.reveal` — while deliberately keeping press /
+    hover / focus feedback (motion is friction when the task is scanning).
+  - **standard** *(default)* — the v0.3 behavior unchanged.
+  - **expressive** (marketing, landing, pitch) — standard plus a gentle `linear()` `--spring`
+    on entrances (with a real-overshoot cubic-bezier fallback) and scroll-driven `.reveal`
+    where supported.
+- Demoable via a compact **Motion: Calm / Std / Exp** control in the tweaks bar (symmetry with
+  the loading Speed control). Fully zero-dep, degrades cleanly, and `prefers-reduced-motion`
+  wins over every tier.
+
 ## v0.3.0 — 2026-07-29
 
 The **premium-feel release** — motion and loading, researched deeply (Emil Kowalski /
