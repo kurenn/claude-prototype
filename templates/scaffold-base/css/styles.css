@@ -80,10 +80,24 @@ html { background-color: rgb(var(--surface)); color: rgb(var(--ink)); }
   --text-4xl:     3.052rem; /* 49 · h1 */
   --text-display: clamp(2.5rem, 6vw, 4rem); /* hero headline only */
 
-  /* Motion — ease-out only; never `ease` / linear / bounce. */
-  --ease-out-quart: cubic-bezier(.25, 1, .5, 1);  /* UI, controls, toasts */
-  --ease-out-expo:  cubic-bezier(.16, 1, .3, 1);  /* reveals, larger moves */
-  --motion-fast: 150ms;
+  /* Motion — ease-out dominant; never `ease` / `ease-in` / linear / bounce for a discrete
+     UI move (linear is reserved for continuous loops: spinners, shimmer). Two axes:
+       · named curves  — pick by the *kind* of move
+       · duration scale — pick by travel distance / element size (bigger move = longer)
+     Enter ≠ exit: an exit runs ~75% of its entrance and can use a snappier curve. */
+  --ease-out-quart: cubic-bezier(.25, 1, .5, 1);       /* entrances: UI, controls, toasts */
+  --ease-out-expo:  cubic-bezier(.16, 1, .3, 1);       /* reveals, larger on-enter moves */
+  --ease-in-out-strong: cubic-bezier(.77, 0, .175, 1); /* on-screen moves (A→B, reposition) */
+  --ease-ios:       cubic-bezier(.32, .72, 0, 1);      /* drawers / sheets / slide-overs */
+  /* Duration scale, keyed to importance/distance — a finer-grained companion to the coarse
+     --motion-* scale below. BOTH are live: new work reaches for --dur-*, existing components
+     keep --motion-*; don't diverge the shared ones. Rough mapping:
+       press(130) < fast(180) ≈ motion-fast(150) · base(240) ≈ motion(250) · slow(320) < motion-slow(400). */
+  --dur-press: 130ms;   /* tap / :active feedback — smallest, fastest */
+  --dur-fast:  180ms;   /* small moves: hover, toggle, chip, tooltip */
+  --dur-base:  240ms;   /* default: most component transitions */
+  --dur-slow:  320ms;   /* larger moves: drawers, modals, section entrances */
+  --motion-fast: 150ms; /* coarse scale, kept for existing components — do not diverge */
   --motion:      250ms;
   --motion-slow: 400ms;
 
@@ -305,6 +319,17 @@ body       { font-optical-sizing: auto; }
 html { transition: background-color .3s var(--ease-out-quart); }
 body { transition: background-color .3s var(--ease-out-quart), color .3s var(--ease-out-quart); }
 
+/* No transitions during a theme flip (Rauno). Flipping [data-theme] changes EVERY token at
+   once; letting the html/body background-color transition above (plus every component's own
+   transition) animate through that swap produces a laggy, multi-speed color smear. theme.js
+   adds `.theme-switching` to <html> for exactly one frame around the swap (removed on a
+   double-rAF, so the no-transition paint lands first) — the new palette snaps in instantly
+   and correctly. The transitions above stay intact for any other background change. */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after { transition: none !important; }
+
 /* Respect reduced motion — stop transitions and decorative motion, but keep the loading
    spinner turning (blanking it mid-ring looks broken) and force reveals visible. The
    `*` selector doesn't reach the ::view-transition-* pseudo tree (it's a separate tree,
@@ -321,7 +346,10 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
    order) the base `.reveal { opacity: 0 }` rule further down, which would otherwise win. */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { transition-duration: .01ms !important; }
-  .reveal { opacity: 1 !important; transform: none !important; }
+  /* Force the movement utilities to their visible end state (reduce movement, keep the
+     content). `.enter` rides here rather than a second @media block — the `!important`
+     end state also wins in the @starting-style before-change pass, so nothing flashes. */
+  .reveal, .enter { opacity: 1 !important; transform: none !important; }
   .skeleton { animation: none; }   /* static shimmer is fine; spinner keeps turning as feedback */
   ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
     animation-duration: 1ms !important; animation-delay: 0ms !important; }
@@ -342,6 +370,27 @@ body { transition: background-color .3s var(--ease-out-quart), color .3s var(--e
   opacity: 1;
   transform: none;
 }
+
+/* Mount entrance — the zero-JS counterpart to `.reveal`. `.reveal` fires when an element
+   scrolls INTO view (needs app.js's IntersectionObserver); `.enter` fires the moment the
+   element MOUNTS/appears, driven purely by CSS `@starting-style` — no JS, no observer.
+   Add class="enter" for a tasteful fade+rise on first paint; add style="--i:0|1|2…" on
+   siblings for a capped stagger. `@starting-style` is Chrome 117+ / Safari 17.5+ / FF 129+;
+   older browsers ignore the start state and the element just appears at its correct end
+   state (no motion — never gate correctness on it). Use sparingly — a hero, a stat strip —
+   not every card. Reduced motion is handled in the global block above (forces end state). */
+.enter {
+  transition: opacity var(--dur-base) var(--ease-out-quart),
+              transform var(--dur-base) var(--ease-out-quart);
+  transition-delay: calc(min(var(--i, 0), 8) * 40ms);   /* cap the stagger so long lists don't crawl */
+  opacity: 1;
+  transform: translateY(0);
+}
+@starting-style {
+  .enter { opacity: 0; transform: translateY(8px); }
+}
+/* Let a display/[hidden] toggle animate too, where a build reuses `.enter` for show/hide. */
+.enter[hidden], .enter.is-hidden { transition-behavior: allow-discrete; }
 
 /* Modal (app.js toggles the `open` class + aria-hidden on [data-modal] — this is the
    display half of that contract; every prototype needs one, so it ships here rather

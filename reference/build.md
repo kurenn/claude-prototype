@@ -313,10 +313,23 @@ fit) still belong in the build's own `styles.css` additions — keep them token-
 
 ### Motion utilities (opt-in)
 
-Two scroll/transition utilities ship in the scaffold but do nothing until a screen
-opts in by adding the class or calling the helper. Both are reduced-motion-safe and
-degrade to "just show the correct end state" if unsupported — never gate correctness
-on either running.
+Three motion utilities ship in the scaffold but do nothing until a screen opts in by
+adding the class or calling the helper. All are reduced-motion-safe and degrade to
+"just show the correct end state" if unsupported — never gate correctness on any of
+them running.
+
+**The token system underneath** (`styles.css` `:root`) — ease-out dominant; never
+`ease-in` / the default `ease` / `linear` for a discrete UI move (`linear` is for
+continuous loops only: spinner, shimmer). Pick the **curve by the kind of move** —
+`--ease-out-quart` (entrances, UI, controls, toasts), `--ease-out-expo` (reveals /
+larger enters), `--ease-in-out-strong` (on-screen A→B repositions), `--ease-ios`
+(drawers / sheets) — and the **duration by travel distance / element size**, bigger
+move = longer, from `--dur-press` / `--dur-fast` / `--dur-base` / `--dur-slow`
+(130 / 180 / 240 / 320ms). That scale is a finer-grained companion to the coarse
+`--motion-fast/-/-slow` (150 / 250 / 400ms) that existing components use — **both are
+live, don't diverge the shared ones**: new work reaches for `--dur-*`, existing
+components keep `--motion-*`. **Enter ≠ exit**: an exit runs ~75% of its entrance and
+can take a snappier curve. Animate transform + opacity only.
 
 - **Reveal-on-scroll** — add `class="reveal"` to any element and `app.js` fades/slides
   it in the first time it scrolls into view (IntersectionObserver, `.reveal` rules in
@@ -334,6 +347,23 @@ on either running.
   to the DOM afterward (e.g. list/card markup hydrated from `data.js`) are never
   observed and stay stuck at opacity 0. Only add the class to markup that's already in
   the page when `app.js` runs.
+- **Mount entrance (`.enter`)** — the zero-JS counterpart to `.reveal`. `.reveal` fires
+  when an element scrolls *into view*; `.enter` fires the moment it *mounts/appears*,
+  driven purely by CSS `@starting-style` — no JS, no IntersectionObserver, no hydration
+  caveat. Add `class="enter"` for a tasteful fade+rise on first paint, and
+  `style="--i:0|1|2…"` on siblings for a capped stagger (`--i × 40ms`, capped at 8 so a
+  long list doesn't crawl):
+  ```html
+  <div class="stat enter" style="--i:0">…</div>
+  <div class="stat enter" style="--i:1">…</div>
+  <div class="stat enter" style="--i:2">…</div>
+  ```
+  `@starting-style` is Chrome 117+ / Safari 17.5+ / FF 129+; where unsupported the
+  element just appears at its correct end state (no motion). Reduced motion forces the
+  end state via the global block in `styles.css`. Use sparingly — a hero, a stat strip —
+  **not every card** (same guidance as `.reveal`). It's distinct from `.reveal`: mount
+  vs scroll-into-view — pick `.enter` for above-the-fold content that's present on load,
+  `.reveal` for content the user scrolls down to.
 - **Same-doc View Transitions** — wrap a DOM update (tab switch, filter re-render,
   persona swap) in `UI.withViewTransition()` (`ui.js`) so it cross-fades where the
   browser supports the API:
