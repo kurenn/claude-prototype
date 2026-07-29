@@ -21,6 +21,11 @@
 
   function applyTheme(name) {
     if (!THEMES.includes(name)) name = THEMES[0];
+    // Kill transitions for one frame around the flip so every token snaps to the new theme
+    // instantly, instead of animating a laggy, multi-speed color smear (Rauno: no
+    // transitions during a theme flip — the CSS `html.theme-switching *` rule does the
+    // suppressing). Double-rAF removal lands the no-transition paint before re-enabling.
+    root.classList.add('theme-switching');
     root.dataset.theme = name;
     setStored(name);
     // update visible segmented controls
@@ -30,6 +35,13 @@
     // update any theme-label spans (for legacy cycle buttons)
     document.querySelectorAll('[data-theme-label]').forEach(el => el.textContent = name);
     if (window.State) window.State.set('theme', name === THEMES[0] ? null : name);
+    // Re-enable transitions once the new palette has painted (two frames later, so the
+    // transition-less repaint is guaranteed to have landed first).
+    requestAnimationFrame(function () {
+      requestAnimationFrame(function () {
+        root.classList.remove('theme-switching');
+      });
+    });
   }
 
   // Init: URL param > localStorage > prefers-color-scheme > default
