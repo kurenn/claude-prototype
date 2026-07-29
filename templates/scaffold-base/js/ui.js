@@ -410,16 +410,27 @@
   //   UI.withViewTransition(() => selectTab(name));
   //
   // Falls back to just running `fn` synchronously — same result, no animation — when
-  // `document.startViewTransition` isn't supported (Firefox, older Safari) or the user
-  // has prefers-reduced-motion set. Never gate correctness on this running; it's a
-  // visual upgrade, not a step the callback depends on.
+  // `document.startViewTransition` isn't supported (older Safari; Firefox shipped same-doc
+  // support in Firefox 144 — it's cross-document View Transitions, used by js/vt.js, that
+  // Firefox still lacks) or the user has prefers-reduced-motion set. Never gate correctness
+  // on this running; it's a visual upgrade, not a step the callback depends on.
+  //
+  // Adds a `.vt-same-doc` class to <html> for the transition's lifetime so styles.css can
+  // give the root a crossfade instead of the directional page-nav slide — both same-doc
+  // and cross-doc transitions produce the same ::view-transition-*(root) pseudos, so
+  // without this the class-less rule would apply to both. `.then(clear, clear)` (not
+  // `.finally`) because `finished` rejects when a transition is skipped, and `.finally`
+  // would leave that rejection unhandled.
   function withViewTransition(fn) {
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     if (reduceMotion || typeof document.startViewTransition !== 'function') {
       fn();
       return;
     }
-    document.startViewTransition(fn);
+    document.documentElement.classList.add('vt-same-doc');
+    const t = document.startViewTransition(fn);
+    function clear() { document.documentElement.classList.remove('vt-same-doc'); }
+    t.finished.then(clear, clear);
   }
 
   window.UI = { toast, undoToast, copyButton, loadingButton, showSkeletons, hideSkeletons, fakeLoad, trapFocus, releaseFocus, withViewTransition };
