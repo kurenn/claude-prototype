@@ -16,6 +16,7 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 - `scaffold-base/js/state.js` → `js/state.js` — URL state utility.
 - `scaffold-base/js/ui.js` → `js/ui.js` — interaction helpers (loading button, toast, declarative `[data-loading]` / `[data-toast]` / `[data-confirm]`, modal focus trap, opt-in `UI.withViewTransition`) **plus the timing engine** (`UI.fakeLatency` / `UI.fakeCall` / `UI.withLoader` / `UI.setSpeed` / `UI.replayLoading` / `UI.announce`) that gives simulated loads real, non-uniform latency + spinner-delay/min-visible discipline. See "Interaction states → Simulated loading".
 - `scaffold-base/js/loading.js` → `js/loading.js` — the tweaks-bar demo controls for that engine: ⟳ Replay (`data-loading-replay`) + the 3-way Speed segmented control (`data-speed-option`), speed persisted in localStorage like theme. Loads **after `ui.js`** in the script order.
+- `scaffold-base/js/motion.js` → `js/motion.js` — the tweaks-bar **Motion** control: the 3-way tier segmented control (`data-motion-option="calm|standard|expressive"`), applied as `data-motion` on `<html>` and persisted in localStorage like theme. The three tiers are platform (fixed) — no per-prototype edits; the skill just picks the default in `DESIGN.md`. Loads **after `theme.js`** in the script order. See "Motion tiers".
 - `feedback-overlay/feedback.js` → `js/feedback.js` — feedback overlay.
 - `feedback-overlay/feedback.css` → `css/feedback.css` — feedback overlay styles.
 - `scaffold-base/js/vt.js` → `js/vt.js` — cross-document View Transitions (default-on root transition + dormant list→detail hero-morph machinery). Works as-is; the only optional edit is tuning `idFromUrl` when you wire a hero morph with a non-default detail-URL scheme (see "Page transitions"). Loads **non-deferred in `<head>`**, not at body-end.
@@ -46,6 +47,7 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 ├── js/
 │   ├── state.js            # URL state + share + history drawer (Shift+?)
 │   ├── theme.js            # data-theme switcher
+│   ├── motion.js           # data-motion tier switcher (calm / standard / expressive)
 │   ├── layout.js           # data-layout switcher
 │   ├── data.js             # personas + shared content
 │   ├── persona.js          # data-persona switcher
@@ -69,7 +71,7 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 - The persistent `<header>` and `#proto-controls` bar each carry a distinct `view-transition-name` (`app-header` / `app-controls`, set in both `styles.css` and inline) so the chrome holds still across navigations. Keep the two names distinct on any screen where both exist. `styles.css` scopes the name to `body > header` (the top-level header only, a direct child of `<body>`) — not bare `header` — so it doesn't also pick up an unrelated nested `<header>` (the feedback overlay's panel has its own, and a builder's `<article><header>` would too); a second element claiming the same name aborts the whole transition.
 - Tailwind CDN + inline config extending CSS vars so `bg-surface`, `text-accent`, `border-muted` work.
 - The visible control bar (below) — not a click-to-reveal pill.
-- Scripts loaded in this order at the end of `<body>`: `state.js` → `theme.js` → `layout.js` → `data.js` → `persona.js` → `ui.js` → `loading.js` → `app.js` → `feedback.js`. Data loads before persona (persona reads it); ui before app (app may call `UI.toast`); `loading.js` after `ui.js` (it wires the tweaks-bar Speed/Replay controls to `UI.setSpeed` / `UI.replayLoading`).
+- Scripts loaded in this order at the end of `<body>`: `state.js` → `theme.js` → `motion.js` → `layout.js` → `data.js` → `persona.js` → `ui.js` → `loading.js` → `app.js` → `feedback.js`. Data loads before persona (persona reads it); ui before app (app may call `UI.toast`); `loading.js` after `ui.js` (it wires the tweaks-bar Speed/Replay controls to `UI.setSpeed` / `UI.replayLoading`); `motion.js` after `theme.js` (mirrors it — reads `proto-motion` from localStorage / a `?motion=` param and syncs the tier control). The inline anti-FOUC `<head>` script also sets `data-motion` before first paint, so the tier is correct even before `motion.js` runs.
 
 ### No horizontal overflow at 390px
 
@@ -94,8 +96,10 @@ The exact markup ships in `templates/scaffold-base/index.html` (the `#proto-cont
 block) — that template is the source of truth. Copy it onto every screen and edit only
 the `data-theme-option` / `data-layout-option` / `data-persona-option` buttons to match
 this prototype's themes, layouts, and personas. The **Loading** section (⟳ Replay +
-Instant/Real/Slow Speed) is platform — copy it verbatim, don't edit it. Styling for
-`#proto-controls`, `.proto-bar*`, and `.proto-seg*` ships in `css/styles.css` — do not restyle.
+Instant/Real/Slow Speed) and the **Motion** section (Calm/Std/Exp tier) are platform — copy
+them verbatim, don't edit them (the motion *default* is chosen in `DESIGN.md`, not by removing
+a button). Styling for `#proto-controls`, `.proto-bar*`, and `.proto-seg*` ships in
+`css/styles.css` — do not restyle.
 
 The bar is bottom-**center** (not bottom-right) so it's discoverable and doesn't fight
 right-side content sidebars. Reviewers see every theme and layout option at a glance
@@ -435,6 +439,41 @@ detail hero. Wire four attributes and the rest is automatic:
   crossfade — no blank flash — via the explicit `prefers-reduced-motion` override in
   `styles.css` (clamping animation-duration alone isn't enough; the root fade-in also
   carries an animation-delay that needs clamping, or you get a flash of blank page instead).
+
+### Motion tiers (calm / standard / expressive)
+
+One motion setting doesn't fit every prototype: a dense dashboard with cinematic hero-morphs
+is *friction*; a landing page with only a crossfade *under-delivers*. So motion intensity is
+gated by a **tier** on `html[data-motion="calm|standard|expressive"]` (default `standard`).
+The tier is a **stance the skill decides and records in `DESIGN.md`** — from register + tone +
+screen types (`reference/discovery.md` → "Motion tier") — not a feature to leave at default by
+accident. It's set on `<html>` (by the inline anti-FOUC `<head>` script pre-paint, then by
+`js/motion.js`) and is demoable live from the control bar's **Motion** segmented control.
+
+Everything degrades cleanly: the tier only ever *scales* motion that already degrades on its
+own (View Transitions, `@starting-style`, scroll-driven animation), so correctness never
+depends on a tier. **`prefers-reduced-motion` wins over every tier**, expressive included.
+
+| | Root page transition | List→detail hero morph | `.enter` / `.reveal` | Scroll-driven | Micro-interactions |
+|---|---|---|---|---|---|
+| **calm** | fast crossfade only (~130ms, no slide) | **off** | render instantly (visible end-state) | off | **kept** (`:active` press, hover, focus) |
+| **standard** *(default)* | crossfade + directional slide | on | as authored (sparing) | off | kept |
+| **expressive** | crossfade + directional slide | on | `.enter`: `--spring` + richer distance/duration · `.reveal`: as standard unless scroll-driven | `.reveal` upgraded to scroll-driven where supported | kept |
+
+- **calm** — for dense tools/dashboards/data apps. Suppresses the directional slide (CSS
+  overrides `::view-transition-*(root)` to a short fade), the hero morph (`vt.js` early-returns
+  on `pageswap`/`pagereveal` — the root crossfade still runs via CSS), and all entrance/reveal
+  animation (`.enter`/`.reveal` resolve to their visible end-state; `app.js` also skips the
+  reveal observer). It deliberately **keeps** `:active` press, hover, and focus feedback — those
+  are feedback, not decoration. (The Loading/Speed engine is a *separate* control, untouched by
+  the tier.)
+- **standard** — exactly today's default behavior; adds no CSS. See "Page transitions" above and
+  the `.enter` / `.reveal` entries under "Motion utilities (opt-in)".
+- **expressive** — for marketing/landing/pitch. Everything standard does, **plus** a subtle
+  `--spring` easing token (gentle ~2–3% overshoot, `linear()` with a `cubic-bezier` fallback —
+  reserved for entrances, never a trampoline) applied to `.enter`, slightly richer entrance
+  distance/duration, and `.reveal` upgraded to a scroll-driven animation where
+  `animation-timeline: view()` is supported (gated behind `prefers-reduced-motion: no-preference`).
 
 ### Nav patterns — break the reflex
 

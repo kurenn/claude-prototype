@@ -48,7 +48,7 @@ bash ~/.claude/skills/prototype/ensure-deps.sh --yes
 ```
 Installs **impeccable** (deep design assessment) and **prompt-refiner** (Q&A → spec) — third-party companions from their marketplaces; it fetches remote code (drop `--yes` to review first). If
 npx/Node or network is unavailable it prints guidance and continues — `/prototype` falls
-back to built-in checks and notes it in the final report. Then proceed to Step 1.
+back to built-in checks and notes it in the final report.
 
 ## Skill detection protocol
 
@@ -80,7 +80,7 @@ just the reminder. Never fail for a missing optional skill; note it in the final
    direction** (mood + named palette & type pairing + one signature move) and wait for a real yes-or-tweak (never self-approve)
    before building — a design review, not a form.
 2. **Build (steps 5–6)** → `reference/build.md`. Scaffold from `templates/`, wire the visible
-   control bar (theme + layout + persona + loading + share + feedback), the data layer, interaction
+   control bar (theme + layout + persona + motion + loading + share + feedback), the data layer, interaction
    states, and the layout system; then build one HTML file per screen. Before writing each
    screen, self-score it with the pre-emit critique in `reference/assess.md`; any axis < 3
    → revise before the next screen.
@@ -107,7 +107,7 @@ Subcommands (`variant`, `apply-feedback`) → `reference/subcommands.md`.
 These are load-bearing — they're what separates this from generic AI output.
 
 - **Always interactive.** Every button, link, modal, tab, composer, filter works. No dead buttons. A "static mockup" is not a valid output — if that's what the user wants, redirect to `/design-shotgun` or `/design-html`.
-- **Always-visible control bar.** A bottom-center segmented control showing every theme + layout + persona + loading option at once, plus share + feedback — never a click-to-reveal pill. Reviewers judge options they can see.
+- **Always-visible control bar.** A bottom-center segmented control showing every theme + layout + persona + motion + loading option at once, plus share + feedback — never a click-to-reveal pill. Reviewers judge options they can see.
 - **The control bar never wraps.** `flex-wrap: nowrap` + `overflow-x: auto` is load-bearing: a two-line bar reads as broken, and once one thing looks broken the reviewer doubts everything else.
 - **Feedback is always on.** The 💬 button ships enabled on every screen — no URL flags, no hidden modes.
 - **Ask before building — a hard gate.** Never write a screen until the user gives a real yes (or tweak) to the committed **design direction**. This holds in *every* mode — a rich brief or Quick mode does not waive it. Don't self-approve or infer consent from a detailed brief: a brief says *what*, the confirm settles *how it looks*. Discovery prevents generic output.

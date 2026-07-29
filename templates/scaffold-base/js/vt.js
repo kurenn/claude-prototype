@@ -11,6 +11,7 @@
   }
   window.addEventListener('pageswap', function (e) {
     if (!e.viewTransition || reduce) return;
+    if (document.documentElement.dataset.motion === 'calm') return;  // calm: root crossfade only (CSS), no element morph
     // Destination id first: matches the clicked card via data-vt-item, or a
     // "related detail" link elsewhere on this page — so detail→detail nav names
     // the clicked card, not this page's own hero. Fall back to this page's own
@@ -28,6 +29,7 @@
   });
   window.addEventListener('pagereveal', function (e) {
     if (!e.viewTransition || reduce) return;
+    if (document.documentElement.dataset.motion === 'calm') return;  // calm: root crossfade only (CSS), no element morph
     // Own id first — the incoming page IS the detail. Fall back to guessing the
     // previous page's id from the referring URL (e.g. detail→list back-nav).
     // Guard navigation.activation: it throws in Safari 18.2-18.3, which fires

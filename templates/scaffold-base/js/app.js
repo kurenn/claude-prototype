@@ -25,7 +25,16 @@
   const revealEls = document.querySelectorAll('.reveal');
   if (revealEls.length) {
     const reduceMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
-    if (reduceMotion || typeof IntersectionObserver !== 'function') {
+    // calm motion tier: scroll-driven effects are off — show reveals immediately (the CSS
+    // also forces `.reveal` to its visible end-state under [data-motion="calm"]). expressive
+    // upgrades `.reveal` to a scroll-driven animation in CSS, but only while the ViewTimeline
+    // is ACTIVE; the observer path below still adds `.visible` there regardless, and that's
+    // what actually makes the content visible when the timeline is INACTIVE (no scrollable
+    // overflow, or an overflow:hidden ancestor) — the expressive CSS doesn't set its own
+    // `opacity: 0` for exactly this reason, so this observer is a working safety net, not
+    // just a harmless redundancy.
+    const calm = document.documentElement.dataset.motion === 'calm';
+    if (reduceMotion || calm || typeof IntersectionObserver !== 'function') {
       revealEls.forEach(el => el.classList.add('visible'));
     } else {
       const io = new IntersectionObserver((entries) => {
