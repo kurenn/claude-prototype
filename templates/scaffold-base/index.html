@@ -139,6 +139,18 @@
           <button class="proto-seg" data-persona-option="empty"   aria-pressed="false">Empty</button>
         </div>
       </div>
+      <!-- Loading: demo the (transient) fake-latency loading. ⟳ Replay re-runs the
+           page's load choreography; Speed scales every simulated latency. Compact by
+           design — the bar must stay one row (it scrolls, never wraps). See js/loading.js. -->
+      <div class="proto-bar-section">
+        <span class="proto-bar-label">Loading</span>
+        <button class="proto-seg" data-loading-replay title="Replay the loading animation">⟳ Replay</button>
+        <div class="proto-seg-group">
+          <button class="proto-seg" data-speed-option="instant" aria-pressed="false">Instant</button>
+          <button class="proto-seg" data-speed-option="real"    aria-pressed="true">Real</button>
+          <button class="proto-seg" data-speed-option="slow"    aria-pressed="false">Slow</button>
+        </div>
+      </div>
       <div class="proto-bar-section">
         <button class="proto-seg" data-share title="Copy shareable URL">🔗 Share</button>
         <button class="proto-seg" data-feedback-toggle title="Toggle feedback mode">💬 Feedback</button>
@@ -153,6 +165,7 @@
   <script src="js/data.js"></script>
   <script src="js/persona.js"></script>
   <script src="js/ui.js"></script>
+  <script src="js/loading.js"></script>
   <script src="js/app.js"></script>
   <script src="js/feedback.js"></script>
 </body>

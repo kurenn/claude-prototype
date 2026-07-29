@@ -51,6 +51,60 @@ either. The button also gets `aria-live="polite"` (if it doesn't already have on
 so the label swap — the *only* feedback here — is announced to screen readers, not
 just visible.
 
+### Simulated latency & skeleton discipline (the timing engine)
+
+**Rationale:** a prototype has no backend, so every "load" is faked. Fake it with a bare
+`setTimeout(…, 700)` and it feels wrong two ways: the same 700ms every time reads as
+mechanical, and a loader shown for a call that "finishes" in 40ms *flashes* while one shown
+then hidden 30ms later *blinks*. Real products have jittery, tiered latency and loaders that
+refuse to flash. `ui.js` ships an engine so simulated loading gets both for free.
+
+**Tiered, non-uniform latency.** Different actions take different amounts of time, and no two
+identical actions take *exactly* the same time. `UI.fakeLatency(kind)` returns ms with ±45%
+jitter, per tier:
+
+```js
+UI.fakeLatency('nav')    // ~220ms base — a cheap route change
+UI.fakeLatency('read')   // ~700ms base — fetch a list/detail
+UI.fakeLatency('mutate') // ~380ms base — save/submit
+UI.fakeLatency('upload') // ~2200ms base — the deliberately-slow outlier
+// each × the global Speed multiplier (Instant 0 · Real 1 · Slow 2.5)
+```
+
+Await one directly with `UI.fakeCall(kind, { failRate })` — resolves after `fakeLatency(kind)`,
+or rejects when `failRate` (0–1) fires, so the error face (build.md "state matrix") is
+demoable without editing data:
+
+```js
+try { await UI.fakeCall('mutate'); showSaved(); }
+catch { showRegionError(); }            // .state.state--error, with a [data-retry]
+```
+
+**Spinner-delay + minimum-visible-duration.** Two thresholds kill the flash/blink. Don't show
+the loader until the work has run **300ms** (a faster call shows *nothing* — no flash); once
+shown, keep it up at least **500ms** (it can't blink out). `UI.withLoader` bakes both in:
+
+```js
+UI.withLoader(
+  () => UI.fakeCall('read'),            // the "work"
+  { show: () => region.setAttribute('aria-busy','true'),   // fires only if work outlasts 300ms
+    hide: () => region.setAttribute('aria-busy','false') } // never fires if show didn't; otherwise no sooner than 500ms after it
+);
+```
+
+`UI.fakeLoad(region, duration, opts)` (and `data-skeleton-on-load`) already run through this —
+skeletons get the delay/min-visible discipline, plus `aria-busy` and a polite "Loading…" /
+"Loaded." announcement (one shared `UI.announce` live region), with **no per-screen wiring**.
+Pass a `duration` to pin it (back-compat) or omit it for engine timing that honors the Speed
+control. **Skeletons, not spinners, for shaped content** — see tell #6 below.
+
+**Demoing the transient loading.** Because loaders are transient, they're hard to review — you
+have to reload to see them again. The tweaks-bar **⟳ Replay** button (`UI.replayLoading()`)
+re-runs every region's load sequence on demand, and the **Speed** control (Instant/Real/Slow)
+scales the whole engine so a reviewer can freeze the choreography in slow-mo or confirm Instant
+skips the skeleton entirely. Register a bespoke load sequence with `UI.registerLoader(fn)` so
+Replay picks it up too.
+
 ### Optimistic update with Undo
 
 **Rationale:** a confirm dialog ("Are you sure you want to archive this?") interrupts

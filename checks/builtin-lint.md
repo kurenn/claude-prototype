@@ -490,6 +490,61 @@ identical siblings; break the eyebrow → hairline rule → oversized-serif temp
 the hero shape, drop the hairline, or size the headline down and let something else carry
 the page.
 
+---
+
+## State completeness
+
+### 35. State-matrix completeness
+A primary list / table / collection region that ships **only a happy path** — a full grid
+with no empty state and no error affordance anywhere near it — reads as a mockup, not a
+product. Real regions can be empty (first-run, no-results, cleared) or fail (the call
+errored), and each needs its own scoped face: an `.empty-state` / `.state.state--empty`
+with a primary action, and a `.state.state--error` with a plain-language message + a
+`[data-retry]`. See `reference/build.md` → "The state matrix — every data region ships all
+of it" for the full per-region matrix (including the three distinct empties).
+
+**This rule is part-heuristic** — grep can find the *candidate* regions and whether any
+state markup sits nearby, but confirming a region is a *primary* collection (vs. an
+incidental grid of, say, footer links) and that its empty/error copy is actually correct
+needs a screenshot or DOM read (via claude-in-chrome), not text matching alone. Treat a
+grep miss as "look closer," not "pass."
+
+```
+# Candidate primary collections:
+grep -rnE 'class="[^"]*(proto-grid|\btable\b)[^"]*"' <prototype>/ --include="*.html"
+grep -rnE '<table\b' <prototype>/ --include="*.html"
+grep -rnE '<ul\b|<ol\b' <prototype>/ --include="*.html"
+# State faces present anywhere in the same file:
+grep -rnE 'class="[^"]*(empty-state|state--empty|state--error)[^"]*"' <prototype>/ --include="*.html"
+grep -rn "data-retry" <prototype>/ --include="*.html"
+```
+
+`\btable\b` false-positives on Tailwind's own `table-auto` / `table-cell` / `table-fixed`
+utility classes (a word-boundary regex still matches "table" right up to the `-`) — treat a
+hit there as noise, not a candidate, unless the element is also an actual `<table>`. The
+class grep also misses semantic markup that never carries a `proto-grid`/`table` class at
+all — a plain `<table>` or a `<ul>`/`<ol>` feed — hence the two added element-level greps.
+None of this replaces judgment: still confirm by reading the matched element, not the grep
+alone.
+
+For each screen that matches a candidate grep (a `.proto-grid`, a real `<table>`, or a
+`<ul>`/`<ol>` feed — filtering out `table-*` utility-class noise), confirm the same file
+**also** matches the state-face greps — an empty state for that region and, for anything
+that "loads" or "fails," an error affordance (`.state--error` + `data-retry`). Flag a
+primary collection that ships neither. A region genuinely incapable of being empty or
+failing (a fixed 3-up feature strip, a static pricing table) is not a finding — note *why*
+it's exempt rather than bolting on an unreachable empty state.
+
+**Fix:** author the missing face(s) — `.state.state--empty` (distinguish first-run /
+no-results / cleared) and/or `.state.state--error` with a working `[data-retry]` — and wire
+them to a persona or the `data-skeleton-on-load` / `UI.fakeCall` flow so they're reachable
+in the demo, not dead markup. A `[data-retry]` grep hit is not itself a pass: presence ≠
+wired — confirm the button actually re-runs something (ui.js ships a generic default that
+replays the nearest region's loader; a real prototype should still wire it to the actual
+retry) rather than sitting inert.
+
+---
+
 ## Report format
 
 Produce `LINT.md` at the prototype root:
@@ -497,7 +552,7 @@ Produce `LINT.md` at the prototype root:
 ```markdown
 # Lint Report — {{timestamp}}
 
-**Rules checked:** 34  ·  **Passing:** N  ·  **Findings:** M
+**Rules checked:** 35  ·  **Passing:** N  ·  **Findings:** M
 
 ## Errors (N)
 
