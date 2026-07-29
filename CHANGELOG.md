@@ -1,5 +1,37 @@
 # Changelog
 
+## v0.3.0 — 2026-07-29
+
+The **premium-feel release** — motion and loading, researched deeply (Emil Kowalski /
+Rauno Freiberg / Family / IBM Carbon / web.dev / NN/g) and scoped hard to zero-dep
+(CSS + vanilla JS + Tailwind CDN, no build). Every addition degrades cleanly where
+unsupported.
+
+### Motion & transitions
+- **Cross-document View Transitions** (#44) — a default-on root crossfade/slide gives every
+  multi-page prototype real page-to-page transitions, and a naming convention + `js/vt.js`
+  (`data-vt-item`/`data-vt-detail`/`data-vt-hero`) drives an opt-in **list→detail hero morph**
+  via `pageswap`/`pagereveal`, with persistent chrome held still, `object-fit` fix,
+  reduced-motion → crossfade-only, and a plain-navigation fallback in Firefox. Same-document
+  swaps (tab/filter) crossfade rather than slide.
+- **Motion floor-raisers** (#47) — named easing curves (`--ease-in-out-strong`, `--ease-ios`)
+  + a distance-keyed duration scale (`--dur-press/-fast/-base/-slow`) coexisting with the old
+  `--motion-*` scale; a zero-JS `@starting-style` `.enter` mount entrance with a capped stagger;
+  a sharpened doctrine (ease-out dominance, duration ∝ travel, enter ≠ exit); and a **theme-switch
+  fix** that suppresses transitions for one frame so the palette snaps instead of smearing.
+
+### Loading & perceived performance
+- **A fake-latency timing engine** (#45) — tiered, ±45%-jittered per-action latency scaled by a
+  global demo speed, wrapped in a **spinner-delay + minimum-visible-duration** discipline so
+  loaders never flash or blink; the existing skeleton/loading-button paths run through it.
+- **A tweaks-bar Loading control** (#45) — a compact **⟳ Replay** + **Instant / Real / Slow**
+  speed toggle, so the transient load choreography is demoable (like Theme/Persona).
+- **The state matrix** (#45) — a `.state`/`.state--empty`/`.state--error` component + per-region
+  guidance (first-run vs no-results vs cleared empties; scoped error + Retry) + an `aria-busy`/
+  live-region a11y spine + lint rule 35 (state-matrix completeness).
+- **Skeleton-restore fix** (#46) — `data-skeleton-on-load` regions no longer get stuck showing
+  skeletons forever (the restore guard now compares the DOM-serialized markup).
+
 ## v0.2.0 — 2026-07-28
 
 The **anti-slop release**. Everything since the initial `v0.1.0`: a real design-quality
