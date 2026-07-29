@@ -17,6 +17,10 @@
       } catch (e) {}
     })();
   </script>
+  <!-- Cross-document View Transitions — in <head>, NON-deferred, before Tailwind CDN.
+       `pagereveal` fires before first paint; a deferred load would miss it. No-op where
+       unsupported. (This page has no header/#proto-controls to isolate; root transition only.) -->
+  <script src="js/vt.js"></script>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family={{HEADING_FONT}}:wght@500;700&family={{BODY_FONT}}:wght@400;500&display=swap" rel="stylesheet" />
