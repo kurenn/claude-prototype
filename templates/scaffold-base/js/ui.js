@@ -37,6 +37,114 @@
 (function () {
   const TOAST_MS = 1600;
 
+  // ---------- TIMING ENGINE (fake-latency) ----------
+  // Prototypes have no backend, so loading is *simulated*. The two failure modes
+  // are "instant" (every read is free, nothing ever feels like work) and "bare
+  // spinner" (a loader that flashes or blinks). This engine fixes both: tiered,
+  // non-uniform latency per action *kind*, scaled by a global demo speed, plus a
+  // spinner-delay + minimum-visible-duration discipline (withLoader) so loaders
+  // never flash on a fast "call" or blink out on a slow one. Every simulated
+  // action (fakeLoad, loadingButton, a build's own fakeCall) flows through here.
+  // See reference/microinteractions.md → "Simulated latency (the timing engine)".
+  const SPEED = { instant: 0, real: 1, slow: 2.5 };   // global multiplier on every latency
+  let speedMode = 'real';                             // the tweaks-bar Speed control changes this
+
+  // Per-kind base durations (ms) with ±45% jitter so repeated calls never feel
+  // metronomic. nav is a cheap route change; read fetches a list/detail; mutate is
+  // a save/submit; upload is the deliberately-slow outlier.
+  function fakeLatency(kind) {
+    const base = ({ nav: 220, read: 700, mutate: 380, upload: 2200 })[kind] || 600;
+    const jitter = 0.45; // ±45%, never uniform
+    return (base * (1 - jitter) + Math.random() * base * 2 * jitter) * SPEED[speedMode];
+  }
+
+  // Await a simulated call; may reject. `opts.failRate` (0–1) lets a build demo the
+  // error path deterministically-ish: `await UI.fakeCall('mutate', { failRate: 1 })`.
+  function fakeCall(kind, opts) {
+    opts = opts || {};
+    return new Promise(function (res, rej) {
+      setTimeout(function () {
+        (Math.random() < (opts.failRate || 0)) ? rej(new Error('simulated failure')) : res();
+      }, fakeLatency(kind || 'read'));
+    });
+  }
+
+  // Spinner-delay + minimum-visible-duration so loaders never flash/blink:
+  //   - `delay` (300ms): don't show the loader at all until the work has been
+  //     running this long — a sub-300ms "call" completes with no visible loader.
+  //   - `minVisible` (500ms): once shown, keep it up at least this long so it can't
+  //     blink out the instant the work resolves a hair later.
+  // `work` is a function returning a value/Promise. `show`/`hide` toggle the visual
+  // (skeletons, aria-busy, announce). Resolves after hide; re-throws work's rejection.
+  function withLoader(work, o) {
+    o = o || {};
+    const delay = o.delay == null ? 300 : o.delay;
+    const minVis = o.minVisible == null ? 500 : o.minVisible;
+    let shownAt = 0;
+    const t = setTimeout(function () { shownAt = Date.now(); o.show && o.show(); }, delay);
+    return Promise.resolve().then(work).then(finish, function (e) { finish(); throw e; });
+    function finish() {
+      clearTimeout(t);
+      if (shownAt) {
+        const left = minVis - (Date.now() - shownAt);
+        if (left > 0) return new Promise(function (r) { setTimeout(function () { o.hide && o.hide(); r(); }, left); });
+      }
+      o.hide && o.hide();
+    }
+  }
+
+  // Change the global demo speed. Persists like theme (localStorage) and keeps any
+  // [data-speed-option] segmented buttons' aria-pressed in sync. js/loading.js wires
+  // the control bar to this and restores the persisted value on load.
+  const SPEED_KEY = 'proto-speed';
+  function setSpeed(mode) {
+    if (SPEED[mode] == null) return;
+    speedMode = mode;
+    try { localStorage.setItem(SPEED_KEY, mode); } catch (e) {}
+    document.querySelectorAll('[data-speed-option]').forEach(function (btn) {
+      btn.setAttribute('aria-pressed', String(btn.dataset.speedOption === mode));
+    });
+  }
+  function getSpeed() { return speedMode; }
+
+  // Replay every page-load loading choreography so the (transient) loading can be
+  // *demo'd* — re-runs each `[data-skeleton-on-load]` container through the engine
+  // (speed-aware: no fixed duration, so fakeLatency('read') governs it) plus any
+  // loaders a build registered via UI.registerLoader(). Wired to ⟳ Replay in the bar.
+  const customLoaders = [];
+  function registerLoader(fn) { if (typeof fn === 'function') customLoaders.push(fn); }
+  function replayLoading() {
+    document.querySelectorAll('[data-skeleton-on-load]').forEach(function (container) {
+      if (container.dataset.skeletonActive === '1') return; // already mid-load — don't stack
+      const count = parseInt(container.dataset.skeletonCount, 10) || 3;
+      fakeLoad(container, null, { count: count }); // null duration → engine-timed, speed-aware
+    });
+    customLoaders.forEach(function (fn) { try { fn(); } catch (e) { console.warn('replayLoading', e); } });
+  }
+
+  // ---------- A11Y LOADING SPINE ----------
+  // One shared polite live region every loader speaks through, created lazily like
+  // .proto-toast. Skeleton bars themselves stay decorative (aria-hidden by nature —
+  // they're empty silhouettes); the announcement + aria-busy on the region is what a
+  // screen reader hears. announce('') is ignored so a stray call can't blank it.
+  function announce(msg) {
+    if (msg == null || msg === '') return;
+    let el = document.querySelector('.proto-status');
+    if (!el) {
+      el = document.createElement('div');
+      el.className = 'proto-status sr-only';
+      el.setAttribute('role', 'status');
+      el.setAttribute('aria-live', 'polite');
+      document.body.appendChild(el);
+    }
+    // Clear then set on the next frame so an identical repeat message (e.g. "Loading…"
+    // twice across a Replay) still triggers the live region instead of being deduped.
+    el.textContent = '';
+    const set = function () { el.textContent = msg; };
+    if (window.requestAnimationFrame) window.requestAnimationFrame(set); // bound to window — no brand-check throw
+    else setTimeout(set, 0);
+  }
+
   // ---------- TOAST ----------
   function toast(msg, type) {
     let el = document.querySelector('.proto-toast');
@@ -133,8 +241,13 @@
 
   // ---------- LOADING BUTTON ----------
   // Shows data-loading text briefly, then runs the callback (or the original href).
+  // `ms` is optional: pass a number to pin the duration (back-compat), or omit it
+  // (null/undefined) to let the timing engine pick — fakeLatency('mutate'), so the
+  // button's "work" scales with the global Speed control like every other simulated
+  // call. A save/submit is a `mutate`, hence that tier.
   function loadingButton(btn, ms, callback) {
     if (btn.dataset.loadingActive === '1') return; // debounce double-click
+    const wait = (ms == null) ? fakeLatency('mutate') : ms;
     const original = btn.textContent;
     const loadingText = btn.dataset.loading || 'Loading…';
     btn.dataset.loadingActive = '1';
@@ -148,7 +261,7 @@
       btn.disabled = false;
       btn.dataset.loadingActive = '0';
       if (typeof callback === 'function') callback();
-    }, ms || 600);
+    }, wait);
   }
 
   // ---------- COPY TO CLIPBOARD (label swap) ----------
@@ -237,12 +350,13 @@
       return;
     }
 
-    // loading + optional toast
+    // loading + optional toast — `null` duration lets the engine pick
+    // fakeLatency('mutate'), so [data-loading] buttons honor the Speed control.
     if (el.dataset.loading) {
       e.preventDefault();
       const href = el.getAttribute('href');
       const toastMsg = el.dataset.toast;
-      loadingButton(el, 800, () => {
+      loadingButton(el, null, () => {
         if (toastMsg) toast(toastMsg, 'success');
         if (href && href !== '#') {
           // small delay so toast is visible briefly before navigation
@@ -308,9 +422,36 @@
     delete container.dataset.skeletonActive;
   }
 
+  // Show a container's skeletons for a simulated read, then restore. Back-compatible
+  // signature — `duration` still pins the wait when a number is passed (e.g. the
+  // documented `UI.fakeLoad(grid, 650, { count: 6 })` from a filter handler) — but
+  // now runs the timing engine underneath:
+  //   - `duration == null` → fakeLatency('read'), so it's speed-aware (Replay/Speed).
+  //   - withLoader discipline: a sub-300ms read never flashes a skeleton; a skeleton
+  //     that does show stays up ≥500ms so it can't blink out.
+  //   - the container gets aria-busy + a polite "Loading…"/"Loaded." announcement.
+  // Returns the withLoader promise (older callers ignored the return — still fine).
   function fakeLoad(container, duration, options) {
-    showSkeletons(container, options);
-    setTimeout(() => hideSkeletons(container), duration || 700);
+    if (!container) return Promise.resolve();
+    options = options || {};
+    const dur = duration == null ? fakeLatency('read') : duration;
+    return withLoader(
+      function () { return new Promise(function (r) { setTimeout(r, dur); }); },
+      {
+        delay: options.delay,
+        minVisible: options.minVisible,
+        show: function () {
+          showSkeletons(container, options);
+          container.setAttribute('aria-busy', 'true');
+          announce('Loading…');
+        },
+        hide: function () {
+          hideSkeletons(container);
+          container.setAttribute('aria-busy', 'false');
+          announce('Loaded.');
+        },
+      }
+    );
   }
 
   // ---------- MODAL FOCUS TRAP ----------
@@ -433,5 +574,12 @@
     t.finished.then(clear, clear);
   }
 
-  window.UI = { toast, undoToast, copyButton, loadingButton, showSkeletons, hideSkeletons, fakeLoad, trapFocus, releaseFocus, withViewTransition };
+  window.UI = {
+    toast, undoToast, copyButton, loadingButton,
+    showSkeletons, hideSkeletons, fakeLoad,
+    trapFocus, releaseFocus, withViewTransition,
+    // timing engine + a11y loading spine
+    fakeLatency, fakeCall, withLoader,
+    setSpeed, getSpeed, replayLoading, registerLoader, announce,
+  };
 })();

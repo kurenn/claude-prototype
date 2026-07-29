@@ -14,7 +14,8 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 
 **Copy literally, no edits** (product-agnostic platform code):
 - `scaffold-base/js/state.js` → `js/state.js` — URL state utility.
-- `scaffold-base/js/ui.js` → `js/ui.js` — interaction helpers (loading button, toast, declarative `[data-loading]` / `[data-toast]` / `[data-confirm]`, modal focus trap, opt-in `UI.withViewTransition`).
+- `scaffold-base/js/ui.js` → `js/ui.js` — interaction helpers (loading button, toast, declarative `[data-loading]` / `[data-toast]` / `[data-confirm]`, modal focus trap, opt-in `UI.withViewTransition`) **plus the timing engine** (`UI.fakeLatency` / `UI.fakeCall` / `UI.withLoader` / `UI.setSpeed` / `UI.replayLoading` / `UI.announce`) that gives simulated loads real, non-uniform latency + spinner-delay/min-visible discipline. See "Interaction states → Simulated loading".
+- `scaffold-base/js/loading.js` → `js/loading.js` — the tweaks-bar demo controls for that engine: ⟳ Replay (`data-loading-replay`) + the 3-way Speed segmented control (`data-speed-option`), speed persisted in localStorage like theme. Loads **after `ui.js`** in the script order.
 - `feedback-overlay/feedback.js` → `js/feedback.js` — feedback overlay.
 - `feedback-overlay/feedback.css` → `css/feedback.css` — feedback overlay styles.
 - `scaffold-base/js/vt.js` → `js/vt.js` — cross-document View Transitions (default-on root transition + dormant list→detail hero-morph machinery). Works as-is; the only optional edit is tuning `idFromUrl` when you wire a hero morph with a non-default detail-URL scheme (see "Page transitions"). Loads **non-deferred in `<head>`**, not at body-end.
@@ -48,7 +49,8 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 │   ├── layout.js           # data-layout switcher
 │   ├── data.js             # personas + shared content
 │   ├── persona.js          # data-persona switcher
-│   ├── ui.js               # loading / toast / skeleton / confirm helpers
+│   ├── ui.js               # loading / toast / skeleton / confirm helpers + timing engine
+│   ├── loading.js          # tweaks-bar Replay + Speed controls for the timing engine
 │   ├── vt.js               # cross-doc View Transitions (loads in <head>, non-deferred)
 │   ├── app.js              # page interactions (modals, tabs, filters, composer)
 │   └── feedback.js         # pin-to-element overlay (always on)
@@ -67,7 +69,7 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 - The persistent `<header>` and `#proto-controls` bar each carry a distinct `view-transition-name` (`app-header` / `app-controls`, set in both `styles.css` and inline) so the chrome holds still across navigations. Keep the two names distinct on any screen where both exist. `styles.css` scopes the name to `body > header` (the top-level header only, a direct child of `<body>`) — not bare `header` — so it doesn't also pick up an unrelated nested `<header>` (the feedback overlay's panel has its own, and a builder's `<article><header>` would too); a second element claiming the same name aborts the whole transition.
 - Tailwind CDN + inline config extending CSS vars so `bg-surface`, `text-accent`, `border-muted` work.
 - The visible control bar (below) — not a click-to-reveal pill.
-- Scripts loaded in this order at the end of `<body>`: `state.js` → `theme.js` → `layout.js` → `data.js` → `persona.js` → `ui.js` → `app.js` → `feedback.js`. Data loads before persona (persona reads it); ui before app (app may call `UI.toast`).
+- Scripts loaded in this order at the end of `<body>`: `state.js` → `theme.js` → `layout.js` → `data.js` → `persona.js` → `ui.js` → `loading.js` → `app.js` → `feedback.js`. Data loads before persona (persona reads it); ui before app (app may call `UI.toast`); `loading.js` after `ui.js` (it wires the tweaks-bar Speed/Replay controls to `UI.setSpeed` / `UI.replayLoading`).
 
 ### No horizontal overflow at 390px
 
@@ -91,8 +93,9 @@ scrollbar. `benchmark/render.sh` captures a `-w390` shot of every screen for thi
 The exact markup ships in `templates/scaffold-base/index.html` (the `#proto-controls`
 block) — that template is the source of truth. Copy it onto every screen and edit only
 the `data-theme-option` / `data-layout-option` / `data-persona-option` buttons to match
-this prototype's themes, layouts, and personas. Styling for `#proto-controls`,
-`.proto-bar*`, and `.proto-seg*` ships in `css/styles.css` — do not restyle.
+this prototype's themes, layouts, and personas. The **Loading** section (⟳ Replay +
+Instant/Real/Slow Speed) is platform — copy it verbatim, don't edit it. Styling for
+`#proto-controls`, `.proto-bar*`, and `.proto-seg*` ships in `css/styles.css` — do not restyle.
 
 The bar is bottom-**center** (not bottom-right) so it's discoverable and doesn't fight
 right-side content sidebars. Reviewers see every theme and layout option at a glance
@@ -144,11 +147,94 @@ kills a demo. Baseline checklist:
 
 - **Loading state** — primary CTAs (book, submit, save, send) use `data-loading="<text>"` (+ optional `data-toast="<msg>"`). Click shows loading text + spinner, fires the toast, then navigates or opens a modal. ui.js wires this.
 - **Success toast** — anything that "succeeds" shows a confirmation: `UI.toast('Saved', 'success')` or `data-toast`.
-- **Empty state** — every list/grid has an `.empty-state` wrapper for when the persona's list is empty: headline + one-line explainer + primary action ("Browse vendors", "Create your first…"). Ship at least the primary collection view's empty state on each side.
-- **Error state / 404** — `404.html` ships with the scaffold. Link at least one "broken" affordance to it. Form validation errors render inline under the field, not as dismissable alerts.
+- **Empty state** — every list/grid has an `.empty-state` (or `.state.state--empty`) wrapper for when the persona's list is empty: headline + one-line explainer + primary action ("Browse vendors", "Create your first…"). Ship at least the primary collection view's empty state on each side. **Distinguish first-run vs no-results vs cleared** — see "The state matrix" below; they're three different copies + actions, not one generic "Nothing here."
+- **Error state / 404** — `404.html` ships with the scaffold (whole-page not-found). For a *region* that fails, use `.state.state--error` — scoped to the region, plain language, a **Retry** (`[data-retry]`) that re-runs the call and preserves input (see "The state matrix" below). `404.html` still handles broken navigations: link at least one "broken" affordance to it. Form validation errors render inline under the field, not as dismissable alerts.
 - **Form state persistence** — multi-step inputs save to localStorage and restore on reload. Cheap win; makes the demo feel alive across refreshes.
-- **Skeleton loaders** — any list/grid that changes on user action (filter chips, pagination, persona switch, page load) briefly swaps to placeholder silhouettes. Mark a container `data-skeleton-on-load` (auto-wires on page load; tune with `data-skeleton-count` / `data-skeleton-duration`), and for filter/pagination/persona changes call `UI.fakeLoad(container, 650, { count: 6 })` from the relevant handler in `app.js`. The `.skeleton` class + shimmer ships in styles.css; shape with `.is-text` / `.is-text-lg` / `.is-block` / `.is-circle`. `hideSkeletons` only restores the pre-skeleton snapshot if the container still shows the exact skeleton markup it injected — if a render function (e.g. a persona-driven list renderer) already filled the container with real content before the timer fires, the restore is skipped, so JS-rendered containers are safe to use with `data-skeleton-on-load` without any manual cleanup.
+- **Skeleton loaders** — any list/grid that changes on user action (filter chips, pagination, persona switch, page load) briefly swaps to placeholder silhouettes. Mark a container `data-skeleton-on-load` (auto-wires on page load; tune with `data-skeleton-count` / `data-skeleton-duration`), and for filter/pagination/persona changes call `UI.fakeLoad(container, 650, { count: 6 })` from the relevant handler in `app.js`. The `.skeleton` class + shimmer ships in styles.css; shape with `.is-text` / `.is-text-lg` / `.is-block` / `.is-circle`. `fakeLoad` now runs the timing engine underneath — spinner-delay (a sub-300ms load shows no skeleton), min-visible (a shown skeleton can't blink), `aria-busy` + a polite announcement, and speed-awareness when you omit the duration; the ⟳ Replay control re-runs the whole choreography. See "Simulated loading — the timing engine" below. `hideSkeletons` only restores the pre-skeleton snapshot if the container still shows the exact skeleton markup it injected — if a render function (e.g. a persona-driven list renderer) already filled the container with real content before the timer fires, the restore is skipped, so JS-rendered containers are safe to use with `data-skeleton-on-load` without any manual cleanup.
 - **Modal focus trap** — every modal needs `role="dialog"`, `aria-modal="true"`, and an `aria-hidden` that flips with open state (author these on the modal markup itself); `app.js`'s `openModal`/`closeModal` already call `UI.trapFocus(modalEl, triggerEl)` on open and `UI.releaseFocus(modalEl)` on close. That helper (in `ui.js`) moves focus to the first focusable element inside, loops Tab/Shift+Tab within the modal so it can't leak to the page behind it, and restores focus to whatever triggered the modal when it closes. `app.js` also wires Esc to close whichever modal is open. Keep passing the trigger element (usually the clicked button) into `openModal` — it's what focus returns to. See `checks/builtin-lint.md` rule 6.
+
+#### The state matrix — every data region ships all of it
+
+A "data region" is any list, table, grid, feed, or collection that could plausibly be
+loading, full, or empty. Shipping only the happy path (a full grid) is the single most
+common "this is a mockup, not a product" tell. Each such region needs the **whole**
+matrix — author the markup for all of them, then toggle via persona / the engine:
+
+| State | What it is | Craft notes |
+|---|---|---|
+| **default** | the region with real content | realistic data (build.md Step 6), never lorem |
+| **loading** | skeleton silhouettes of that content | `data-skeleton-on-load` (page load) or `UI.fakeLoad(region, …)` (filter/paginate/persona); spinner-delay + min-visible ship free (below) |
+| **empty** | no content — but *distinguish the reason* | three different empties, three different copies + actions (below) |
+| **error** | the call failed | `.state.state--error`: scoped to the region, plain language, a **Retry** (`[data-retry]`) that re-runs the call and **preserves any input** — never a raw stack trace or a whole-page takeover |
+| **success** | the action landed | often *silent* (the change is visible) — see "Silent success" in microinteractions.md; toast only when the effect is off-screen or the region can't show it |
+
+**The three empties are not the same state** — collapsing them into one generic "Nothing
+here" is a tell:
+- **first-run** (the user has never added anything) → onboarding voice + a *primary create*
+  action: "Create your first report." This is the empty you design hardest; it's the one
+  reviewers judge.
+- **no-results** (a filter/search matched nothing) → "No invoices match *Overdue*." + a
+  *clear-filters* escape hatch. The data exists; the query is too narrow.
+- **cleared** (the user emptied it themselves — archived the last item, marked all read) →
+  a calm, done-state acknowledgement ("Inbox zero — nothing left to review."), not an error
+  and not an onboarding prompt.
+
+Use `.state.state--empty` (or the existing `.empty-state`) for empties and
+`.state.state--error` for the failure face — both are token-driven, reserve vertical
+space (`min-height`) so swapping between states doesn't shift surrounding layout, and give
+one icon + title + body + a single action button. Wire the empties off personas
+(build.md "Data layer") so the control bar's **Empty** persona actually shows them.
+
+```html
+<!-- error face for a region that failed to load; [data-retry] re-runs the fetch -->
+<div class="state state--error" role="alert">
+  <span class="state-icon"><!-- inline SVG, one weight --></span>
+  <p class="state-title font-heading">Couldn't load invoices</p>
+  <p class="state-body">Something went wrong on our end. Your filters are still applied.</p>
+  <div class="state-actions"><button class="…" data-retry>Retry</button></div>
+</div>
+```
+
+`checks/builtin-lint.md` rule 35 (state-matrix completeness) flags a primary collection
+region that ships only the happy path — no empty state, no error affordance nearby.
+
+#### Simulated loading — the timing engine
+
+Prototypes have no backend, so "loading" is *simulated*. Left alone that produces one of
+two bad feels: **instant** (every read is free, nothing reads as real work) or **bare
+spinner** (a loader that flashes on a fast call or blinks out on a slow one). `ui.js`
+ships a small timing engine so simulated loads feel like a real product's, with nothing to
+wire on the happy path:
+
+- **`UI.fakeLatency(kind)`** — tiered, non-uniform latency (ms) with ±45% jitter so
+  repeats never feel metronomic. Tiers: `nav` 220 · `read` 700 · `mutate` 380 ·
+  `upload` 2200. Scaled by the global Speed multiplier.
+- **`UI.fakeCall(kind, { failRate })`** — `await` a simulated call that resolves after
+  `fakeLatency(kind)`, or rejects (to demo the error face) when `failRate` (0–1) fires.
+- **`UI.withLoader(work, { show, hide, delay, minVisible })`** — the anti-flash
+  discipline: don't show the loader until `work` has run `delay` ms (**300** default, so a
+  sub-300ms call shows *no* loader), and once shown keep it up at least `minVisible`
+  (**500** default, so it can't blink). `show`/`hide` toggle the visual **and** the a11y
+  state (see below).
+- **`UI.fakeLoad(region, duration, opts)` / `data-skeleton-on-load`** already run through
+  `withLoader` + `fakeLatency('read')` — pass a number to pin the duration (back-compat,
+  e.g. `UI.fakeLoad(grid, 650, { count: 6 })` from a filter handler) or omit it to let the
+  engine time it. `[data-loading]` / `UI.loadingButton` run through `fakeLatency('mutate')`.
+- **A11y spine.** When a region's loader shows, `ui.js` sets `aria-busy="true"` on it and
+  announces "Loading…" through one shared polite live region (`UI.announce`, a lazily
+  created `.sr-only role="status"` node); on done, `aria-busy="false"` + "Loaded." Skeleton
+  bars stay decorative. Nothing to wire — it rides on `fakeLoad`.
+- **Custom choreographies:** `UI.registerLoader(fn)` registers a load sequence so **Replay**
+  re-runs it alongside the `data-skeleton-on-load` regions.
+
+**The tweaks-bar demo control.** The engine runs by default; the control bar adds a compact
+**Loading** section (in `#proto-controls`) to *demo* the transient loading — a **⟳ Replay**
+button (`data-loading-replay` → `UI.replayLoading()`, re-runs every region's load sequence)
+and a 3-way **Speed** segmented control (`data-speed-option="instant|real|slow"`, default
+**Real**, persisted in localStorage) that scales every latency: **Instant** ≈ 0 (reads feel
+free — and the spinner-delay means no skeleton even appears), **Slow** ×2.5 (watch the
+choreography). `js/loading.js` wires it. Keep the section compact — the bar must stay one
+row (it scrolls, never wraps).
 
 For richer interaction recipes (copy-as-label-swap, optimistic-with-undo, tooltip timing, tab crossfade), see `reference/microinteractions.md`.
 

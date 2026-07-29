@@ -551,6 +551,62 @@ body > header   { view-transition-name: app-header; }
 .empty-state p { margin: 0 auto; max-width: 32rem; }
 .empty-state .actions { margin-top: 1.25rem; display: inline-flex; gap: .5rem; }
 
+/* Screen-reader-only — visually hidden but read aloud. Powers the shared polite
+   live region (`.proto-status`, created lazily by ui.js's UI.announce) that every
+   loader speaks "Loading…" / "Loaded." through. Also usable on any visually-implicit
+   label a build needs announced. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* State matrix component — the non-happy-path states a data region needs, as one
+   token-driven block (icon slot + title + body + one action). `.state--empty` is the
+   empty/first-run/no-results/cleared face (same spirit as `.empty-state`, which stays
+   as-is for existing builds); `.state--error` is the scoped, plain-language failure
+   face with a `[data-retry]` action. `min-height` reserves space so a region swapping
+   default → loading → empty/error doesn't shift the layout around it. Document the full
+   per-region matrix in reference/build.md → "Interaction states". */
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 12rem;               /* reserve space — appearing must not shift layout */
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  border: 1px dashed rgb(var(--muted) / .4);
+  border-radius: var(--radius);
+  color: rgb(var(--ink2));
+}
+.state .state-icon {
+  display: inline-flex;
+  width: 2.25rem; height: 2.25rem;
+  color: rgb(var(--ink3));
+}
+.state .state-icon > svg { width: 100%; height: 100%; }
+.state .state-title {
+  color: rgb(var(--ink));
+  font-family: inherit;            /* add class="font-heading" in markup for the display face */
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+.state .state-body { margin: 0 auto; max-width: 32rem; }
+.state .state-actions { margin-top: .25rem; display: inline-flex; flex-wrap: wrap; gap: .5rem; justify-content: center; }
+
+/* Error face — tint the border + icon with the same --status-error token .proto-toast
+   and .form-field already use, so a theme swap carries it. Keep the copy plain-language
+   and scoped to the region; the [data-retry] button re-runs the failed call (a build
+   wires it to re-fetch and preserve any user input — see reference/build.md). */
+.state--error { border-color: rgb(var(--status-error) / .45); }
+.state--error .state-icon { color: rgb(var(--status-error)); }
+
 /* Visible control bar — all options shown inline, no click-to-reveal.
    Positioned bottom-center so it's discoverable and doesn't fight sidebars. */
 #proto-controls {
