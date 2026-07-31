@@ -1,11 +1,22 @@
 /*
- * Layout switcher — comfortable (default) / compact.
+ * Layout switcher — per-prototype, not fixed to column counts.
  *
- * Comfortable: generous whitespace, docs-feel. Line-height 1.7, max 720.
- * Compact: tighter, reference-manual feel. Line-height 1.55, max 640.
+ * Customize the LAYOUTS array for this prototype. Names should match:
+ *   - the `data-layout-option="..."` buttons in the control bar
+ *   - the CSS rules keyed off `html[data-layout="..."]` in styles.css
+ *
+ * Pick names from real product vocabulary in your category. Examples:
+ *
+ *   const LAYOUTS = ['grid', 'gallery', 'list'];           // photo marketplace
+ *   const LAYOUTS = ['compact', 'comfortable', 'spacious']; // dashboard density
+ *   const LAYOUTS = ['list-only', 'split-view', 'preview']; // inbox
+ *   const LAYOUTS = ['grid-2', 'grid-3', 'grid-4'];         // e-commerce catalog
+ *   const LAYOUTS = ['reading', 'with-sidebar'];            // content site
+ *
+ * The first entry is the default. Applied to <html data-layout="...">.
  */
 (function () {
-  const LAYOUTS = ['comfortable', 'compact'];
+  const LAYOUTS = ['editorial', 'index']; // feature grid: editorial = roomy 2-up, index = dense 3-up
   const STORAGE_KEY = 'proto-layout';
   const root = document.documentElement;
 

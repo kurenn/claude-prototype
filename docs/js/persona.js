@@ -1,14 +1,22 @@
 /*
- * Persona switcher — new (default) / installed.
+ * Persona switcher — third dimension alongside theme + layout.
  *
- * new: hasn't installed the skill. Install section prominent.
- * installed: already has it. Install collapses to a note. Roadmap rises.
+ * A "persona" is a state the prototype can be shown in: empty user,
+ * active user, power user, first-time-onboarding, etc. Swapping the persona
+ * swaps whatever data.js has defined under that key, plus any elements with
+ * data-persona-show / data-persona-hide / data-persona-text attributes.
  *
- * On persona change, a 150ms skeleton flash sells the illusion that content
- * is re-resolving. See app.js for the flash handler.
+ * Customize PERSONAS below. Names must match keys in js/data.js personas.
+ *
+ *   const PERSONAS = ['default', 'empty'];         // simplest
+ *   const PERSONAS = ['sara-new', 'sara-shopping', 'sara-post-event'];  // lifecycle
+ *   const PERSONAS = ['customer', 'admin', 'support'];  // role-based
+ *
+ * First entry is the default. Works with visible segmented controls:
+ *   <button data-persona-option="<name>">Label</button>
  */
 (function () {
-  const PERSONAS = ['new', 'installed'];
+  const PERSONAS = ['default', 'empty']; // default = the demo populated; empty = demo's first-run state
   const STORAGE_KEY = 'proto-persona';
   const root = document.documentElement;
 
