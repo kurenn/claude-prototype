@@ -545,6 +545,42 @@ retry) rather than sitting inert.
 
 ---
 
+## Vertical rhythm
+
+### 36. Tight-leading display type overlaps its neighbor
+An oversized display heading or wordmark set with `line-height` below ~1 (`leading-none`,
+`leading-[0.8]`, `line-height: .85`, etc.) reserves *less* vertical space than its glyph ink
+actually occupies — descenders (p, y, g, q, j, comma, period) drop below the line box, and
+ascenders push above it. When the next paragraph or section sits flush underneath with no
+reserved clearance, its box overlaps those glyphs. This is a **vertical** overlap — distinct
+from horizontal overflow (rule 24, `overflow-wrap` on display headings) and from all-caps
+cap-collision-on-wrap (rule 25). Tight leading itself isn't the bug; tight leading *with a
+flush neighbor and no reserved clearance* is.
+
+**This rule is part-heuristic**, like rules 29/33/35 — grep finds candidate tight-leading
+display elements, but confirming the glyph ink actually crosses into the next element's box
+needs a screenshot or a DOM read (via claude-in-chrome). Tight leading is legitimate whenever
+clearance is reserved; don't flag on the class/property alone.
+
+```
+grep -rnE 'class="[^"]*(leading-none|leading-\[0?\.[0-9]+)' <prototype>/ --include="*.html"
+grep -rnE 'line-height:\s*(0?\.[0-9]+|0)([^0-9]|;|$)' <prototype>/ --include="*.css"
+```
+
+For each match, confirm it's an oversized display heading/wordmark (large font-size), not an
+incidental `line-height: 1` on a chip, button, or icon row (those have no descenders to clip
+and aren't display type). Then check whether the element is immediately followed by other
+content with no `padding-bottom` / `margin-bottom` clearance reserved on the tight-leading
+element. Where claude-in-chrome is available, screenshot the boundary (or read computed
+geometry) to confirm the glyph ink — not just the line box — crosses into the next block.
+
+**Fix:** reserve descender/ascender clearance on the display element — add `padding-bottom`
+(~0.15–0.25em of its font-size) and/or `margin-bottom`, or raise `line-height` toward 1 — so
+the neighboring block never touches a glyph. Tight leading is fine *with* clearance; the bug
+is tight leading with a flush neighbor and no clearance.
+
+---
+
 ## Report format
 
 Produce `LINT.md` at the prototype root:
@@ -552,7 +588,7 @@ Produce `LINT.md` at the prototype root:
 ```markdown
 # Lint Report — {{timestamp}}
 
-**Rules checked:** 35  ·  **Passing:** N  ·  **Findings:** M
+**Rules checked:** 36  ·  **Passing:** N  ·  **Findings:** M
 
 ## Errors (N)
 
