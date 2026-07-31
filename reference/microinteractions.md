@@ -266,6 +266,53 @@ toast, because the user can't otherwise tell the action didn't work.
 - It's undoable and time-limited — that's the Undo-toast case above, which is a
   toast whose job is the Undo affordance, not the confirmation itself.
 
+### Number pop-in / rolling counter
+
+**Rationale:** a KPI or total that *animates to* its value draws the eye to the one number that
+changed — but only when it genuinely just changed (a live metric, a result landing). Animating every
+number on page load is decoration.
+
+**Mechanic (zero-dep):** count from a start to the target over ~500–800ms with `requestAnimationFrame`,
+easing out; write `tabular-nums` so the width doesn't jitter mid-count. For a small +1/-1 (a badge),
+skip the roll — just a quick scale pop (`transform: scale(1.15)→1` over 150ms). **Gate on motion:**
+`calm` and `prefers-reduced-motion` paint the final number instantly; drive the duration through the
+loading-speed engine so the tweaks bar scales it.
+
+### Spinner → check morph
+
+**Rationale:** when a loading action succeeds, morphing the *same* spinner into a checkmark (rather
+than swapping in a separate success element) keeps the user's eye anchored on one spot and reads as
+"this finished," not "something new appeared."
+
+**Mechanic:** one SVG circle whose `stroke-dasharray` spins while pending, then on resolve stops and a
+check path draws in (`stroke-dashoffset` 100→0 over 250ms). Pairs with `withLoader` (min-visible
+discipline) so the check is actually seen on fast calls. On failure, morph to a shake + `.state--error`
+instead — never a check. This is the AI-native tool-call "done" state (`reference/ai-native-ui.md`).
+**Reduced-motion / calm:** skip the spin and the draw-in — swap straight to a static check (or error)
+icon the moment the call resolves.
+
+### Dissolve on remove
+
+**Rationale:** deleting a row/card with a soft dissolve (rather than an instant vanish or a full
+"smoky" particle effect) tells the user *which* thing left and where — the gap closing confirms the
+delete without a toast. The particle/smoke version from the corpus needs canvas; the dissolve carries
+the same read in pure CSS.
+
+**Mechanic:** on remove, transition `opacity 1→0` + a slight `filter: blur(4px)` + `scale(0.98)` over
+~200ms, then collapse the height via `grid-template-rows: 1fr→0fr` (see "Height changes" above) so
+neighbors slide up. **Reduced-motion / calm:** skip straight to the height collapse, no blur.
+
+### Card-stack fan on hover
+
+**Rationale:** a stacked set (saved items, versions, a deck) that **fans slightly on hover** signals
+"there's more than one here, and it's browsable" — a discoverability cue, not eye-candy. Only earn it
+when the stack really holds multiple things the user can act on.
+
+**Mechanic:** absolutely-stack the cards with a small `rotate`/`translate` offset per depth; on the
+container's `:hover`/`:focus-within`, widen the offsets via `transform` (GPU-cheap). Keep it subtle
+(≤6° / ≤12px) — a big fan reads as a toy. **Gate on motion:** `calm` shows the stack static with a
+count badge instead; `prefers-reduced-motion` never fans.
+
 ## Motion tells to avoid
 
 Named failure patterns — the visual signatures of un-crafted, generated-looking

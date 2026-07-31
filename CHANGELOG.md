@@ -1,5 +1,39 @@
 # Changelog
 
+## v0.5.0 — 2026-07-31
+
+The **inspiration-intake release** — the skill can now *learn from the web on an ongoing basis*
+instead of studying a reference once and forgetting it. Seeded from a deep intake of ten premium
+design sites (the Jakub Antalik showcase set, aicss, canvasui, beautiful-ui, originkit, agentation,
+transitions.dev, landingfolio).
+
+### The ongoing loop — intake → corpus → graduate
+- **A living inspiration corpus** (`reference/inspiration.md`, new) — a dated/sourced/tagged ledger
+  that persists a reference's distilled DNA (not screenshots) so each build compounds on the last.
+  On-demand, so the always-loaded router is untouched (SKILL.md stays at ~2598/2600 tokens).
+- **`/prototype intake <url…>`** (new subcommand) — browse a site in full, distill its DNA, and
+  append a corpus entry; privacy-guarded (only the given URLs, never the user's own tabs).
+- **A graduation ledger** — proven moves (recurring across ≥3 entries) promote from the corpus into
+  the menus the skill always reads. Discovery now reads *from* and feeds *back into* the corpus.
+
+### What graduated from the first ten
+- **AI-native UI is now a first-class genre** (`reference/ai-native-ui.md`, new) — a zero-dep, à-la-carte
+  vocabulary wired to the existing loading engine: a *named* thinking-state taxonomy (Working /
+  Searching / Solving / Listening / Composing / Shaping, not one spinner), streaming text, tool-call
+  states, approval cards, tool chips, task rows, agent composer, plus AI-specific anti-slop (no violet
+  "AI gradient").
+- **Three page archetypes beyond the app-shell** (`build.md`) — *single-artifact showcase*, *live
+  component catalog*, and *documentation-as-landing* — plus the **playground pattern** (variant
+  toggles + slider → regenerated copy-paste code) and a few honest "legitimacy tells".
+- **Two sharpened registers, reconciled with the anti-slop rules** — a *dev-tool near-black* ground
+  (`color-palettes.md`) that draws the exact line between the mastered version and the `blue-on-black`
+  reflex it already bans; and a *dev-tool / AI-native* type register (`type-pairings.md`) that explains
+  when the reflex faces (Inter/Geist) are *earned* — the real signature being mono-for-labels, not the
+  sans.
+- **Four new micro-interactions** (`microinteractions.md`) — number pop-in / rolling counter,
+  spinner→check morph, dissolve-on-remove, and card-stack fan-on-hover — each motion-tier- and
+  reduced-motion-gated.
+
 ## v0.4.0 — 2026-07-29
 
 ### Motion tiers

@@ -55,6 +55,22 @@ flourish. **quiet** (minimal) commits to Instrument Sans alone, a quiet neo-grot
 not Geist, and not reaching for the menu's already-common Public Sans / Hanken Grotesk either. All
 three (plus IBM Plex Mono) are Google Fonts and already off the reflex-reject list below.
 
+**The dev-tool / AI-native register — when the reflex faces are earned.** The premium dev-tool and
+AI-product sites in `reference/inspiration.md` (canvasui, aicss, beautiful-ui, originkit, the Antalik
+set) run **a system sans + a mono for labels** — often the very faces this table rejects (Inter,
+Geist). That is not a loophole: those faces are banned *as a default*, and these sites earn them by
+spending the entire distinctiveness budget elsewhere — an OKLCH-tinted near-black ground, one
+signature motion moment, and above all a **mono companion carrying every label, count, path and
+token** (originkit sets *all* labels in mono). The register's real signature is that mono discipline,
+not the sans. So for a genuine developer-tool / AI brief:
+- Reach first for the **technical / carbon** rows above (Hanken · Schibsted Grotesk · IBM Plex Sans +
+  JetBrains Mono / IBM Plex Mono) — they *are* this register, one notch less defaulted than Inter.
+- Inter/Geist are permissible **only** when the brief is truly this category (a characterful display
+  would read as trying-too-hard) **and** the budget is spent on ground + mono + motion. Even then
+  Geist copies the category leader (Vercel) — use it only when the brief explicitly asks to read like
+  Vercel/Linear, and prefer the grotesque otherwise.
+- The move to actually steal: **mono-for-labels as a deliberate signal**, not the reflex sans.
+
 Free-text tones: map to the nearest row or combine deliberately (e.g. "warm + technical" → a
 grotesque display with a humanist body like IBM Plex Sans). One family in several weights often
 beats two competing typefaces — only add a second face for genuine contrast.
@@ -63,7 +79,8 @@ beats two competing typefaces — only add a second face for genuine contrast.
 
 **Inter · Roboto · Open Sans · Lato · Montserrat · Arial · raw `system-ui` as the brand face.**
 Fine for docs or a pure tool where personality isn't the goal; wrong for a prototype meant to
-impress. Two anti-reflexes:
+impress. **Sole exception:** the dev-tool / AI-native register above, under its stated conditions
+only (budget spent on ground + mono + motion) — never elsewhere. Two anti-reflexes:
 
 - **Mono is not a costume.** Use a monospace for numbers/code/eyebrows, never as lazy "developer
   vibes" across the whole UI.

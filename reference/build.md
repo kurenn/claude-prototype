@@ -554,6 +554,41 @@ One HTML file per screen. Each screen:
 - **Tight-leading display type needs clearance.** An oversized heading/wordmark with `line-height` below 1 (`leading-none`, `leading-[0.8]`, etc.) clips its own descenders/ascenders out of the line box — the glyphs are still there, just outside the box the layout thinks it reserved. Pair any such heading with `padding-bottom` (~0.15–0.25em of its font-size) or `margin-bottom` so a period or descender never collides with the next block. Tight leading is fine; tight leading with a flush neighbor and no clearance isn't.
 - **Icons & imagery.** *Decide the icon role from the register — `DESIGN.md` names it (discovery.md Step 4) — don't leave density to chance.* **Product** register (dashboards, tools, app shells): icons are **functional** — they carry affordances (nav destinations, row/card actions, status, controls); a product screen with no action or nav icons is usually under-built. **Brand** register (landing, pitch, editorial): icons are **earned, not default** — lead with type and space, use an icon only where it removes ambiguity (a play control on an audio CTA), never decorative above headings; zero icons is a legitimate, deliberate outcome. Where you do use them: inline SVG copied from [reicon.dev](https://reicon.dev) (MIT, 2,700+, multiple weights) at **one** weight — never a big rounded icon above every heading. `brands.reicon.dev` covers real-looking logos. For photos, follow "Real imagery for photo-forward products" below — a glyph tile is a fallback, never the plan.
 
+### Page archetypes — beyond the app-shell
+
+Most prototypes are an app-shell (nav + screens). But three other whole-page shapes recur in the
+best work (`reference/inspiration.md`) and fit specific briefs — pick the archetype in discovery, name
+it in `DESIGN.md`, don't default to app-shell for everything:
+
+- **Single-artifact showcase** (beam / metal / orbs) — the page *is* one component, shown off. Centered,
+  quiet OKLCH-tinted near-black, one **hero live demo**, then `Installation → Usage → Playground`.
+  For a pitch of a single feature, effect, or primitive. Its engine is the **playground pattern**
+  below. Signature belongs on the artifact, not the chrome; GitHub/X pair + "Made by —" footer.
+- **Live component catalog** (aicss / transitions.dev / beautiful-ui / originkit) — a category-labeled
+  grid (or left-TOC list) of **real running demos**, never screenshots. Each tile: the live thing + a
+  **name + one-line mechanic** + a copy affordance; band label + count on the right. For a library,
+  design-system, or "here's everything it does" page. Keep tiles as quiet frames so the content reads.
+- **Documentation-as-landing** (agentation) — a technical product typeset as a beautiful *document*:
+  left TOC, numbered how-to, inline code chips, an **embedded working demo** inside the prose, one
+  expressive flourish (a script wordmark) on an otherwise-neutral face, "Made by / Colophon" footer.
+  For a dev tool / API / agent product where the audience is technical and prose is the pitch.
+
+**The playground pattern** (the showcase's engine, reusable anywhere): variant **toggles** (pill
+segmented controls) + a **slider** drive a live preview *and* regenerate a copy-paste code/spec block
+in real time. It's the control-bar philosophy (`Visible control bar` above) applied to one element —
+wire it through `State.set()` so the shown config and the emitted snippet never drift, and put a
+copy-as-label-swap button (`UI.copyButton`) on the snippet.
+
+**Legitimacy tells** (cheap, and they read as "a real team shipped this"): an `npm install …` line
+with a copy button in the hero; a small **Pro** badge on premium items; a GitHub/X icon pair
+top-right; a "Made by — / Colophon" footer; an inline "new stuff, in your inbox" capture. Use a few,
+honestly — they're texture, not a checklist to spam.
+
+**AI / agent products → `reference/ai-native-ui.md`.** If the prototype has an agent or model as an
+actor (chat, copilot, agent console), that file is the component vocabulary — thinking-state taxonomy,
+streaming text, tool-call states, approval cards, task rows — all zero-dep and wired to the loading
+engine. Don't invent AI UI from scratch; it has its own genre now.
+
 ### Real imagery for photo-forward products
 
 Marketplaces, listings, and profiles can't demo credibly on placeholders — a reviewer

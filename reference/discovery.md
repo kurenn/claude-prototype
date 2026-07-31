@@ -54,6 +54,21 @@ a copy of the source:
   density), not the paint — see "Choosing layouts" (Step 3) for the category vocabulary.
 - **Accent** — the one accent move: which color, and how much of the surface it spends.
 
+### The living corpus — read it, feed it
+
+The reading above is per-build; `reference/inspiration.md` is where it **persists** so the skill
+compounds. Use it both directions:
+
+- **Read from it** — once tone (Step 2) and register (Step 4) are set, skim the corpus for entries
+  whose **register/genre matches** and pull concrete, zero-dep moves into the direction (e.g. a dev-tool brief →
+  the near-black + mono-label + playground moves the corpus already distilled). It's on-demand, so it
+  costs the router nothing.
+- **Feed it** — when you study a genuinely good new reference, persist it as a corpus entry (schema at
+  the top of that file), or tell the user to run `/prototype intake <url…>` (`reference/subcommands.md`).
+  When a move recurs (≥3 entries is the trigger for a cross-site pattern — though a single site can
+  still graduate a self-contained move that's obviously right), propose promoting it into the menus.
+  This is the "ongoing" loop: **intake → corpus → graduate.**
+
 ### No reference? Point at a curated gallery
 
 Route by what you're building — these are inspiration sources, not built-in skill categories:

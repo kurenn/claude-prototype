@@ -1,6 +1,6 @@
 ---
 name: prototype
-description: Build production-feel HTML prototypes for sales demos, stakeholder reviews, and design exploration. Runs a discovery Q&A, scaffolds a zero-dep static site (HTML + Tailwind CDN + CSS variables + theme switcher + layout switcher + URL-state + feedback overlay + always-visible control bar), and runs a design-quality assessment loop. Use when the user says "prototype", "mockup", "demo", "pitch page", "sales demo", "click-through", or describes a UI they want to show someone without building the real thing. Also handles /prototype variant "<vibe>" (fork a variant) and /prototype apply-feedback <file> (apply pinned feedback JSON).
+description: Build production-feel HTML prototypes for sales demos and reviews. Runs a discovery Q&A, scaffolds a zero-dep static site (HTML + Tailwind CDN + theme/layout switchers + URL-state + feedback overlay + control bar) and runs a design-quality loop. Use when the user says "prototype", "mockup", "demo", "pitch page", "sales demo", "click-through", or describes a UI they want to show someone without building the real thing. Also handles /prototype variant "<vibe>" (fork a variant) and /prototype apply-feedback <file> (apply pinned feedback JSON).
 ---
 
 # /prototype
@@ -24,6 +24,7 @@ small vanilla JS files.
 /prototype                          → full flow: discover → build → assess → ship
 /prototype variant "<vibe>"         → fork current prototype into variants/<slug>/
 /prototype apply-feedback <file>    → read feedback JSON, apply each comment, re-assess
+/prototype intake <url…>            → add sites to the inspiration corpus
 ```
 
 ## The flow at a glance
@@ -100,7 +101,7 @@ any screen — ask which page and how it should change (feel, layout, content, a
 apply it to just that screen, re-verify, and loop until they're happy. A prototype earns its keep
 by being iterated, not shipped once.
 
-Subcommands (`variant`, `apply-feedback`) → `reference/subcommands.md`.
+Subcommands (`variant`, `apply-feedback`, `intake`) → `reference/subcommands.md`.
 
 ## Non-negotiable constraints
 

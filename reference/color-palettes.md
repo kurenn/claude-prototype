@@ -27,7 +27,8 @@ each deliberately dodges its category-reflex cliché. Preview them live in `desi
 - **Dark mode ≠ inverted light**: elevate with *lighter surfaces* (`surface` < `elevated` <
   `elevated-2`), not shadow; desaturate the accent; drop body weight a notch.
 - **Category-reflex check**: if the palette is guessable from the domain (finance→navy/gold,
-  health→teal/white, crypto→neon, dev-tool→blue-on-black), rework it.
+  health→teal/white, crypto→neon, dev-tool→blue-on-black), rework it. (One defined exception: the
+  *earned* near-black — no glow, no guessable accent — in "dev-tool near-black" below.)
 - **AI-editorial reflex check — passing the category-reflex check above is NOT enough.** A warm
   cream/paper or warm-carbon ground + a display serif + one lone amber/terracotta/oxblood accent is
   its own cross-domain "a machine made this" tell, independent of domain — a podcast site that
@@ -93,6 +94,22 @@ surface, not a second hue. No card chrome, oversized whitespace, one near-invisi
 - **Light:** `#f8f6f1 · #fcfaf6 · #fefdfa · #26231f · #5c5750 · #8c867d · #e2ded6 · #f0ece4 · #3c2e24 · #faf7f2`
 - **Dark:** `#161411 · #1f1c18 · #292520 · #ede8e0 · #b0a99f · #847e75 · #342f29 · #26221d · #e9e3d9 · #181512`
 
+### dev-tool near-black — earned monochrome · restrained (cross-tone ground)
+Not a tone row — a **ground strategy** the premium dev-tool / AI sites in `reference/inspiration.md`
+share (8 of 10 are near-black). It sits one inch from the **`dev-tool→blue-on-black` reflex banned
+above**, so the line matters — and the line is *not* "pure `#000` vs tinted." The banned reflex is the
+guessable dev-tool cliché: an accent (classically blue or neon) *glowing* on black. The earned version
+keeps the near-black but removes **both** the glow **and** the guessable accent — distinctiveness comes
+from the mono-label type register and one signature moment, not from color. Use only for a genuine
+developer-tool / AI brief; if you're reaching for a glow or a blue to justify it, you're back in the reflex.
+- **Dark:** `#0b0b0d · #141417 · #1c1c20 · #ececf0 · #a8a8b0 · #78787f · #2a2a30 · #201f25 · #ececf0 · #0b0b0d`
+  — the "accent" is a **monochrome inversion** (near-white on near-black), like `quiet` — no hue at all
+  is the strong default here. If the brief genuinely needs one, add exactly one **desaturated** hue that
+  is **not blue or green** (both *are* the dev-tool cliché this dodges) — a muted clay/amber like
+  `#b0805a` reads as chosen — on ≤5% of the surface, never a neon, never a glow, never a gradient.
+- **Light counterpart:** don't invert to gray — use any tinted-light row above (e.g. `minimal`); this
+  register is dark-first, so ship the dark theme as the primary.
+
 Free-text tones: map to the nearest row or shift the hue deliberately; keep the tinting + one-accent discipline.
 
 ## Anti-slop — never ship these
@@ -102,7 +119,10 @@ default** (the #1 tell) · gray text on a colored ground (use a tint of the grou
 
 ## Contrast (verified, WCAG)
 
-Body `ink` on `surface` clears 4.5:1 in both themes for all nine. Three honest flags:
+Body `ink` on `surface` clears 4.5:1 in both themes for all nine tone rows. Four honest flags:
+- **dev-tool near-black** (the cross-tone ground, not counted in the nine): its mono-inversion accent
+  trivially clears; if you add the optional clay/amber hue, verify it — `#b0805a`(~L0.62) on `#0b0b0d`
+  clears AA for a small chip/underline, but it's a fill role, not body text.
 - **`ink3`** (tertiary — timestamps, placeholders, captions) is AA-*Large* only in light mode.
   Never set body copy in it; use `ink2` for anything essential.
 - **playful marigold / bold lime** accents are **fill** roles (button background + `accent-ink`
