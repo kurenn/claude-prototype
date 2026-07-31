@@ -1,891 +1,641 @@
 /*
- * claude-prototype landing page
- * Tokens keyed off data-theme and data-layout on <html>.
- * Color vars are RGB channels (scaffold convention) so Tailwind's alpha works.
+ * Design tokens per theme.
+ * Every color = CSS var (RGB channels, space-separated, no commas) so Tailwind's
+ * `<alpha-value>` works: bg-accent/50, text-ink/70, etc.
+ * Flip themes by changing [data-theme] on <html>.
+ *
+ * Pick the palette per tone from reference/color-palettes.md. Tint every neutral
+ * (OKLCH chroma .005–.015) — never flat gray, #000, or #fff. Dark themes elevate
+ * with lighter surfaces (not shadow) + a desaturated accent. These three are tinted
+ * starting points; a build replaces them with the chosen palette's themes.
  */
 
 /* ==========================================================================
-   THEMES
-   ========================================================================== */
+ * PALETTE — "Ember on cream". One accent (ember) + a single reserved SIGNAL
+ * hue (lime) used NOWHERE except the live demo's alive/active states.
+ * Ember is a FILL / large-display / stroke color, never small body text
+ * (orange-on-cream computes ~3.7:1 — fine for display, fails for body). Body
+ * text stays --ink / --ink2. No gradients anywhere. Three page themes:
+ *   daylight — the cream light (default)
+ *   ember    — warm dark variant (prefers-color-scheme: dark picks this)
+ *   paper    — flat, monochrome newsprint (accent collapses into ink)
+ * ========================================================================== */
 
-html[data-theme="terminal"] {
-  --surface:         18  22  19;
-  --elevated:        24  28  24;
-  --elevated-2:      32  37  33;
-  --accent:         149 196 163;   /* muted CRT-phosphor green */
-  --accent-ink:      18  22  19;
-  --muted:           73  81  75;   /* border-strong */
-  --hairline:        46  52  47;   /* border-hairline */
-  --ink:            237 233 223;   /* warm off-white */
-  --ink2:           182 177 165;   /* ink-muted */
-  --ink3:           135 148 135;   /* ink-subtle (green-tinted) — AA 5.3:1 */
-  --radius: 4px;
-  --heading-weight: 700;
-  --font-heading: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+html[data-theme="daylight"] {
+  --surface:  250 246 238;
+  --elevated: 255 252 246;
+  --elevated-2: 243 236 224;
+  --ink:       26  21  17;
+  --ink2:      82  72  62;
+  --ink3:     130 118 104;
+  --hairline: 230 222 208;
+  --muted:    165 154 138;
+  --accent:   230  79  38;   /* ember — fills / display / stroke only, never body text */
+  --accent-ink: 255 251 245;
+  --signal:   190 236  80;   /* reserved: demo alive/active states ONLY */
+  --signal-ink: 26  32  10;
+  --status-error: 190 60 60;
+  --radius: 14px;
+  /* warm, low shadow */
+  --shadow-sm: 0 1px 2px rgb(60 34 18 / .05);
+  --shadow-md: 0 2px 4px rgb(60 34 18 / .06), 0 6px 16px rgb(60 34 18 / .06);
+  --shadow-lg: 0 4px 10px rgb(60 34 18 / .07), 0 18px 40px rgb(60 34 18 / .10);
+}
+
+html[data-theme="ember"] {
+  --surface:   22  19  17;
+  --elevated:  30  26  23;
+  --elevated-2: 40  35  31;
+  --ink:      245 240 232;
+  --ink2:     190 182 170;
+  --ink3:     140 132 120;
+  --hairline:  52  46  41;
+  --muted:    112 104  94;
+  --accent:   240  96  52;   /* ember, lifted for the dark surface */
+  --accent-ink: 22  19  17;
+  --signal:   198 244  96;
+  --signal-ink: 20  24  10;
+  --status-error: 248 113 113;
+  --radius: 14px;
+  --shadow-sm: none; --shadow-md: none; --shadow-lg: none;  /* dark elevates via surface */
 }
 
 html[data-theme="paper"] {
-  --surface:        249 244 234;
-  --elevated:       241 234 221;
-  --elevated-2:     232 223 206;
-  --accent:         165  77  49;   /* dusty brick */
-  --accent-ink:     250 246 237;
-  --muted:          163 151 130;
-  --hairline:       211 201 181;
-  --ink:             40  33  23;
-  --ink2:            96  87  72;
-  --ink3:           105  96  80;   /* AA 4.6:1 on cream surface */
-  --radius: 4px;
-  --heading-weight: 600;
-  --font-heading: "Fraunces", ui-serif, Georgia, serif;
+  --surface:  247 244 237;   /* warm bone / newsprint */
+  --elevated: 252 250 245;
+  --elevated-2: 240 236 227;
+  --ink:       26  24  21;
+  --ink2:      84  78  70;
+  --ink3:     128 120 110;
+  --hairline: 224 218 207;
+  --muted:    166 158 145;
+  --accent:    26  24  21;   /* monochrome — the accent collapses into ink */
+  --accent-ink: 250 247 240;
+  --signal:   190 236  80;
+  --signal-ink: 26  32  10;
+  --status-error: 176 54 54;
+  --radius: 4px;            /* flatter than the ember themes */
+  --shadow-sm: 0 1px 1px rgb(30 26 20 / .04);
+  --shadow-md: 0 1px 2px rgb(30 26 20 / .05), 0 4px 10px rgb(30 26 20 / .04);
+  --shadow-lg: 0 2px 6px rgb(30 26 20 / .05), 0 12px 28px rgb(30 26 20 / .06);
 }
 
-html[data-theme="mono"] {
-  --surface:        252 252 253;
-  --elevated:       248 247 249;
-  --elevated-2:     238 237 240;
-  --accent:          29  28  32;   /* resolves to ink-strong */
-  --accent-ink:     252 252 253;
-  --muted:          174 173 178;
-  --hairline:       218 217 221;
-  --ink:             29  28  32;
-  --ink2:            98  98 103;
-  --ink3:           100 100 107;   /* AA 4.7:1 on near-white surface */
-  --radius: 0;
-  --heading-weight: 700;
-  --font-heading: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-}
+/* Anti-FOUC: paint the base background/text from these render-blocking tokens
+   immediately, instead of waiting on Tailwind CDN's runtime-generated `bg-surface`
+   utility. `<link rel="stylesheet" href="css/styles.css">` blocks rendering, so
+   this resolves before first paint (once the inline <head> script has set
+   data-theme); `<body class="bg-surface text-ink">` then reapplies the same
+   values redundantly once Tailwind loads — no visible change, no flash. */
+html { background-color: rgb(var(--surface)); color: rgb(var(--ink)); }
 
-/* ==========================================================================
-   TOKENS — spacing, type, motion (theme-independent)
-   ========================================================================== */
-
+/* Type scale — committed 1.25 major third (fixed rem for UI; hero uses --text-display clamp).
+   Floor defaults: the per-prototype DESIGN.md may retune values, but keep one committed ratio.
+   Pick the tone's font pairing from reference/type-pairings.md. */
 :root {
-  --s-1: 4px;  --s-2: 8px;  --s-3: 12px; --s-4: 16px; --s-5: 24px;
-  --s-6: 32px; --s-7: 48px; --s-8: 64px; --s-9: 96px; --s-10: 128px;
+  --text-xs:      .75rem;   /* 12 · captions, legal, meta labels */
+  --text-sm:      .875rem;  /* 14 · secondary UI, table meta */
+  --text-base:    1rem;     /* 16 · body (never smaller) */
+  --text-lg:      1.25rem;  /* 20 · lead, subhead */
+  --text-xl:      1.563rem; /* 25 · h4 */
+  --text-2xl:     1.953rem; /* 31 · h3 */
+  --text-3xl:     2.441rem; /* 39 · h2 */
+  --text-4xl:     3.052rem; /* 49 · h1 */
+  --text-display: clamp(2.5rem, 6vw, 4rem); /* hero headline only */
 
-  --r-0: 0;
-  --r-1: 4px;
-  --r-2: 8px;
+  /* Motion — ease-out dominant; never `ease` / `ease-in` / linear / bounce for a discrete
+     UI move (linear is reserved for continuous loops: spinners, shimmer). Two axes:
+       · named curves  — pick by the *kind* of move
+       · duration scale — pick by travel distance / element size (bigger move = longer)
+     Enter ≠ exit: an exit runs ~75% of its entrance and can use a snappier curve. */
+  --ease-out-quart: cubic-bezier(.25, 1, .5, 1);       /* entrances: UI, controls, toasts */
+  --ease-out-expo:  cubic-bezier(.16, 1, .3, 1);       /* reveals, larger on-enter moves */
+  --ease-in-out-strong: cubic-bezier(.77, 0, .175, 1); /* on-screen moves (A→B, reposition) */
+  --ease-ios:       cubic-bezier(.32, .72, 0, 1);      /* drawers / sheets / slide-overs */
+  /* Spring — expressive motion tier only (html[data-motion="expressive"] applies it to
+     .enter / key entrances). Gentle overshoot (~2%), never a trampoline. This cubic-bezier
+     is the actual fallback where linear() isn't supported, so it has to genuinely spring —
+     P1's y=1.25 control point produces the ~2% peak; the linear() @supports override below
+     shapes the settle precisely where it IS supported. Reserved for entrances — reduced
+     motion neutralizes it (the global block clamps transition-duration, so the curve never
+     runs). */
+  --spring: cubic-bezier(.3, 1.25, .5, 1);
+  /* Duration scale, keyed to importance/distance — a finer-grained companion to the coarse
+     --motion-* scale below. BOTH are live: new work reaches for --dur-*, existing components
+     keep --motion-*; don't diverge the shared ones. Rough mapping:
+       press(130) < fast(180) ≈ motion-fast(150) · base(240) ≈ motion(250) · slow(320) < motion-slow(400). */
+  --dur-press: 130ms;   /* tap / :active feedback — smallest, fastest */
+  --dur-fast:  180ms;   /* small moves: hover, toggle, chip, tooltip */
+  --dur-base:  240ms;   /* default: most component transitions */
+  --dur-slow:  320ms;   /* larger moves: drawers, modals, section entrances */
+  --motion-fast: 150ms; /* coarse scale, kept for existing components — do not diverge */
+  --motion:      250ms;
+  --motion-slow: 400ms;
 
-  --text-xs: 12px; --text-sm: 14px; --text-base: 16px; --text-md: 18px;
-  --text-lg: 22px; --text-xl: 28px; --text-2xl: 36px; --text-3xl: 48px;
-  --text-display: clamp(40px, 6vw, 64px);
+  /* Spacing — 4pt scale. Use `gap`, not per-element margins. Rhythm: tight
+     in-group (--space-2/3), generous between sections (--space-8/9). */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
 
-  --motion-fast: 150ms cubic-bezier(0.22, 1, 0.36, 1);
-  --motion-medium: 300ms cubic-bezier(0.22, 1, 0.36, 1);
-
-  --font-body: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-  --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  /* Depth — subtle shadow scale (light) + semantic z-index. Dark themes set
+     --shadow-* to none and elevate with --elevated / --elevated-2 instead. */
+  --shadow-sm: 0 1px 2px rgb(20 30 24 / .05);
+  --shadow-md: 0 2px 4px rgb(20 30 24 / .06), 0 4px 12px rgb(20 30 24 / .05);
+  --shadow-lg: 0 4px 8px rgb(20 30 24 / .07), 0 12px 28px rgb(20 30 24 / .08);
+  --z-dropdown: 200;
+  --z-sticky:   400;
+  --z-modal:    600;
+  --z-toast:    800;
+  --z-tooltip: 1000;
+  --z-feedback: 1100; /* review overlay — above all prototype UI */
 }
 
-/* ==========================================================================
-   LAYOUT VARIANTS
-   ========================================================================== */
-
-html[data-layout="comfortable"] {
-  --section-py: var(--s-9);
-  --section-py-lg: var(--s-10);
-  --line-height-body: 1.7;
-  --content-max: 720px;
-  --feature-row-gap: var(--s-5);
+/* Precise spring settle where linear() easing is supported (Chrome 113+ / Safari 17.2+ /
+   FF 112+). Peaks at ~1.025 (a ~2.5% overshoot) then settles to 1 — gentle, not bouncy.
+   Falls back to the cubic-bezier --spring above where linear() isn't supported. */
+@supports (transition-timing-function: linear(0, 1)) {
+  :root {
+    --spring: linear(
+      0, 0.104 3.4%, 0.386 8.7%, 0.727 15%, 0.928 20.4%, 1.006 24.3%,
+      1.025 30%, 1.022 37.9%, 1.004 50%, 0.997 61.5%, 1
+    );
+  }
 }
 
-html[data-layout="compact"] {
-  --section-py: var(--s-7);
-  --section-py-lg: var(--s-8);
-  --line-height-body: 1.55;
-  --content-max: 640px;
-  --feature-row-gap: var(--s-3);
+/* Typographic polish — floor defaults; apply on top of the chosen pairing. */
+h1, h2, h3 { text-wrap: balance; overflow-wrap: anywhere; } /* balance ragged lines; anywhere lets a long unbroken token (URL / slug / ID) wrap instead of overflowing at 390px — builtin-lint rule 24 */
+p          { text-wrap: pretty; }
+body       { font-optical-sizing: auto; }
+.tabular, [data-tabular] { font-variant-numeric: tabular-nums; } /* numeric cells / KPIs */
+.eyebrow   { text-transform: uppercase; letter-spacing: .1em; font-size: var(--text-xs); }
+
+/* Baseline card — subtle shadow in light; dark themes drop it (--shadow-* none) and lift
+   via --elevated surface contrast. Builds may extend .card, but keep depth a whisper. */
+.card {
+  background: rgb(var(--elevated));
+  border: 1px solid rgb(var(--muted) / .18);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
 }
 
-/* Default (no data-layout set yet) */
-html:not([data-layout]) {
-  --section-py: var(--s-9);
-  --section-py-lg: var(--s-10);
-  --line-height-body: 1.7;
-  --content-max: 720px;
-  --feature-row-gap: var(--s-5);
+/* Shared components — a small set every build can extend beyond .card, so
+ * KPI strips / filter rows / tables / forms don't get reinvented from scratch
+ * per prototype. Tokens only (surface/elevated/ink/accent/hairline/space/radius/
+ * shadow) — no gradients, no colors outside the one accent + the existing
+ * success/error status pair already used by .proto-toast. Builds may restyle
+ * these, but keep them token-driven so a theme swap doesn't break them. */
+
+/* .stat — KPI tile. Group 2-4 in a .proto-grid row. */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  padding: var(--space-4) var(--space-5);
+  background: rgb(var(--elevated));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-sm);
+}
+.stat-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: .08em;
+  color: rgb(var(--ink2));
+}
+.stat-value {
+  font-size: var(--text-3xl);
+  font-weight: 600;
+  color: rgb(var(--ink));
+  font-variant-numeric: tabular-nums; /* also covered by .tabular if applied directly */
+}
+.stat-delta {
+  font-size: var(--text-sm);
+  color: rgb(var(--ink2));
 }
 
-/* ==========================================================================
-   BASE
-   ========================================================================== */
-
-* { box-sizing: border-box; }
-
-html, body {
-  margin: 0;
-  padding: 0;
+/* .chip — filter pill / tag / status label. `.is-active` for a selected filter;
+   `.is-muted` for a disabled/inactive one. Same "is-" state prefix as
+   .is-loading / .is-error / .is-success elsewhere in this file. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-1);
+  padding: .3rem .7rem;
+  border-radius: 999px;
+  border: 1px solid rgb(var(--hairline));
   background: rgb(var(--surface));
+  color: rgb(var(--ink2));
+  font-size: var(--text-xs);
+  line-height: 1;
+  white-space: nowrap;
+}
+.chip.is-active {
+  background: rgb(var(--accent));
+  border-color: rgb(var(--accent));
+  color: rgb(var(--accent-ink));
+}
+.chip.is-muted { opacity: .6; }
+
+/* .table — put on the <table> itself, inside the existing .proto-table-wrap
+   (that wrapper only handles horizontal overflow; this handles the look). */
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--text-sm);
+}
+.table th,
+.table td {
+  padding: var(--space-3) var(--space-4);
+  text-align: left;
+  border-bottom: 1px solid rgb(var(--hairline));
+}
+.table th {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: .05em;
+  font-weight: 600;
+  color: rgb(var(--ink2));
+  background: rgb(var(--elevated-2));
+}
+.table tbody tr:last-child td { border-bottom: 0; }
+@media (hover: hover) {
+  .table tbody tr:hover { background: rgb(var(--muted) / .06); }
+}
+
+/* .form-field — label + control + optional hint/error, stacked. Pairs with the
+   "form state persistence" + "inline error on blur" guidance in reference/build.md. */
+.form-field { display: flex; flex-direction: column; gap: var(--space-1); }
+.form-field > label {
+  font-size: var(--text-sm);
+  font-weight: 500;
   color: rgb(var(--ink));
-  font-family: var(--font-body);
-  font-size: var(--text-base);
-  line-height: var(--line-height-body);
-  -webkit-font-smoothing: antialiased;
-  text-rendering: optimizeLegibility;
 }
-
-html { transition: background-color var(--motion-medium); }
-body { transition: background-color var(--motion-medium), color var(--motion-medium); }
-
-a {
-  color: inherit;
-  text-decoration-color: rgb(var(--hairline));
-  text-decoration-thickness: 1px;
-  text-underline-offset: 3px;
-  transition: color var(--motion-fast), text-decoration-color var(--motion-fast);
-}
-a:hover {
-  color: rgb(var(--accent));
-  text-decoration-color: rgb(var(--accent));
-}
-html[data-theme="mono"] a:hover {
+.form-field input,
+.form-field select,
+.form-field textarea {
+  padding: .55rem .75rem;
+  border-radius: var(--radius);
+  border: 1px solid rgb(var(--hairline));
+  background: rgb(var(--elevated));
   color: rgb(var(--ink));
-  text-decoration-color: rgb(var(--ink));
+  font: inherit;
 }
-
-h1, h2, h3, h4 {
-  font-family: var(--font-heading);
-  font-weight: var(--heading-weight);
-  letter-spacing: -0.01em;
-  margin: 0;
-  line-height: 1.2;
-  color: rgb(var(--ink));
+.form-field .hint {
+  font-size: var(--text-xs);
+  color: rgb(var(--ink2));
+  min-height: 1lh; /* reserve the message slot so an error appearing on blur doesn't shove layout — builtin-lint rule 27 */
 }
-h1 { font-size: var(--text-3xl); letter-spacing: -0.02em; }
-h2 { font-size: var(--text-2xl); letter-spacing: -0.02em; }
-h3 { font-size: var(--text-xl); }
-h4 { font-size: var(--text-lg); }
-
-p { margin: 0 0 var(--s-4); max-width: 70ch; }
-
-code, pre, kbd, samp {
-  font-family: var(--font-mono);
-  font-size: 0.93em;
+/* Error state reuses the --status-error token, same as .proto-toast.is-error. */
+.form-field.has-error input,
+.form-field.has-error select,
+.form-field.has-error textarea {
+  border-color: rgb(var(--status-error));
 }
+.form-field .error { font-size: var(--text-xs); color: rgb(var(--status-error)); min-height: 1lh; }
 
-hr.rule {
-  border: 0;
-  border-top: 1px solid rgb(var(--hairline));
-  margin-block: var(--s-7);
-}
-
-:where(a, button, .proto-seg, summary, details):focus-visible {
+/* Interaction floor — Tailwind's reset drops focus rings; ship one globally, plus a press
+   micro-interaction. Keep custom :hover styles behind @media (hover:hover) so they don't
+   stick on touch. :where() keeps specificity 0 so product styles win. */
+:where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
   outline: 2px solid rgb(var(--accent));
   outline-offset: 2px;
-  border-radius: var(--r-1);
 }
+:where(button:not([disabled])):active { transform: translateY(1px); }
 
-/* ==========================================================================
-   LAYOUT — container, sections
-   ========================================================================== */
-
-.container {
-  max-width: var(--content-max);
-  margin: 0 auto;
-  padding: 0 var(--s-5);
+/* Imagery — initials avatar + aspect-ratio media placeholder. Prefer these over flat
+   color-block "photos". Icons: copy inline SVG from reicon.dev (MIT) at one weight.
+   .media API: drop an <img> inside and it fills the box, no other markup changes —
+   `<div class="media"><img src="assets/images/…" alt="…"></div>`. Leave it empty (or
+   add data-scene, below) and the wash/scene placeholder shows instead. Real photos are
+   the goal for photo-forward products (marketplaces, listings, profiles) — see
+   reference/build.md "Real imagery" before shipping a placeholder in one of those. */
+.avatar {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: 2.5rem; height: 2.5rem; border-radius: 999px;
+  background: rgb(var(--accent)); color: rgb(var(--accent-ink, var(--surface)));
+  font-weight: 600; font-size: .85rem; letter-spacing: .02em; flex: none;
 }
-@media (min-width: 768px) { .container { padding: 0 var(--s-7); } }
-
-.section {
-  padding-block: var(--section-py);
-}
-.section.section-lg {
-  padding-block: var(--section-py-lg);
-}
-.section + .section {
-  border-top: 1px solid rgb(var(--hairline));
-}
-
-.section-label {
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: var(--text-xs);
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  color: rgb(var(--ink3));
-  margin: 0 0 var(--s-2);
-}
-
-.lead {
-  font-size: var(--text-md);
-  color: rgb(var(--ink2));
-  max-width: 62ch;
-}
-
-.meta {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: rgb(var(--ink3));
-  letter-spacing: 0.02em;
-}
-
-/* ==========================================================================
-   SITE NAV (sticky)
-   ========================================================================== */
-
-.site-nav {
-  position: sticky;
-  top: 0;
-  z-index: 30;
-  background: rgb(var(--surface) / .92);
-  backdrop-filter: saturate(180%) blur(8px);
-  -webkit-backdrop-filter: saturate(180%) blur(8px);
-  border-bottom: 1px solid rgb(var(--hairline));
-}
-.site-nav .wrap {
-  max-width: 1040px;
-  margin: 0 auto;
-  padding: var(--s-3) var(--s-5);
-  display: flex;
-  align-items: center;
-  gap: var(--s-5);
-}
-.site-nav .wordmark {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  font-weight: 500;
-  letter-spacing: -0.01em;
-  color: rgb(var(--ink));
-  text-decoration: none;
-  white-space: nowrap;
-}
-.site-nav .wordmark .slash {
-  color: rgb(var(--ink3));
-  padding-right: 2px;
-}
-.site-nav nav {
-  display: flex;
-  gap: var(--s-5);
-  overflow-x: auto;
-  scrollbar-width: none;
-  flex: 1;
-}
-.site-nav nav::-webkit-scrollbar { display: none; }
-.site-nav nav a {
-  font-size: var(--text-sm);
-  color: rgb(var(--ink2));
-  text-decoration: none;
-  white-space: nowrap;
-  padding: var(--s-1) 0;
-  border-bottom: 1px solid transparent;
-  transition: color var(--motion-fast), border-color var(--motion-fast);
-}
-.site-nav nav a:hover {
-  color: rgb(var(--ink));
-}
-.site-nav nav a.is-active {
-  color: rgb(var(--ink));
-  border-bottom-color: rgb(var(--ink));
-}
-.site-nav .gh-link {
-  font-size: var(--text-sm);
-  color: rgb(var(--ink2));
-  text-decoration: none;
-  white-space: nowrap;
-}
-.site-nav .gh-link:hover { color: rgb(var(--ink)); }
-@media (max-width: 680px) {
-  .site-nav nav { gap: var(--s-4); }
-  .site-nav .gh-link span { display: none; }
-}
-
-/* ==========================================================================
-   HERO
-   ========================================================================== */
-
-.hero {
-  padding-block: var(--s-10) var(--s-9);
-}
-.hero .eyebrow {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: rgb(var(--ink3));
-  letter-spacing: 0.04em;
-  margin-bottom: var(--s-5);
-}
-.hero h1 {
-  font-size: var(--text-display);
-  font-weight: var(--heading-weight);
-  letter-spacing: -0.025em;
-  line-height: 1.05;
-  max-width: 20ch;
-  margin-bottom: var(--s-5);
-}
-.hero .sub {
-  font-size: var(--text-md);
-  color: rgb(var(--ink2));
-  max-width: 58ch;
-  margin-bottom: var(--s-6);
-}
-.hero .actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-3);
-  align-items: center;
-}
-@media (max-width: 540px) {
-  .hero { padding-block: var(--s-8) var(--s-7); }
-}
-
-/* ==========================================================================
-   BUTTONS
-   ========================================================================== */
-
-.btn {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  gap: var(--s-2);
-  padding: var(--s-3) var(--s-5);
-  font-family: var(--font-body);
-  font-weight: 500;
-  font-size: var(--text-sm);
-  line-height: 1;
-  border-radius: var(--r-1);
-  border: 1px solid rgb(var(--ink));
-  background: transparent;
-  color: rgb(var(--ink));
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color var(--motion-fast), color var(--motion-fast),
-              border-color var(--motion-fast);
-  white-space: nowrap;
-}
-.btn:hover {
-  background: rgb(var(--elevated-2));
-}
-.btn.btn-primary {
-  background: rgb(var(--accent));
-  color: rgb(var(--accent-ink));
-  border-color: rgb(var(--accent));
-}
-.btn.btn-primary:hover {
-  background: rgb(var(--accent) / 0.88);
-  color: rgb(var(--accent-ink));
-}
-.btn .chev {
-  display: inline-block;
-  font-family: var(--font-mono);
-  font-size: 0.9em;
-  translate: 0 -1px;
-}
-
-/* ==========================================================================
-   CODE BLOCK (terminal-style $ prefix)
-   ========================================================================== */
-
-.code-block {
+.media {
   position: relative;
-  background: rgb(var(--elevated));
-  border: 1px solid rgb(var(--hairline));
-  border-radius: var(--r-1);
-  padding: var(--s-4) calc(var(--s-5) + 36px) var(--s-4) var(--s-5);
-  margin-block: var(--s-4);
-  overflow-x: auto;
-  scrollbar-width: thin;
+  aspect-ratio: 4 / 3; width: 100%; border-radius: var(--radius); overflow: hidden;
+  background: linear-gradient(135deg, rgb(var(--accent) / .18), rgb(var(--muted) / .12));
 }
-.code-block pre {
-  margin: 0;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  line-height: 1.6;
-  color: rgb(var(--ink));
-  white-space: pre;
-  min-width: max-content;
-}
-.code-block code { display: block; }
-.code-block .cmd::before {
-  content: "$ ";
-  color: rgb(var(--ink3));
-  user-select: none;
-}
-.code-block .copy-btn {
-  position: absolute;
-  top: var(--s-3);
-  right: var(--s-3);
-  width: 28px; height: 28px;
-  border: 0;
-  border-radius: var(--r-1);
-  background: rgb(var(--elevated));
-  color: rgb(var(--ink3));
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  transition: background-color var(--motion-fast), color var(--motion-fast);
-  box-shadow: -12px 0 16px 4px rgb(var(--elevated));
-  z-index: 2;
-}
-.code-block .copy-btn:hover {
-  color: rgb(var(--ink));
-  background: rgb(var(--elevated-2));
-  box-shadow: -12px 0 16px 4px rgb(var(--elevated-2));
-}
-.code-block .copy-btn .copy-icon,
-.code-block .copy-btn .check-icon {
-  width: 14px; height: 14px; display: block;
-}
-.code-block .copy-btn .check-icon { display: none; color: rgb(var(--accent)); }
-.code-block .copy-btn.is-copied .copy-icon { display: none; }
-.code-block .copy-btn.is-copied .check-icon { display: block; }
+.media > img { width: 100%; height: 100%; object-fit: cover; display: block; }
 
-/* ==========================================================================
-   FEATURE LIST (definition-list style)
-   ========================================================================== */
-
-.feature-list {
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-direction: column;
-  gap: var(--feature-row-gap);
-}
-.feature-list .feature-row {
-  display: grid;
-  grid-template-columns: minmax(160px, 1fr) 2.5fr;
-  gap: var(--s-5);
-  padding-block: var(--s-4);
-  border-top: 1px solid rgb(var(--hairline));
-}
-.feature-list .feature-row:first-child { border-top: 0; padding-top: 0; }
-.feature-list .feature-row dt {
-  font-family: var(--font-body);
-  font-weight: 600;
-  font-size: var(--text-base);
-  color: rgb(var(--ink));
-  letter-spacing: -0.005em;
-}
-.feature-list .feature-row dt .label-detail {
-  display: block;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  font-weight: 400;
-  color: rgb(var(--ink3));
-  margin-top: 2px;
-  letter-spacing: 0;
-}
-.feature-list .feature-row dd {
-  margin: 0;
-  color: rgb(var(--ink2));
-}
-.feature-list .feature-row dd p {
-  margin: 0 0 var(--s-2);
-}
-.feature-list .feature-row dd p:last-child { margin-bottom: 0; }
-@media (max-width: 620px) {
-  .feature-list .feature-row {
-    grid-template-columns: 1fr;
-    gap: var(--s-2);
-  }
-}
-
-/* ==========================================================================
-   FILE TREE
-   ========================================================================== */
-
-.file-tree {
-  position: relative;
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  line-height: 1.7;
-  background: rgb(var(--elevated));
-  border: 1px solid rgb(var(--hairline));
-  border-radius: var(--r-1);
-  padding: var(--s-5) var(--s-6);
-  margin-block: var(--s-5);
-  color: rgb(var(--ink));
-  overflow-x: auto;
-}
-.file-tree::after {
+/* Scene placeholders — a better-than-glyph fallback for when real photos aren't in
+   hand yet. Add data-scene to an *empty* .media (never alongside a real <img> — the
+   photo should always win). Three tasteful, generic silhouettes cut from the wash via
+   mask-image, so they inherit the theme instead of looking like clip art:
+   - "landscape"  — venues, real estate, travel, any outdoor/place listing.
+   - "portrait"   — profile / person cards where an initials .avatar reads too small.
+   - "still-life" — marketplace products, objects, anything shot on a surface.
+   These are still placeholders, not a substitute for asking the user for real images. */
+.media[data-scene]::before {
   content: "";
-  position: sticky;
-  right: -1px;
-  top: 0;
-  display: block;
-  pointer-events: none;
-  background: linear-gradient(to right, transparent, rgb(var(--elevated)) 70%);
-  width: 32px;
-  height: 100%;
-  margin-top: -100%;
-  margin-left: auto;
+  position: absolute; inset: 0;
+  background: linear-gradient(135deg, rgb(var(--accent) / .38), rgb(var(--muted) / .28));
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+  -webkit-mask-position: center 65%; mask-position: center 65%;
+  -webkit-mask-size: 58%; mask-size: 58%;
 }
-.file-tree .dir { color: rgb(var(--ink)); }
-.file-tree .file { color: rgb(var(--ink2)); }
-.file-tree .comment {
-  color: rgb(var(--ink3));
-  font-style: normal;
-  padding-left: 1ch;
+.media[data-scene="landscape"]::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='72' cy='28' r='10'/%3E%3Cpath d='M0 70 L25 45 L45 62 L62 38 L100 70 Z'/%3E%3Cpath d='M0 82 L20 65 L40 78 L58 60 L100 82 L100 100 L0 100 Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='72' cy='28' r='10'/%3E%3Cpath d='M0 70 L25 45 L45 62 L62 38 L100 70 Z'/%3E%3Cpath d='M0 82 L20 65 L40 78 L58 60 L100 82 L100 100 L0 100 Z'/%3E%3C/svg%3E");
 }
-@media (max-width: 720px) {
-  .file-tree { padding: var(--s-4) var(--s-5); font-size: 13px; }
-  .file-tree code { display: block; min-width: max-content; }
+.media[data-scene="portrait"]::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='36' r='18'/%3E%3Cpath d='M14 100 C14 74 30 60 50 60 C70 60 86 74 86 100 Z'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='36' r='18'/%3E%3Cpath d='M14 100 C14 74 30 60 50 60 C70 60 86 74 86 100 Z'/%3E%3C/svg%3E");
+}
+.media[data-scene="still-life"]::before {
+  -webkit-mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='50' cy='82' rx='38' ry='8'/%3E%3Crect x='30' y='34' width='40' height='46' rx='10'/%3E%3Ccircle cx='50' cy='30' r='16'/%3E%3C/svg%3E");
+  mask-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'%3E%3Cellipse cx='50' cy='82' rx='38' ry='8'/%3E%3Crect x='30' y='34' width='40' height='46' rx='10'/%3E%3Ccircle cx='50' cy='30' r='16'/%3E%3C/svg%3E");
 }
 
-/* ==========================================================================
-   COMMAND TABLE
-   ========================================================================== */
+/* Smooth theme transitions */
+html { transition: background-color .3s var(--ease-out-quart); }
+body { transition: background-color .3s var(--ease-out-quart), color .3s var(--ease-out-quart); }
 
-.cmd-table {
-  display: grid;
-  grid-template-columns: minmax(220px, 1fr) 2fr;
-  gap: 0 var(--s-5);
-  margin-block: var(--s-5);
-  border-top: 1px solid rgb(var(--hairline));
-}
-.cmd-table .cmd-row {
-  display: contents;
-}
-.cmd-table .cmd-row > * {
-  padding: var(--s-4) 0;
-  border-bottom: 1px solid rgb(var(--hairline));
-  margin: 0;
-}
-.cmd-table .cmd-name {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: rgb(var(--ink));
-}
-.cmd-table .cmd-desc {
-  color: rgb(var(--ink2));
-}
-@media (max-width: 620px) {
-  .cmd-table {
-    grid-template-columns: 1fr;
-    gap: 0;
-  }
-  .cmd-table .cmd-row > * { padding: var(--s-3) 0; }
-  .cmd-table .cmd-name { padding-bottom: 0; border-bottom: 0; }
-}
+/* No transitions during a theme flip (Rauno). Flipping [data-theme] changes EVERY token at
+   once; letting the html/body background-color transition above (plus every component's own
+   transition) animate through that swap produces a laggy, multi-speed color smear. theme.js
+   adds `.theme-switching` to <html> for exactly one frame around the swap (removed on a
+   double-rAF, so the no-transition paint lands first) — the new palette snaps in instantly
+   and correctly. The transitions above stay intact for any other background change. */
+html.theme-switching,
+html.theme-switching *,
+html.theme-switching *::before,
+html.theme-switching *::after { transition: none !important; }
 
-/* ==========================================================================
-   COMPANION TABLE
-   ========================================================================== */
-
-.companion {
-  display: grid;
-  grid-template-columns: 160px 1fr;
-  gap: 0 var(--s-5);
-  margin-block: var(--s-5);
-  border-top: 1px solid rgb(var(--hairline));
-}
-.companion .comp-row { display: contents; }
-.companion .comp-row > * {
-  padding: var(--s-4) 0;
-  border-bottom: 1px solid rgb(var(--hairline));
-  margin: 0;
-}
-.companion .comp-name {
-  font-weight: 600;
-  color: rgb(var(--ink));
-}
-.companion .comp-name a { text-decoration: none; }
-.companion .comp-desc { color: rgb(var(--ink2)); }
-.companion .comp-install {
-  grid-column: 1 / -1;
-  padding-top: 0;
-  border-top: 0;
-}
-@media (max-width: 620px) {
-  .companion {
-    grid-template-columns: 1fr;
-  }
-  .companion .comp-row > * { padding: var(--s-3) 0; }
-  .companion .comp-name { border-bottom: 0; padding-bottom: 0; }
-}
-
-/* ==========================================================================
-   PRINCIPLES (numbered with hairlines)
-   ========================================================================== */
-
-.principles {
-  counter-reset: principle;
-  list-style: none;
-  margin: var(--s-5) 0;
-  padding: 0;
-  border-top: 1px solid rgb(var(--hairline));
-}
-.principles li {
-  counter-increment: principle;
-  padding: var(--s-4) 0 var(--s-4) 48px;
-  border-bottom: 1px solid rgb(var(--hairline));
-  position: relative;
-  color: rgb(var(--ink));
-}
-.principles li::before {
-  content: counter(principle, decimal-leading-zero);
-  position: absolute;
-  left: 0;
-  top: var(--s-4);
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: rgb(var(--ink3));
-  letter-spacing: 0.04em;
-}
-.principles li strong {
-  font-weight: 600;
-  color: rgb(var(--ink));
-}
-.principles li .detail {
-  display: block;
-  color: rgb(var(--ink2));
-  font-size: var(--text-sm);
-  margin-top: 2px;
-}
-
-/* ==========================================================================
-   INSTALL OPTIONS
-   ========================================================================== */
-
-.install-opt {
-  padding: var(--s-5) 0;
-  border-top: 1px solid rgb(var(--hairline));
-}
-.install-opt:first-child { border-top: 0; padding-top: var(--s-3); }
-.install-opt h3 {
-  font-size: var(--text-base);
-  font-weight: 600;
-  margin: 0 0 var(--s-2);
-  color: rgb(var(--ink));
-}
-.install-opt p {
-  font-size: var(--text-sm);
-  color: rgb(var(--ink2));
-  margin: 0 0 var(--s-3);
-  max-width: 62ch;
-}
-.install-opt .code-block { margin-block: var(--s-3) 0; }
-
-.install-note {
-  padding: var(--s-4) var(--s-5);
-  background: rgb(var(--elevated));
-  border: 1px solid rgb(var(--hairline));
-  border-radius: var(--r-1);
-  font-size: var(--text-sm);
-  color: rgb(var(--ink2));
-  margin-block: var(--s-4);
-}
-.install-note summary {
-  cursor: pointer;
-  color: rgb(var(--ink));
-  font-weight: 500;
-  padding: 0;
-  list-style: none;
-  display: flex;
-  align-items: center;
-  gap: var(--s-2);
-}
-.install-note summary::before {
-  content: "›";
-  font-family: var(--font-mono);
-  color: rgb(var(--ink3));
-  transition: transform var(--motion-fast);
-  display: inline-block;
-}
-.install-note[open] summary::before { transform: rotate(90deg); }
-.install-note .note-body {
-  margin-top: var(--s-4);
-  padding-top: var(--s-4);
-  border-top: 1px solid rgb(var(--hairline));
-}
-
-/* ==========================================================================
-   MODAL
-   ========================================================================== */
-
-[data-modal] {
-  position: fixed;
-  inset: 0;
-  z-index: 50;
-  display: none;
-  align-items: flex-start;
-  justify-content: center;
-  padding: var(--s-7) var(--s-4);
-  background: rgb(var(--ink) / 0.5);
-  opacity: 0;
-  transition: opacity var(--motion-medium);
-  overflow-y: auto;
-}
-[data-modal].open {
-  display: flex;
-  opacity: 1;
-}
-[data-modal] .modal-card {
-  background: rgb(var(--elevated));
-  border: 1px solid rgb(var(--hairline));
-  border-radius: var(--r-2);
-  padding: var(--s-6);
-  max-width: 720px;
-  width: 100%;
-  transform: scale(0.98);
-  transition: transform var(--motion-medium);
-  margin: auto 0;
-}
-[data-modal].open .modal-card { transform: scale(1); }
-[data-modal] .modal-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
-  gap: var(--s-4);
-  margin-bottom: var(--s-5);
-}
-[data-modal] .modal-head h3 {
-  margin: 0;
-  font-size: var(--text-lg);
-}
-[data-modal] .modal-close {
-  background: transparent;
-  border: 0;
-  color: rgb(var(--ink2));
-  font-family: var(--font-mono);
-  font-size: var(--text-base);
-  cursor: pointer;
-  padding: 0 var(--s-2);
-  line-height: 1;
-  transition: color var(--motion-fast);
-}
-[data-modal] .modal-close:hover { color: rgb(var(--ink)); }
-
-.mock-bar {
-  background: rgb(var(--surface));
-  border: 1px solid rgb(var(--hairline));
-  border-radius: var(--r-2);
-  padding: var(--s-5);
-  margin-block: var(--s-4);
-}
-.mock-bar .mock-label {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: rgb(var(--ink3));
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  margin-bottom: var(--s-3);
-}
-.mock-bar .mock-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-3);
-  align-items: center;
-  padding: var(--s-3) var(--s-4);
-  background: rgb(var(--elevated));
-  border: 1px solid rgb(var(--hairline));
-  border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: rgb(var(--ink2));
-}
-.mock-bar .mock-seg {
-  padding: var(--s-1) var(--s-3);
-  border-radius: 999px;
-  background: rgb(var(--elevated-2));
-  color: rgb(var(--ink));
-}
-.mock-bar .mock-divider {
-  width: 1px;
-  height: 14px;
-  background: rgb(var(--hairline));
-}
-
-/* ==========================================================================
-   PERSONA: contextual styling
-   ========================================================================== */
-
-/* Skeleton flash (150ms) on persona switch */
-[data-persona-flash] {
-  transition: opacity var(--motion-fast);
-}
-[data-persona-flash].is-flashing {
-  opacity: 0.35;
-}
-
-/* Install section collapses into a note on 'installed' persona */
-html[data-persona="installed"] .install-options { display: none; }
-html[data-persona="installed"] .install-reinstall { display: block; }
-html:not([data-persona="installed"]) .install-reinstall { display: none; }
-
-/* Hero CTA routing by persona */
-html[data-persona="new"] .hero [data-cta-installed] { display: none; }
-html[data-persona="installed"] .hero [data-cta-new] { display: none; }
-
-/* ==========================================================================
-   FOOTER / CREDITS
-   ========================================================================== */
-
-.site-footer {
-  padding-block: var(--s-8);
-  border-top: 1px solid rgb(var(--hairline));
-  color: rgb(var(--ink2));
-  font-size: var(--text-sm);
-}
-.site-footer .credits {
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--s-2) var(--s-5);
-  margin-bottom: var(--s-3);
-}
-.site-footer .credits span { color: rgb(var(--ink3)); }
-.site-footer .footmeta {
-  font-family: var(--font-mono);
-  font-size: var(--text-xs);
-  color: rgb(var(--ink3));
-}
-
-/* ==========================================================================
-   404
-   ========================================================================== */
-
-.four-oh-four {
-  min-height: 70vh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: flex-start;
-  padding-block: var(--s-10);
-}
-.four-oh-four .code {
-  font-family: var(--font-mono);
-  font-size: var(--text-sm);
-  color: rgb(var(--ink3));
-  margin-bottom: var(--s-4);
-}
-.four-oh-four h1 {
-  font-size: var(--text-2xl);
-  margin-bottom: var(--s-3);
-}
-.four-oh-four p {
-  color: rgb(var(--ink2));
-  margin-bottom: var(--s-5);
-}
-
-/* ==========================================================================
-   SCAFFOLD PLATFORM BLOCKS (from scaffold-base/css/styles.css)
-   Do NOT restyle these. They're part of the platform.
-   ========================================================================== */
-
-/* Respect reduced motion */
+/* Respect reduced motion — stop transitions and decorative motion, but keep the loading
+   spinner turning (blanking it mid-ring looks broken) and force reveals visible. The
+   `*` selector doesn't reach the ::view-transition-* pseudo tree (it's a separate tree,
+   not matched by the universal selector), so it gets its own override below.
+   Clamping animation-duration alone isn't enough: the root fade-in also carries a 90ms
+   animation-delay (from the directional-slide timing further down), and a duration clamp
+   doesn't touch delay — the result is a ~90ms blank flash before the sliver of crossfade,
+   not a kept crossfade. So delay gets clamped too, AND the root gets its own explicit,
+   clean 120ms linear crossfade (reusing the vt-fade-out/vt-fade-in keyframes) instead of
+   inheriting the directional-slide animation list at 1ms. Cross-document transitions fire
+   regardless of this media query, so this is what tames them; the same-doc
+   UI.withViewTransition path (ui.js) already no-ops entirely under reduced motion.
+   `.reveal` needs `!important` too: it's equal specificity to (and comes before, in source
+   order) the base `.reveal { opacity: 0 }` rule further down, which would otherwise win. */
 @media (prefers-reduced-motion: reduce) {
-  * { animation: none !important; transition: none !important; }
+  *, *::before, *::after { transition-duration: .01ms !important; }
+  /* Force the movement utilities to their visible end state (reduce movement, keep the
+     content). `.enter` rides here rather than a second @media block — the `!important`
+     end state also wins in the @starting-style before-change pass, so nothing flashes. */
+  .reveal, .enter { opacity: 1 !important; transform: none !important; }
+  .skeleton { animation: none; }   /* static shimmer is fine; spinner keeps turning as feedback */
+  ::view-transition-group(*), ::view-transition-old(*), ::view-transition-new(*) {
+    animation-duration: 1ms !important; animation-delay: 0ms !important; }
+  ::view-transition-old(root) { animation: 120ms linear both vt-fade-out !important; }
+  ::view-transition-new(root) { animation: 120ms linear both vt-fade-in !important; }
 }
 
-/* Reveal-on-scroll */
+/* Reveal-on-scroll — opt-in; app.js observes any `.reveal` element and adds `.visible`
+   the first time it enters the viewport (IntersectionObserver, with a reduced-motion
+   and no-IO fallback — see the comment above app.js's `revealEls` block). Nothing
+   moves unless you add class="reveal" to the element. Siblings that enter together
+   (a row of grid items) can stagger with style="--i:0|1|2…" — same capped-at-8 scheme
+   as `.enter` below, so a long row never crawls in one at a time. */
 .reveal {
   opacity: 0;
   transform: translateY(12px);
-  transition: opacity .6s cubic-bezier(0.22, 1, 0.36, 1), transform .6s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity .6s var(--ease-out-expo), transform .6s var(--ease-out-expo);
+  transition-delay: calc(min(var(--i, 0), 8) * 40ms);
 }
 .reveal.visible {
   opacity: 1;
   transform: none;
 }
 
-/* Toast */
+/* Mount entrance — the zero-JS counterpart to `.reveal`. `.reveal` fires when an element
+   scrolls INTO view (needs app.js's IntersectionObserver); `.enter` fires the moment the
+   element MOUNTS/appears, driven purely by CSS `@starting-style` — no JS, no observer.
+   Add class="enter" for a tasteful fade+rise on first paint; add style="--i:0|1|2…" on
+   siblings for a capped stagger. `@starting-style` is Chrome 117+ / Safari 17.5+ / FF 129+;
+   older browsers ignore the start state and the element just appears at its correct end
+   state (no motion — never gate correctness on it). Use sparingly — a hero, a stat strip —
+   not every card. Reduced motion is handled in the global block above (forces end state). */
+.enter {
+  transition: opacity var(--dur-base) var(--ease-out-quart),
+              transform var(--dur-base) var(--ease-out-quart);
+  transition-delay: calc(min(var(--i, 0), 8) * 40ms);   /* cap the stagger so long lists don't crawl */
+  opacity: 1;
+  transform: translateY(0);
+}
+@starting-style {
+  .enter { opacity: 0; transform: translateY(8px); }
+}
+/* Let a display/[hidden] toggle animate too, where a build reuses `.enter` for show/hide. */
+.enter[hidden], .enter.is-hidden { transition-behavior: allow-discrete; }
+
+/* Modal (app.js toggles the `open` class + aria-hidden on [data-modal] — this is the
+   display half of that contract; every prototype needs one, so it ships here rather
+   than being reinvented per-build). Prototype-specific modal content still lives in
+   each screen's HTML; this only handles show/hide + the dim backdrop + entry motion.
+   Uses visibility (not display:none) so the opacity fade actually runs both ways —
+   display:none can't be transitioned, it just snaps. The scrim is a fixed black, not
+   an --ink-derived token: --ink flips to a near-white value in dark themes, which
+   would invert the backdrop into a near-white scrim over dark surfaces. */
+[data-modal] {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--space-4);
+  background: rgb(0 0 0 / .45);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity var(--motion-fast) var(--ease-out-quart), visibility 0s linear var(--motion-fast);
+  overflow-y: auto;
+}
+[data-modal].open {
+  opacity: 1;
+  visibility: visible;
+  transition: opacity var(--motion-fast) var(--ease-out-quart), visibility 0s linear;
+}
+@media (prefers-reduced-motion: reduce) { [data-modal] { transition: none; } }
+
+/* ---- View Transitions (cross-document, default-on; degrades to instant nav) ----
+   `@view-transition { navigation: auto }` opts EVERY same-origin page-to-page navigation
+   into a smooth transition (crossfade + directional slide) with zero per-prototype work —
+   every screen links this stylesheet, so every screen opts in. Unsupported browsers
+   (Firefox, mid-2026) ignore all of this and do a plain instant navigation; nothing here
+   is load-bearing for correctness. js/vt.js (loaded non-deferred in <head>) adds the
+   optional list→detail hero morph on top.
+
+   The same ::view-transition-*(root) pseudos are ALSO produced by the opt-in same-document
+   transition (UI.withViewTransition in ui.js — tab/filter/persona swaps), so the look below
+   covers both. Reduced motion is handled in the @media block higher up (clamps VT to ~1ms:
+   drops the slide + hero fly, keeps the fade). */
+@view-transition { navigation: auto; }
+
+/* Chrome isolation — persistent chrome gets its own name so its snapshot is lifted out of
+   the root and holds still (doesn't slide/fade) across navigations: the #1 "VT bolted on
+   wrong" tell. Two elements can't share one active name, so header and the control bar get
+   DISTINCT names (index.html sets the same two names inline as a visible builder hook).
+   Scoped to `body > header` — the direct top-level header only, NOT bare `header` — so this
+   doesn't also match an unrelated `<header>` elsewhere in the page (the feedback overlay's
+   injected panel has its own `<header>`, and a builder's `<article><header>` would too).
+   Two elements can't share one active view-transition-name; if a second `header` on the
+   page picked this up, the whole transition would abort. */
+body > header   { view-transition-name: app-header; }
+#proto-controls { view-transition-name: app-controls; }
+
+/* Directional root slide (upgrade from the default crossfade) — old page fades fast + drifts
+   left; new page fades in + settles from the right. */
+::view-transition-old(root){ animation: 90ms cubic-bezier(.4,0,1,1) both vt-fade-out, 300ms var(--ease-out-quart, cubic-bezier(.23,1,.32,1)) both vt-slide-out; }
+::view-transition-new(root){ animation: 210ms cubic-bezier(0,0,.2,1) 90ms both vt-fade-in, 300ms var(--ease-out-quart, cubic-bezier(.23,1,.32,1)) both vt-slide-in; }
+@keyframes vt-fade-out{ to{opacity:0} } @keyframes vt-fade-in{ from{opacity:0} }
+@keyframes vt-slide-out{ to{transform:translateX(-2%)} } @keyframes vt-slide-in{ from{transform:translateX(2%)} }
+
+/* Same-document swaps (ui.js UI.withViewTransition — tab/filter/persona swaps) must
+   crossfade, not inherit the directional page-nav slide above: both produce the same
+   ::view-transition-*(root) pseudos, so without this override a same-doc swap would slide
+   sideways like a page navigation, which reads wrong for an in-place UI update. Scoped
+   with a root class — not view-transition `types` — because cross-browser support for
+   `types` is too uneven to rely on yet; ui.js adds `.vt-same-doc` to <html> only for the
+   lifetime of the transition, then removes it. */
+:root.vt-same-doc::view-transition-old(root){ animation:150ms var(--ease-out-quart) both vt-fade-out; }
+:root.vt-same-doc::view-transition-new(root){ animation:150ms var(--ease-out-quart) both vt-fade-in; }
+:root.vt-same-doc::view-transition-image-pair(root){ border-radius:0; }
+
+/* list→detail hero morph — inert until the builder adds the data-attrs (data-vt-item /
+   data-vt-detail + data-vt-hero) AND vt.js names the clicked hero `hero-<id>` on nav (only
+   the clicked one). The `*` matches every named group incl. root/header/controls; those
+   three get a `border-radius:0` exclusion below (a rounded corner briefly clipping the
+   header/control-bar chrome into a "notch" every navigation reads as a bug, not a morph) —
+   the rounding here is meant for actual hero-<id> morphs only. */
+::view-transition-group(*){ animation-duration:.35s; animation-timing-function:cubic-bezier(.2,0,0,1); }
+::view-transition-image-pair(*){ border-radius:var(--radius,12px); overflow:clip; }
+::view-transition-old(*), ::view-transition-new(*){ object-fit:cover; }   /* kills the aspect-ratio "taffy" stretch on the morphing image */
+::view-transition-image-pair(root),
+::view-transition-image-pair(app-header),
+::view-transition-image-pair(app-controls){ border-radius:0; }
+
+/* ---- Motion tiers — html[data-motion="calm|standard|expressive"] (default standard) ----
+   Gate motion INTENSITY by context: a dense dashboard with cinematic morphs is friction; a
+   landing page with only a crossfade under-delivers. The skill DECIDES the tier from register
+   + tone + screen types and records it in DESIGN.md (reference/discovery.md → "Motion tier");
+   js/motion.js applies it on <html> (set pre-paint by the anti-FOUC script so the incoming
+   page's transition CSS resolves correctly) and the control bar demos it.
+
+   `standard` is the default and adds NOTHING here — it's every VT / .enter / .reveal rule
+   above, unmodified. `calm` strips motion down to feedback-only; `expressive` dials entrances
+   up a touch. The global prefers-reduced-motion block higher up wins over ALL tiers (including
+   expressive): its !important VT + `.reveal, .enter` overrides beat these non-important rules,
+   and expressive's scroll-driven reveal is gated behind `prefers-reduced-motion: no-preference`
+   so it never applies under reduced motion at all. */
+
+/* calm — dense tools/dashboards. Root nav transition = a fast crossfade ONLY: drop the
+   directional vt-slide-* (keep a short ~130ms fade). vt.js also early-returns the list→detail
+   hero morph under calm, so only the root crossfade remains. Higher specificity than the bare
+   `::view-transition-*(root)` defaults, so it wins; still non-!important, so reduced motion wins. */
+html[data-motion="calm"]::view-transition-old(root){ animation: 130ms linear both vt-fade-out; }
+html[data-motion="calm"]::view-transition-new(root){ animation: 130ms linear both vt-fade-in; }
+
+/* calm — .enter and .reveal render at their visible end-state instantly: no entrance animation,
+   no scroll-driven effect (app.js also short-circuits the reveal observer under calm). The
+   :active press, hover, and focus micro-interactions are deliberately NOT touched — those are
+   feedback, not friction. (Loading/Speed is a SEPARATE control; untouched here.) */
+
+/* calm — .enter: neutralize only the ENTRANCE, not the whole transition. A blanket
+   `transition: none` here would also kill any LATER state change that reuses .enter's own
+   opacity/transform transition (e.g. a hover/press effect on an element that also carries
+   .enter) — that element would snap instead of ease, eroding the "micro-interactions kept"
+   promise above. So `transition` itself is left alone (still the base .enter rule's
+   var(--dur-base) var(--ease-out-quart)); only `transition-delay` is zeroed (disarms the
+   stagger) and this @starting-style pins the "before mount" values to the SAME as the
+   end-state (opacity:1, transform:none) instead of the global @starting-style's opacity:0 /
+   translateY(8px). Start === end means there's nothing for the transition to interpolate at
+   mount, so the element still renders at its end-state instantly — but the transition stays
+   armed for whatever comes after. */
+html[data-motion="calm"] .enter {
+  transition-delay: 0s;
+}
+@starting-style {
+  html[data-motion="calm"] .enter { opacity: 1; transform: none; }
+}
+
+/* calm — .reveal: this blanket `transition: none` stays (unlike .enter above). .reveal has no
+   hover/press use, and killing its transition is load-bearing against a pre-JS fade — it must
+   snap to its visible end-state the instant `.visible` is added (by app.js, or the
+   reduced-motion/no-IO fallback), with no lingering transition to fight. */
+html[data-motion="calm"] .reveal {
+  transition: none;
+  animation: none;
+  opacity: 1;
+  transform: none;
+}
+
+/* expressive — marketing/landing/pitch. Everything standard does, PLUS a --spring easing and a
+   slightly richer distance/duration on .enter (the key mount entrance). The @starting-style
+   override outranks the base one by specificity. Reduced motion still neutralizes it (the global
+   block clamps transition-duration + forces the end state, so the spring curve never runs). */
+html[data-motion="expressive"] .enter {
+  transition: opacity var(--dur-slow) var(--spring),
+              transform var(--dur-slow) var(--spring);
+  /* the shorthand above resets transition-delay to 0 — re-declare it after, or the staggered
+     entrance (style="--i:0|1|2…") collapses and every sibling mounts simultaneously. */
+  transition-delay: calc(min(var(--i, 0), 8) * 40ms);
+}
+@starting-style {
+  html[data-motion="expressive"] .enter { opacity: 0; transform: translateY(14px); }
+}
+
+/* expressive — .reveal upgraded to scroll-driven where supported. Gated on BOTH
+   prefers-reduced-motion: no-preference (reduced motion never gets it — the global block forces
+   .reveal visible) AND @supports (animation-timeline: view()); everywhere else .reveal keeps its
+   plain IntersectionObserver-driven transition (rules above).
+   No `opacity: 0` declared here — that's deliberate, not an oversight. When the ViewTimeline is
+   ACTIVE, the `reveal-scroll` animation's `both` fill mode already owns the hidden pre-entry
+   state (the `from` keyframe holds opacity 0 until the entry range is reached), so redeclaring
+   it would be redundant. But the timeline can be INACTIVE — no scrollable overflow on the page,
+   or an `overflow: hidden` ancestor breaks it — in which case the animation never actually
+   applies. If `opacity: 0` were set directly on this higher-specificity selector, it would beat
+   the base `.reveal.visible { opacity: 1 }` rule forever and the content would be stuck
+   invisible. Without it, an inactive timeline falls through to the plain cascade: base
+   `.reveal { opacity: 0 }` + `.reveal.visible { opacity: 1 }`, with app.js's
+   IntersectionObserver (still running under expressive) as the working safety net that flips
+   `.visible`. `transition: none` here means that fallback reveal snaps instead of easing —
+   an acceptable trade for never getting stuck invisible. */
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    html[data-motion="expressive"] .reveal {
+      transform: none;                 /* the keyframes own transform now */
+      transition: none;                /* the scroll timeline drives it, not the transition */
+      animation: reveal-scroll linear both;
+      /* the shorthand above resets animation-delay to 0 — re-declare it after, same
+         --i stagger as the transition-delay fallback, so siblings entering on the
+         same scroll range (a grid row) still stagger under the scroll-driven path. */
+      animation-delay: calc(min(var(--i, 0), 8) * 40ms);
+      animation-timeline: view();
+      animation-range: entry 5% cover 30%;
+    }
+  }
+}
+@keyframes reveal-scroll {
+  from { opacity: 0; transform: translateY(18px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* Toast (state.js + ui.js use this) */
 .proto-toast {
   position: fixed;
   bottom: 5rem;
   left: 50%;
   transform: translate(-50%, 8px);
-  z-index: 50;
+  z-index: var(--z-toast);
   padding: .55rem 1rem;
   border-radius: 999px;
   background: rgb(var(--ink));
@@ -893,7 +643,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
   border: 1px solid rgb(var(--ink));
   font-size: .8rem;
   opacity: 0;
-  transition: opacity .2s cubic-bezier(0.22, 1, 0.36, 1), transform .2s cubic-bezier(0.22, 1, 0.36, 1);
+  transition: opacity .2s var(--ease-out-quart), transform .2s var(--ease-out-quart);
   pointer-events: none;
   white-space: nowrap;
   max-width: 90vw;
@@ -902,9 +652,45 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
 }
 .proto-toast.visible { opacity: 1; transform: translate(-50%, 0); }
 .proto-toast.is-error   { background: rgb(190 60 60); border-color: rgb(190 60 60); color: rgb(255 248 245); }
-.proto-toast.is-success { background: rgb(var(--accent)); border-color: rgb(var(--accent)); color: rgb(var(--accent-ink)); }
+.proto-toast.is-success { background: rgb(40 120 80); border-color: rgb(40 120 80); color: rgb(245 255 250); }
 
-/* Loading button */
+/* Undo-toast variant (ui.js's UI.undoToast) — the base rule above truncates the
+   *whole* toast with a single-line ellipsis, which would clip the trailing Undo
+   button off a long message. Here the container becomes a flex row instead: the
+   message (.proto-toast-msg) truncates on its own and the button never shrinks.
+   Gated on :has(.proto-toast-undo), not just the .has-undo class, so this layout
+   only ever applies while a real Undo button is actually present — state.js has
+   its own `.proto-toast`-reusing toast() that ui.js can't reach to keep in sync,
+   and this keeps a stale `.has-undo` class from mis-laying-out its plain toasts. */
+.proto-toast.has-undo:has(.proto-toast-undo) {
+  display: inline-flex;
+  align-items: baseline;
+  gap: .75em;
+  white-space: normal; /* the message span below owns truncation now, not this container */
+}
+.proto-toast-msg {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0; /* let the flex item shrink below its content size so ellipsis can apply */
+}
+.proto-toast-undo {
+  flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: none;
+  font: inherit;
+  font-weight: 600;
+  text-decoration: underline;
+  color: inherit;
+  cursor: pointer;
+  /* .proto-toast itself stays pointer-events:none (click-through at rest) —
+     this control opts back in so it alone can be clicked. */
+  pointer-events: auto;
+}
+
+/* Loading button (ui.js toggles .is-loading) */
 .is-loading { opacity: .75; cursor: wait; }
 .is-loading::after {
   content: "";
@@ -919,9 +705,10 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
 }
 @keyframes proto-spin { to { transform: rotate(360deg); } }
 
+/* Persona show/hide — beats Tailwind display utilities like `.flex` */
 .proto-hidden { display: none !important; }
 
-/* Skeleton loaders */
+/* Skeleton loaders — placeholder silhouettes during fake loads */
 .skeleton {
   background: linear-gradient(
     90deg,
@@ -946,7 +733,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
 .skeleton.is-circle  { border-radius: 999px; aspect-ratio: 1 / 1; }
 .skeleton-item { pointer-events: none; }
 
-/* Empty state */
+/* Empty state wrapper */
 .empty-state {
   padding: 3rem 1.5rem;
   text-align: center;
@@ -956,29 +743,92 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
 }
 .empty-state h3 {
   color: rgb(var(--ink));
-  font-weight: 600;
+  font-family: inherit;   /* inherits body; add class="font-heading" in markup for the display face */
+  font-weight: 500;
   font-size: 1.25rem;
   margin-bottom: .5rem;
 }
 .empty-state p { margin: 0 auto; max-width: 32rem; }
 .empty-state .actions { margin-top: 1.25rem; display: inline-flex; gap: .5rem; }
 
-/* Visible control bar */
+/* Screen-reader-only — visually hidden but read aloud. Powers the shared polite
+   live region (`.proto-status`, created lazily by ui.js's UI.announce) that every
+   loader speaks "Loading…" / "Loaded." through. Also usable on any visually-implicit
+   label a build needs announced. */
+.sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* State matrix component — the non-happy-path states a data region needs, as one
+   token-driven block (icon slot + title + body + one action). `.state--empty` is the
+   empty/first-run/no-results/cleared face (same spirit as `.empty-state`, which stays
+   as-is for existing builds); `.state--error` is the scoped, plain-language failure
+   face with a `[data-retry]` action. `min-height` reserves space so a region swapping
+   default → loading → empty/error doesn't shift the layout around it. Document the full
+   per-region matrix in reference/build.md → "Interaction states". */
+.state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-3);
+  min-height: 12rem;               /* reserve space — appearing must not shift layout */
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+  border: 1px dashed rgb(var(--muted) / .4);
+  border-radius: var(--radius);
+  color: rgb(var(--ink2));
+}
+.state .state-icon {
+  display: inline-flex;
+  width: 2.25rem; height: 2.25rem;
+  color: rgb(var(--ink3));
+}
+.state .state-icon > svg { width: 100%; height: 100%; }
+.state .state-title {
+  color: rgb(var(--ink));
+  font-family: inherit;            /* add class="font-heading" in markup for the display face */
+  font-weight: 500;
+  font-size: 1.25rem;
+}
+.state .state-body { margin: 0 auto; max-width: 32rem; }
+.state .state-actions { margin-top: .25rem; display: inline-flex; flex-wrap: wrap; gap: .5rem; justify-content: center; }
+
+/* Error face — tint the border + icon with the same --status-error token .proto-toast
+   and .form-field already use, so a theme swap carries it. Keep the copy plain-language
+   and scoped to the region; the [data-retry] button re-runs the failed call (a build
+   wires it to re-fetch and preserve any user input — see reference/build.md). */
+.state--error { border-color: rgb(var(--status-error) / .45); }
+.state--error .state-icon { color: rgb(var(--status-error)); }
+
+/* Visible control bar — all options shown inline, no click-to-reveal.
+   Positioned bottom-center so it's discoverable and doesn't fight sidebars. */
 #proto-controls {
   position: fixed;
   bottom: .9rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 40;
+  z-index: var(--z-sticky);
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: .25rem;
   pointer-events: none;
 }
+/* Reserve space so the fixed control bar never occludes the last row of content.
+   App-shell layouts that scroll an inner <main> (instead of the page) should mirror
+   this padding-bottom on that scroll container. */
+body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
+
 #proto-controls > .proto-bar {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: nowrap;                /* never wrap — graceful scroll instead */
   align-items: center;
   gap: .5rem;
   padding: .35rem .5rem;
@@ -987,7 +837,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
   border: 1px solid rgb(var(--muted) / .3);
-  box-shadow: 0 8px 24px rgb(0 0 0 / .15);
+  box-shadow: var(--shadow-lg);
   font-size: .72rem;
   color: rgb(var(--ink2));
   pointer-events: auto;
@@ -1014,6 +864,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
   text-transform: uppercase;
   letter-spacing: .05em;
 }
+/* Hide uppercase section labels on medium-width screens to keep single-line. */
 @media (max-width: 960px) {
   #proto-controls .proto-bar-label { display: none; }
 }
@@ -1033,7 +884,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
   #proto-controls .proto-hint { display: none; }
 }
 
-/* Segmented control */
+/* Segmented control: group + options */
 .proto-seg-group {
   display: inline-flex;
   background: rgb(var(--muted) / .2);
@@ -1049,7 +900,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
   border: 0;
   background: transparent;
   cursor: pointer;
-  transition: background var(--motion-fast), color var(--motion-fast);
+  transition: background .15s var(--ease-out-quart), color .15s var(--ease-out-quart);
   font: inherit;
   white-space: nowrap;
   line-height: 1;
@@ -1064,12 +915,40 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
   font-weight: 500;
 }
 
+/* Wide content (data tables especially) scrolls inside this wrapper instead of
+   pushing the whole page wider than the viewport. Wrap every <table> in one. */
+.proto-table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+.proto-table-wrap > table { min-width: max-content; }
+
+/* Action / filter / toolbar rows: wrap to the next line on narrow screens rather
+   than overflowing horizontally. Apply to header button clusters and filter chips. */
+.proto-actions { display: flex; flex-wrap: wrap; gap: .5rem; align-items: center; }
+
+/* Layout system — the feature grid responds to data-layout on <html>.
+   editorial = roomy 2-up (more air, larger gap); index = dense 3-up.
+   Mobile: always 1 col. Tablet: 2. */
+.proto-grid {
+  display: grid;
+  gap: var(--space-5);
+  grid-template-columns: repeat(1, minmax(0, 1fr));
+}
+@media (min-width: 640px) {
+  .proto-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (min-width: 1024px) {
+  html[data-layout="editorial"] .proto-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-7); }
+  html[data-layout="index"]     .proto-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-5); }
+}
+
+/* Mobile — with nowrap + overflow-x auto, bar scrolls horizontally.
+   Stays single-row for consistency across all viewports. */
+
 /* History drawer (Shift+?) */
 .proto-history {
   position: fixed;
   bottom: 5rem;
   right: 1rem;
-  z-index: 45;
+  z-index: var(--z-modal);
   width: min(22rem, calc(100vw - 2rem));
   max-height: 60vh;
   overflow: auto;
@@ -1077,7 +956,7 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
   border-radius: 12px;
   background: rgb(var(--elevated));
   border: 1px solid rgb(var(--muted) / .2);
-  box-shadow: 0 10px 30px rgb(0 0 0 / .15);
+  box-shadow: var(--shadow-lg);
   display: none;
 }
 .proto-history.visible { display: block; }
@@ -1086,3 +965,487 @@ html[data-persona="installed"] .hero [data-cta-new] { display: none; }
 .proto-history li { padding: .25rem 0; }
 .proto-history a { color: rgb(var(--ink)); text-decoration: none; }
 .proto-history a:hover { color: rgb(var(--accent)); }
+
+
+/* ==========================================================================
+ * LANDING PAGE — claude-prototype
+ * Typography roles (loaded in <head>): Bricolage Grotesque (display),
+ * Instrument Sans (body), Chivo Mono (eyebrows / numbers / code / badges),
+ * Fraunces (ONE oversized editorial wordmark moment only).
+ * ========================================================================== */
+
+.font-editorial { font-family: 'Fraunces', Georgia, serif; font-optical-sizing: auto; }
+
+/* Eyebrows are NEUTRAL mono — never ember-colored (orange text ~3.7:1 fails as
+   small copy). Ember is reserved for fills / large display / strokes. */
+.eyebrow {
+  font-family: 'Chivo Mono', ui-monospace, monospace;
+  text-transform: uppercase;
+  letter-spacing: .16em;
+  font-size: var(--text-xs);
+  color: rgb(var(--ink2));
+}
+
+h1, h2, h3, .display { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
+
+/* Section rhythm */
+.section { padding: var(--space-9) 0; }
+.wrap { width: 100%; max-width: 72rem; margin: 0 auto; padding: 0 var(--space-5); }
+@media (min-width: 640px) { .wrap { padding: 0 var(--space-6); } }
+
+.section-head { max-width: 46rem; }
+.section-title {
+  font-weight: 800;
+  letter-spacing: -.02em;
+  line-height: 1.02;
+  font-size: clamp(1.95rem, 1.3rem + 3vw, 3rem);
+  color: rgb(var(--ink));
+  text-wrap: balance;
+}
+.section-lead { margin-top: var(--space-4); font-size: var(--text-lg); color: rgb(var(--ink2)); line-height: 1.5; max-width: 40rem; }
+
+/* Ember stroke accent under a heading (large / decorative use of the accent). */
+.rule-accent { height: 3px; width: 3.5rem; background: rgb(var(--accent)); border-radius: 2px; margin-top: var(--space-4); }
+
+/* ---------- EMBER FLOOD (hero + closing) ---------- */
+.ember-flood {
+  position: relative;
+  background: rgb(var(--accent));
+  color: rgb(var(--accent-ink));
+  overflow: clip;
+}
+/* Subtle matte grain — overlay blend keeps it a luminance texture, no gradient,
+   no color shift. Cheap tiled SVG turbulence. */
+.ember-flood::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: .10;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 120px 120px;
+}
+
+/* Nav — minimal brand nav: wordmark + single solid CTA, no inline link list
+   (deliberate anti-reflex choice; see DESIGN.md). Sits over the ember flood. */
+.site-nav {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding-top: var(--space-5);
+}
+.wordmark {
+  font-family: 'Chivo Mono', ui-monospace, monospace;
+  font-weight: 700;
+  font-size: 1.25rem;        /* ≥18.66px bold → passes AA-large on ember */
+  letter-spacing: -.01em;
+  color: rgb(var(--accent-ink));
+  line-height: 1;
+  text-decoration: none;
+}
+.wordmark .dot { color: rgb(var(--accent-ink)); opacity: .55; }
+
+/* Solid buttons — labels never sit on the ember fill (that would fail at small
+   sizes). Primary = ink fill; on the ember hero this reads as a bold near-black
+   chip; on cream sections it's the standard dark CTA. */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  line-height: 1;
+  font-weight: 600;
+  font-size: 1rem;
+  padding: .85rem 1.2rem;
+  border-radius: var(--radius);
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: transform var(--dur-press) var(--ease-out-quart), background-color var(--dur-fast) var(--ease-out-quart), color var(--dur-fast) var(--ease-out-quart), border-color var(--dur-fast) var(--ease-out-quart);
+}
+.btn-primary { background: rgb(var(--ink)); color: rgb(var(--surface)); }
+.btn-surface { background: rgb(var(--surface)); color: rgb(var(--ink)); border-color: rgb(var(--hairline)); }
+.btn-ghost   { background: transparent; color: rgb(var(--ink)); border-color: rgb(var(--hairline)); }
+/* Flood-safe CTA: sits ON the ember flood. Filled with --accent-ink (contrasts
+   with the --accent flood in every theme, incl. paper where accent→ink), text in
+   --ink — so the LABEL never rides the low-contrast ember surface directly. */
+.btn-flood { background: rgb(var(--accent-ink)); color: rgb(var(--ink)); box-shadow: var(--shadow-md); }
+@media (hover: hover) {
+  .btn-primary:hover { background: rgb(var(--ink2)); }
+  .btn-surface:hover { border-color: rgb(var(--ink3)); }
+  .btn-ghost:hover   { border-color: rgb(var(--ink3)); background: rgb(var(--elevated)); }
+  .btn-flood:hover   { background: rgb(var(--elevated)); }
+}
+.btn-lg { font-size: 1.05rem; padding: 1rem 1.4rem; }
+
+/* ---------- HERO ---------- */
+.hero { padding-bottom: var(--space-9); }
+.hero-inner { position: relative; z-index: 2; padding-top: var(--space-8); }
+.hero-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .5rem;
+  font-family: 'Chivo Mono', ui-monospace, monospace;
+  font-size: .72rem;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  /* dark chip on ember — legible at any size, in every theme */
+  background: rgb(var(--ink));
+  color: rgb(var(--surface));
+  padding: .4rem .7rem;
+  border-radius: 999px;
+  line-height: 1;
+}
+.hero-eyebrow .tick { width: 6px; height: 6px; border-radius: 999px; background: rgb(var(--surface)); }
+
+.hero-title {
+  margin-top: var(--space-5);
+  font-weight: 800;
+  letter-spacing: -.025em;
+  line-height: .98;
+  /* Sized so each authored line ("Prototypes that" is the longest) fits one line
+     at 390px — the per-line mask below clips vertically, so a line that's too wide
+     to fit would be clipped horizontally, not wrapped. */
+  font-size: clamp(1.95rem, 0.7rem + 6.1vw, 6rem);
+}
+/* .ln masks each line so its inner span can rise from below (the build-in "snap").
+   overflow-wrap:normal keeps whole words on the line (no mid-word break inside the
+   mask); the authored line breaks control the shape. */
+.hero-title .ln { display: block; overflow: hidden; padding-bottom: .04em; }
+.hero-title .ln > span { display: block; transform: translateY(0); will-change: transform; white-space: nowrap; overflow-wrap: normal; }
+/* Build-in flourish: each line rises from a mask (the "snap"); a thin scan bar
+   sweeps once (the "scan"). Resting state is fully visible — reduced motion or an
+   old engine simply shows the resolved headline, never a hidden one. */
+@media (prefers-reduced-motion: no-preference) {
+  .hero-title .ln > span { animation: hero-rise .72s var(--ease-out-expo) both; animation-delay: calc(var(--l, 0) * .12s + .12s); }
+  .hero-scan {
+    position: absolute; top: 0; bottom: 0; left: 0; width: 3px;
+    background: rgb(var(--accent-ink)); opacity: 0; pointer-events: none;
+    animation: hero-scan 1s var(--ease-in-out-strong) both; animation-delay: .05s;
+  }
+}
+@keyframes hero-rise { from { transform: translateY(108%); } to { transform: translateY(0); } }
+@keyframes hero-scan {
+  0% { left: 0; opacity: 0; }
+  8% { opacity: .8; }
+  92% { opacity: .8; }
+  100% { left: 100%; opacity: 0; }
+}
+.hero-title-wrap { position: relative; }
+
+.hero-lead {
+  margin-top: var(--space-5);
+  /* ≥24px min → qualifies as AA-large, so ember→cream (~3.7:1) is compliant */
+  font-size: clamp(1.5rem, 1.2rem + 1.1vw, 1.85rem);
+  font-weight: 400;
+  line-height: 1.32;
+  color: rgb(var(--accent-ink));
+  max-width: 34ch;
+  opacity: .96;
+}
+.hero-cta { margin-top: var(--space-6); display: flex; flex-wrap: wrap; gap: .75rem; }
+
+/* Command card — sits on its own elevated surface so the mono copy keeps full
+   contrast in every theme (never small cream-on-ember). */
+.code-card {
+  margin-top: var(--space-6);
+  max-width: 38rem;
+  background: rgb(var(--elevated));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: var(--radius);
+  box-shadow: var(--shadow-md);
+  overflow: hidden;
+}
+.code-card-head {
+  display: flex; align-items: center; justify-content: space-between;
+  gap: 1rem; padding: .6rem .8rem .6rem 1rem;
+  border-bottom: 1px solid rgb(var(--hairline));
+  background: rgb(var(--elevated-2));
+}
+.code-card-head .lbl {
+  font-family: 'Chivo Mono', ui-monospace, monospace;
+  font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--ink2));
+}
+.code-copy {
+  font-family: 'Chivo Mono', ui-monospace, monospace;
+  font-size: .72rem; padding: .3rem .6rem; border-radius: 999px;
+  border: 1px solid rgb(var(--hairline)); background: rgb(var(--surface)); color: rgb(var(--ink));
+  cursor: pointer; line-height: 1;
+}
+@media (hover: hover) { .code-copy:hover { border-color: rgb(var(--ink3)); } }
+.code-body {
+  margin: 0; padding: 1rem;
+  font-family: 'Chivo Mono', ui-monospace, monospace;
+  font-size: .82rem; line-height: 1.7; color: rgb(var(--ink));
+  overflow-x: auto; white-space: pre;
+}
+.code-body .c-comment { color: rgb(var(--ink2)); }               /* ink2 → clears AA on the elevated surface */
+.code-body .c-prompt  { color: rgb(var(--ink)); font-weight: 700; } /* emphasis via weight, not low-contrast ember */
+.code-body .c-cmd     { color: rgb(var(--ink)); }
+
+/* ---------- STATS STRIP (trust row, real facts only) ---------- */
+.factbar {
+  display: grid; gap: var(--space-4);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin-top: var(--space-7);
+}
+@media (min-width: 720px) { .factbar { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.fact { border-top: 2px solid rgb(var(--accent)); padding-top: var(--space-3); }
+.fact-num {
+  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
+  font-weight: 800; font-size: clamp(1.8rem, 1.2rem + 2vw, 2.5rem);
+  line-height: 1; letter-spacing: -.02em; color: rgb(var(--ink));
+  font-variant-numeric: tabular-nums;
+}
+.fact-lbl { margin-top: .4rem; font-size: var(--text-sm); color: rgb(var(--ink2)); line-height: 1.35; }
+
+/* ==========================================================================
+ * LIVE RE-SKINNABLE DEMO  (THE SIGNATURE)
+ * The device carries its OWN token block, scoped to .demo-stage[data-demo-theme].
+ * Flipping data-demo-theme re-skins every child live via a token cross-fade
+ * (each demo element transitions its resolved color). The reserved SIGNAL hue
+ * (lime) appears ONLY inside .demo-* rules — on this page, lime literally means
+ * "this is alive."
+ * ========================================================================== */
+
+.demo-stage[data-demo-theme="dawn"] {
+  --surface: 255 251 244; --elevated: 250 244 234; --elevated-2: 244 236 223;
+  --ink: 28 22 17; --ink2: 92 82 71; --ink3: 138 126 112;
+  --hairline: 228 219 205; --muted: 168 156 140;
+  --accent: 230 79 38; --accent-ink: 255 251 245;
+  --signal: 190 236 80; --signal-ink: 26 32 10;
+}
+.demo-stage[data-demo-theme="dusk"] {
+  --surface: 26 22 20; --elevated: 34 29 26; --elevated-2: 44 38 34;
+  --ink: 244 238 230; --ink2: 188 178 166; --ink3: 138 128 116;
+  --hairline: 56 49 44; --muted: 110 100 90;
+  --accent: 240 96 52; --accent-ink: 26 22 20;
+  --signal: 198 244 96; --signal-ink: 20 24 10;
+}
+.demo-stage[data-demo-theme="steel"] {
+  --surface: 236 238 241; --elevated: 244 246 249; --elevated-2: 226 229 234;
+  --ink: 26 30 36; --ink2: 78 85 94; --ink3: 122 130 140;
+  --hairline: 210 214 220; --muted: 150 158 168;
+  --accent: 230 79 38; --accent-ink: 246 248 250;   /* ember holds as the one accent, even on cool steel */
+  --signal: 190 236 80; --signal-ink: 26 32 10;
+}
+
+.demo-device {
+  background: rgb(var(--surface));
+  border: 1px solid rgb(var(--hairline));
+  border-radius: calc(var(--radius) + 6px);
+  box-shadow: var(--shadow-lg);
+  overflow: hidden;
+}
+/* Token cross-fade: every child eases its resolved colors when data-demo-theme
+   flips. Reduced motion clamps this globally. */
+.demo-device, .demo-device * {
+  transition: background-color .45s var(--ease-out-quart),
+              border-color .45s var(--ease-out-quart),
+              color .45s var(--ease-out-quart),
+              fill .45s var(--ease-out-quart),
+              box-shadow .45s var(--ease-out-quart);
+}
+/* App-bar of the device — a genuine product header (brand + live state +
+   controls), deliberately NOT a decorative window frame. */
+.demo-topbar {
+  display: flex; align-items: center; gap: .75rem;
+  padding: .75rem 1rem; border-bottom: 1px solid rgb(var(--hairline));
+  background: rgb(var(--elevated));
+  flex-wrap: wrap;
+}
+.demo-brand { display: inline-flex; align-items: center; gap: .5rem; line-height: 1; }
+.demo-brand .mark {
+  width: 1.6rem; height: 1.6rem; border-radius: 7px; flex: none;
+  background: rgb(var(--accent)); color: rgb(var(--accent-ink));
+  display: inline-flex; align-items: center; justify-content: center;
+  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: .9rem;
+}
+.demo-brand .name { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: .95rem; color: rgb(var(--ink)); }
+/* LIVE pill — the signal hue announcing "this is a live, running UI". */
+.demo-live {
+  display: inline-flex; align-items: center; gap: .4rem;
+  font-family: 'Chivo Mono', monospace; font-size: .62rem; letter-spacing: .12em; text-transform: uppercase;
+  color: rgb(var(--signal-ink)); background: rgb(var(--signal));
+  padding: .25rem .5rem; border-radius: 999px; line-height: 1;
+}
+.demo-live .beat { width: 6px; height: 6px; border-radius: 999px; background: rgb(var(--signal-ink)); }
+@media (prefers-reduced-motion: no-preference) {
+  .demo-live .beat { animation: demo-beat 1.6s ease-in-out infinite; }
+}
+@keyframes demo-beat { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
+
+.demo-controls { margin-left: auto; display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
+.demo-ctl { display: inline-flex; align-items: center; gap: .4rem; }
+.demo-ctl-lbl { font-family: 'Chivo Mono', monospace; font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--ink3)); }
+.demo-seg { display: inline-flex; background: rgb(var(--elevated-2)); border: 1px solid rgb(var(--hairline)); border-radius: 999px; padding: 2px; gap: 2px; }
+.demo-seg button {
+  font-family: 'Chivo Mono', monospace; font-size: .64rem; letter-spacing: .02em;
+  padding: .28rem .55rem; border-radius: 999px; border: 0; background: transparent;
+  color: rgb(var(--ink2)); cursor: pointer; line-height: 1;
+}
+@media (hover: hover) { .demo-seg button:hover { color: rgb(var(--ink)); } }
+/* ACTIVE demo control = the signal hue → "this is what's live right now". */
+.demo-seg button[aria-pressed="true"] { background: rgb(var(--signal)); color: rgb(var(--signal-ink)); font-weight: 600; }
+
+.demo-body { padding: 1.1rem; display: grid; gap: 1rem; }
+
+/* stat tiles */
+.demo-tiles { display: grid; gap: .75rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.demo-tile { background: rgb(var(--elevated)); border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); padding: .8rem .85rem; }
+.demo-tile .k { font-family: 'Chivo Mono', monospace; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--ink3)); }
+.demo-tile .v { margin-top: .3rem; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 1.5rem; line-height: 1; color: rgb(var(--ink)); font-variant-numeric: tabular-nums; }
+.demo-tile .d { margin-top: .3rem; font-size: .68rem; color: rgb(var(--ink2)); }
+.demo-tile .d.up { color: rgb(var(--signal-ink)); background: rgb(var(--signal)); display: inline-block; padding: .05rem .35rem; border-radius: 999px; }
+
+/* mini chart */
+.demo-panel { background: rgb(var(--elevated)); border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); padding: .9rem; }
+.demo-panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin-bottom: .7rem; }
+.demo-panel-head .t { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: .9rem; color: rgb(var(--ink)); }
+.demo-panel-head .s { font-family: 'Chivo Mono', monospace; font-size: .62rem; color: rgb(var(--ink3)); }
+.demo-chart { display: flex; align-items: flex-end; gap: .45rem; height: 92px; }
+/* .col needs its OWN definite height (100%, resolving against .demo-chart's
+   92px) — without it, the column sizes to its content (bar+label) rather
+   than stretching, so .demo-bar's `height: NN%` below has nothing definite
+   to resolve against and collapses to its min-height sliver. justify-content:
+   flex-end then anchors the bar+label group to the bottom of that 92px box
+   (a shared baseline), so the bars grow upward from the bottom like a real chart. */
+.demo-chart .col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: .35rem; height: 100%; }
+.demo-bar { width: 100%; border-radius: 4px 4px 0 0; background: rgb(var(--ink) / .18); min-height: 4px; }
+.demo-bar.f { background: rgb(var(--accent)); }              /* filled = ember (large fill) */
+.demo-bar.live { background: rgb(var(--signal)); }           /* latest / live = signal */
+.demo-chart .col .xl { font-family: 'Chivo Mono', monospace; font-size: .54rem; color: rgb(var(--ink3)); }
+
+/* recent list */
+.demo-list { display: grid; gap: .1rem; }
+.demo-row { display: flex; align-items: center; gap: .7rem; padding: .55rem .2rem; border-bottom: 1px solid rgb(var(--hairline)); }
+.demo-row:last-child { border-bottom: 0; }
+.demo-av { width: 1.9rem; height: 1.9rem; border-radius: 999px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: rgb(var(--elevated-2)); color: rgb(var(--ink2)); font-family: 'Chivo Mono', monospace; font-size: .62rem; font-weight: 600; }
+.demo-row .who { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .1rem; }
+.demo-row .who .n { display: block; font-size: .82rem; color: rgb(var(--ink)); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.demo-row .who .m { display: block; font-size: .66rem; color: rgb(var(--ink2)); font-family: 'Chivo Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.demo-row .amt { font-family: 'Chivo Mono', monospace; font-size: .8rem; color: rgb(var(--ink)); font-variant-numeric: tabular-nums; }
+.demo-status { font-family: 'Chivo Mono', monospace; font-size: .58rem; letter-spacing: .06em; text-transform: uppercase; padding: .18rem .45rem; border-radius: 999px; border: 1px solid rgb(var(--hairline)); color: rgb(var(--ink2)); }
+.demo-status.live { color: rgb(var(--signal-ink)); background: rgb(var(--signal)); border-color: transparent; }
+
+.demo-toolbar { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
+.demo-btn {
+  display: inline-flex; align-items: center; gap: .4rem; line-height: 1;
+  font-size: .78rem; font-weight: 600; padding: .5rem .8rem; border-radius: var(--radius);
+  border: 1px solid transparent; cursor: pointer;
+  background: rgb(var(--ink)); color: rgb(var(--surface));   /* ink-filled → passes any size */
+}
+.demo-btn.ghost { background: transparent; color: rgb(var(--ink)); border-color: rgb(var(--hairline)); }
+.demo-note { font-family: 'Chivo Mono', monospace; font-size: .62rem; color: rgb(var(--ink3)); margin-left: auto; }
+
+/* demo layout toggle: focus mode drops the list, spotlights the chart */
+.demo-stage[data-demo-layout="focus"] .demo-list-panel { display: none; }
+.demo-stage[data-demo-layout="focus"] .demo-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.demo-stage[data-demo-layout="compact"] .demo-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+@media (max-width: 560px) {
+  .demo-tiles { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+  .demo-controls { width: 100%; margin-left: 0; }
+}
+
+/* Empty (first-run) + error faces for the demo's primary collection. Shown/hidden
+   via data-persona-show / data-persona-hide (js/data.js) — the control bar's
+   Persona toggle flips the demo between its populated and first-run states. */
+.demo-state .state { min-height: 9rem; }
+
+/* ---------- FEATURE GRID (01–07) ---------- */
+.feature { position: relative; }
+.feature-num {
+  font-family: 'Chivo Mono', monospace;
+  font-weight: 500; font-size: 1.15rem; letter-spacing: .02em;
+  color: rgb(var(--accent));            /* accent as a LARGE mono glyph */
+}
+.feature-title { margin-top: .5rem; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 1.3rem; letter-spacing: -.01em; line-height: 1.12; color: rgb(var(--ink)); }
+.feature-body { margin-top: .5rem; font-size: var(--text-base); line-height: 1.55; color: rgb(var(--ink2)); }
+.feature-top { border-top: 1px solid rgb(var(--hairline)); padding-top: var(--space-4); }
+
+/* ---------- BEFORE / AFTER ---------- */
+.ba-grid { display: grid; gap: var(--space-5); grid-template-columns: 1fr; }
+@media (min-width: 820px) { .ba-grid { grid-template-columns: 1fr 1fr; } }
+.ba-card { border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); overflow: hidden; background: rgb(var(--elevated)); display: flex; flex-direction: column; }
+.ba-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .7rem 1rem; border-bottom: 1px solid rgb(var(--hairline)); background: rgb(var(--elevated-2)); }
+.ba-head .lbl { font-family: 'Chivo Mono', monospace; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--ink2)); }
+.ba-tag { font-family: 'Chivo Mono', monospace; font-size: .6rem; letter-spacing: .04em; padding: .18rem .45rem; border-radius: 999px; border: 1px solid rgb(var(--hairline)); color: rgb(var(--ink3)); }
+.ba-tag.good { color: rgb(var(--accent-ink)); background: rgb(var(--accent)); border-color: transparent; }
+.ba-body { padding: var(--space-5); flex: 1; }
+
+/* "slop" mock — deliberately generic: centered, flat, muted, low hierarchy.
+   Evokes the tell WITHOUT shipping a real gradient / lorem / flagged name. */
+.slop { text-align: center; color: rgb(var(--ink3)); }
+.slop .mm { width: 2.5rem; height: 2.5rem; border-radius: 999px; background: rgb(var(--muted) / .3); margin: 0 auto .8rem; }
+.slop .h { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; font-weight: 600; font-size: 1.25rem; color: rgb(var(--ink2)); letter-spacing: -.01em; }
+.slop .p { font-family: system-ui, sans-serif; font-size: .9rem; margin-top: .5rem; color: rgb(var(--ink3)); max-width: 22rem; margin-left: auto; margin-right: auto; }
+.slop .pill { margin-top: 1rem; display: inline-block; font-family: system-ui, sans-serif; font-size: .8rem; padding: .5rem 1.1rem; border-radius: 999px; background: rgb(var(--muted) / .25); color: rgb(var(--ink3)); }
+.slop-tells { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; justify-content: center; }
+
+/* considered side */
+.after .k { font-family: 'Chivo Mono', monospace; font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: rgb(var(--ink2)); }
+.after .h { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 1.7rem; line-height: 1.05; letter-spacing: -.02em; color: rgb(var(--ink)); margin-top: .5rem; max-width: 16ch; }
+.after .p { font-size: .95rem; color: rgb(var(--ink2)); margin-top: .7rem; line-height: 1.5; max-width: 30ch; }
+.after-tells { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; }
+
+/* ---------- VARIANT WALL ---------- */
+.variant-grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(1, minmax(0, 1fr)); }
+@media (min-width: 560px) { .variant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (min-width: 900px) { .variant-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
+.variant { border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); overflow: hidden; background: rgb(var(--elevated)); }
+.variant .canvas { aspect-ratio: 4 / 3; padding: 1rem; display: flex; flex-direction: column; justify-content: flex-end; gap: .35rem; background: rgb(var(--surface)); border-bottom: 1px solid rgb(var(--hairline)); }
+.variant .foot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .6rem .8rem; }
+.variant .foot .name { font-family: 'Chivo Mono', monospace; font-size: .68rem; letter-spacing: .04em; color: rgb(var(--ink)); }
+.variant .foot .tone { font-family: 'Chivo Mono', monospace; font-size: .58rem; color: rgb(var(--ink3)); text-transform: uppercase; letter-spacing: .08em; }
+.v-mono .kicker { font-family: 'Chivo Mono', monospace; font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--ink3)); }
+.v-mono .big { font-family: 'Chivo Mono', monospace; font-weight: 600; font-size: 1.15rem; color: rgb(var(--ink)); letter-spacing: -.02em; }
+.v-edit .kicker { font-family: 'Chivo Mono', monospace; font-size: .56rem; letter-spacing: .12em; text-transform: uppercase; color: rgb(var(--ink3)); }
+.v-edit .big { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.5rem; line-height: .98; color: rgb(var(--ink)); }
+.v-play .big { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 1.55rem; line-height: .95; letter-spacing: -.03em; color: rgb(var(--accent)); }
+.v-play .kicker { font-family: 'Chivo Mono', monospace; font-size: .58rem; color: rgb(var(--ink3)); text-transform: uppercase; letter-spacing: .08em; }
+.v-min .kicker { font-family: 'Instrument Sans', sans-serif; font-size: .6rem; color: rgb(var(--ink3)); }
+.v-min .big { font-family: 'Instrument Sans', sans-serif; font-weight: 500; font-size: 1.2rem; color: rgb(var(--ink)); letter-spacing: -.01em; }
+.v-swatch { display: flex; gap: .3rem; margin-top: .2rem; }
+.v-swatch i { width: .8rem; height: .8rem; border-radius: 3px; display: block; }
+.v-swatch i.a { background: rgb(var(--accent)); }
+.v-swatch i.k { background: rgb(var(--ink)); }
+.v-swatch i.m { background: rgb(var(--muted)); }
+.v-swatch i.h { background: rgb(var(--hairline)); }
+
+/* ---------- CLOSING / INSTALL ---------- */
+.closing { position: relative; }
+/* the ONE oversized editorial wordmark moment (Fraunces, opsz) */
+.editorial-mark {
+  font-family: 'Fraunces', Georgia, serif;
+  font-optical-sizing: auto;
+  font-weight: 600;
+  font-size: clamp(3.5rem, 1rem + 16vw, 11rem);
+  /* .88 (up from a too-tight .82): still a tight display line-height for the
+     oversized-impact look, but the line box no longer clips the Fraunces
+     descenders (p, y) shorter than the glyph ink. padding-bottom below adds
+     the remaining clearance so the descenders + trailing period fully clear
+     the paragraph underneath — em-based, so it scales with the clamp(). */
+  line-height: .88;
+  letter-spacing: -.03em;
+  color: rgb(var(--accent-ink));
+  margin: 0;
+  padding-bottom: .22em;
+}
+/* The wordmark stays roman — emphasis comes from the opsz/size, not italic
+   (italic display headers/wordmarks are a lint-31 tell). .it just dims the
+   second half so "proto·type" reads as one considered mark. */
+.editorial-mark .it { opacity: .62; }
+
+/* Footer */
+.site-foot { border-top: 1px solid rgb(var(--hairline)); }
+.foot-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-6) 0; }
+.foot-row a { color: rgb(var(--ink)); }
+.foot-links { display: flex; flex-wrap: wrap; gap: 1.1rem; font-family: 'Chivo Mono', monospace; font-size: .72rem; }
+.foot-links a { color: rgb(var(--ink2)); text-decoration: none; }
+@media (hover: hover) { .foot-links a:hover { color: rgb(var(--ink)); } }
+
+/* Anchor scroll offset so the fixed bar / nav don't cover section tops */
+:target { scroll-margin-top: 5rem; }

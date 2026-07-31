@@ -1,38 +1,40 @@
 /*
- * Content + personas for the claude-prototype landing page.
+ * Data layer — centralized content + personas.
  *
- * new:       visitor hasn't installed. Install CTA + outcomes copy.
- * installed: visitor already runs /prototype. Section re-frames to reference.
+ * This landing page uses personas to demonstrate one of the skill's own selling
+ * points live: the embedded demo device swaps between its POPULATED state and its
+ * FIRST-RUN (empty) state when the control bar's Persona toggle flips — real
+ * content swapping, not just chrome. The demo regions carry data-persona-show /
+ * data-persona-hide; Data.apply() (below) walks the DOM and toggles them.
  */
 (function () {
   const DATA = {
     personas: {
-      'new': {
-        hero: {
-          eyebrow: 'Claude Code skill · MIT · v0.1',
-          headline: 'Build clickable HTML prototypes your team can actually review.',
-          sub: 'A Claude Code skill that scaffolds a zero-build-step site with a runtime theme / layout / persona switcher, URL-shareable state, and pin-to-element feedback. For sales demos, stakeholder reviews, and design explorations.',
-          primaryCta: 'Copy install command',
-          secondaryCta: 'View on GitHub',
-        },
-        installBadge: 'Install',
-        installIntro: 'Claude Code loads skills from `~/.claude/skills/<name>/`. Pick any of three.',
-        roadmapBadge: 'See also',
-        ctaIntent: 'primary',
+      'default': {
+        // "Live" — the demo shows a running dashboard with real activity.
+        stateLabel: 'Live',
+        demoCaption: 'Cardinal Coffee · roastery dashboard, running on demo data',
       },
-      'installed': {
-        hero: {
-          eyebrow: 'v0.1 · you\'re already set',
-          headline: 'You\'re set. Here\'s what\'s new, and how to invoke.',
-          sub: 'Skip past install. Jump to the roadmap, the companion-skill reference, or learn how to fork a variant and apply pinned feedback.',
-          primaryCta: 'Jump to roadmap',
-          secondaryCta: 'Contribute',
-        },
-        installBadge: 'Reinstall',
-        installIntro: 'You already have `/prototype` installed. Reinstall options, kept here for reference.',
-        roadmapBadge: 'Roadmap',
-        ctaIntent: 'secondary',
+      'empty': {
+        // First-run — the demo shows its designed empty state, not a blank grid.
+        stateLabel: 'First run',
+        demoCaption: 'Cardinal Coffee · brand-new workspace, first-run state',
       },
+    },
+
+    // Shared (not persona-specific) content the demo renders.
+    demo: {
+      // Recent subscription activity — realistic names + amounts, recent dates.
+      recent: [
+        { who: 'Marisol Vega',    init: 'MV', plan: 'Monthly · Ethiopia Guji', amt: '$24.00', live: true },
+        { who: 'Dev Ramchandani', init: 'DR', plan: 'Bi-weekly · House blend', amt: '$18.00', live: false },
+        { who: 'Priya Nair',      init: 'PN', plan: 'Monthly · Decaf Colombia', amt: '$22.00', live: false },
+      ],
+      // Shipments per weekday (last week) — the mini bar chart.
+      shipments: [
+        { d: 'M', v: 38 }, { d: 'T', v: 52 }, { d: 'W', v: 44 },
+        { d: 'T', v: 61 }, { d: 'F', v: 73 }, { d: 'S', v: 29 }, { d: 'S', v: 17 },
+      ],
     },
   };
 
@@ -48,8 +50,7 @@
     const persona = getPersona(personaName);
 
     document.querySelectorAll('[data-persona-text]').forEach(el => {
-      const path = el.dataset.personaText;
-      const value = resolve(persona, path);
+      const value = resolve(persona, el.dataset.personaText);
       if (value !== undefined && value !== null) el.textContent = String(value);
     });
 

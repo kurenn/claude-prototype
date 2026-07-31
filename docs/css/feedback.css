@@ -9,7 +9,7 @@ body.proto-fb-active * { cursor: crosshair !important; }
 /* Numbered pin on commented elements */
 .proto-fb-pin {
   position: absolute;
-  z-index: 9998;
+  z-index: var(--z-feedback, 1100);
   width: 24px;
   height: 24px;
   border-radius: 999px;
@@ -30,7 +30,7 @@ body.proto-fb-active * { cursor: crosshair !important; }
 /* Popover (appears at click point) */
 .proto-fb-popover {
   position: fixed;
-  z-index: 10000;
+  z-index: calc(var(--z-feedback, 1100) + 2);
   width: 280px;
   background: rgb(var(--elevated));
   color: rgb(var(--ink));
@@ -85,7 +85,7 @@ body.proto-fb-active * { cursor: crosshair !important; }
   color: rgb(var(--ink));
   border-left: 1px solid rgb(var(--muted) / .2);
   box-shadow: -10px 0 40px rgb(0 0 0 / .1);
-  z-index: 9999;
+  z-index: calc(var(--z-feedback, 1100) + 1);
   display: none;
   flex-direction: column;
   font-size: .85rem;
