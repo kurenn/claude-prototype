@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.6.0 — 2026-07-31
+
+The **app-shell release** — first-class support for the most common prototype shape (tools,
+consoles, dashboards), plus two motion/loading defaults that were being left on the table.
+
+### App-shell archetype
+- **App-shell is now a documented archetype** (`build.md` → Page archetypes) with its structure
+  (top bar + optional rail + inner-scrolling main + pinned footer/composer) and the two gotchas that
+  break it: the top bar overflowing at 390px (lint rule 37) and the control-bar clearance.
+- **`.proto-app-shell` scaffold helper** (`styles.css`) — a full-`100dvh` flex column that reserves
+  control-bar clearance via a new **`--proto-controls-safe`** token, so a pinned composer/footer never
+  hides under the floating control bar (the collision surfaced by the agent-console dogfood).
+
+### Motion / loading defaults
+- **Scroll-reveals are now a default for brand / expressive landings** (`build.md`) — put `.reveal` on
+  major sections so the page animates in; a static-scrolling landing reads as unfinished for that
+  register. (Still section-level, never every card.)
+- **The Loading control auto-hides when there's nothing to replay** (`loading.js` + `UI.hasLoaders()`)
+  — no `[data-skeleton-on-load]` region and no registered loader → the ⟳ Replay + Speed control hides
+  itself instead of sitting inert and reading as broken. Re-shows if a loader registers later.
+
 ## v0.5.0 — 2026-07-31
 
 The **inspiration-intake release** — the skill can now *learn from the web on an ongoing basis*

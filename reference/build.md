@@ -344,6 +344,10 @@ can take a snappier curve. Animate transform + opacity only.
   it in the first time it scrolls into view (IntersectionObserver, `.reveal` rules in
   `styles.css`). Use sparingly — a hero section, a stat strip, maybe a testimonial —
   not every card in a long list (that just delays the user seeing content).
+  **On a `register: brand` / expressive landing this is a default, not an afterthought:** put
+  `.reveal` on the major sections (feature blocks, stat strip, closing CTA) so the page animates in
+  as you scroll. A long static-scrolling landing where nothing moves reads as unfinished for that
+  register — but keep it to sections, still never every card in a list.
   ```html
   <section class="reveal">…</section>
   ```
@@ -565,6 +569,15 @@ Most prototypes are an app-shell (nav + screens). But three other whole-page sha
 best work (`reference/inspiration.md`) and fit specific briefs — pick the archetype in discovery, name
 it in `DESIGN.md`, don't default to app-shell for everything:
 
+- **App-shell** (the baseline — tools, consoles, dashboards) — a top bar (brand + nav + an optional
+  right-side status/context chip) over an optional left rail and a **main that scrolls independently**,
+  often with a pinned composer or footer. Two gotchas make or break it: **(1)** the top bar must stay
+  responsive — hide the right-side chip and shrink gaps on narrow screens, or it overflows at 390px
+  (`checks/builtin-lint.md` rule 37); **(2)** when `main` scrolls inside a full-height shell, `body`'s
+  control-bar `padding-bottom` no longer applies (a `100dvh` shell ignores it), so the last row / pinned
+  footer hides under the floating control bar. Use the scaffold's **`.proto-app-shell`** helper (a
+  full-height flex column that reserves `var(--proto-controls-safe)`), or put that padding on the shell
+  yourself — see "App-shell layouts" under the 390px rule above.
 - **Single-artifact showcase** (beam / metal / orbs) — the page *is* one component, shown off. Centered,
   quiet OKLCH-tinted near-black, one **hero live demo**, then `Installation → Usage → Playground`.
   For a pitch of a single feature, effect, or primitive. Its engine is the **playground pattern**

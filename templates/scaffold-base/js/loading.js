@@ -46,4 +46,19 @@
       window.UI && window.UI.replayLoading();
     });
   });
+
+  // Hide the whole Loading control (Replay + Speed) when the page simulates no loading —
+  // no `[data-skeleton-on-load]` region and no registered loader. Otherwise ⟳ Replay does
+  // nothing and reads as broken. Re-evaluated at window.load (after DOMContentLoaded
+  // handlers have registered their loaders) and whenever a loader registers later.
+  function syncLoadingVisibility() {
+    if (!window.UI || typeof window.UI.hasLoaders !== 'function') return;
+    var replay = document.querySelector('[data-loading-replay]');
+    var section = replay && replay.closest('.proto-bar-section');
+    if (!section) return;
+    section.hidden = !window.UI.hasLoaders();
+  }
+  document.addEventListener('proto:loaders-changed', syncLoadingVisibility);
+  if (document.readyState === 'complete') syncLoadingVisibility();
+  else window.addEventListener('load', syncLoadingVisibility);
 })();
