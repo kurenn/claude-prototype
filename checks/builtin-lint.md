@@ -579,6 +579,25 @@ geometry) to confirm the glyph ink — not just the line box — crosses into th
 the neighboring block never touches a glyph. Tight leading is fine *with* clearance; the bug
 is tight leading with a flush neighbor and no clearance.
 
+### 37. App-shell top bar overflows at 390px
+The app-shell top bar — **brand (left) + nav + a right-side status/context chip** — is the most
+common 390px overflow the toolbar rule (build.md → "No horizontal overflow at 390px") misses,
+because it *looks* like chrome, not a toolbar. A fixed-height flex row (`display:flex` on the bar
+inner) whose children don't wrap or shrink has an intrinsic min-width = brand + nav + chip + gaps;
+if that exceeds 390 it pushes `documentElement.scrollWidth` past the viewport even though every
+child looks fine on desktop. A right-side chip like a repo/branch/org pill is the usual tipping
+element. This is a **horizontal** overflow (distinct from rule 24's heading wrap) and reads as
+broken the instant a nav item or the chip clips off-screen.
+
+```
+grep -rnE 'class="[^"]*(appbar|topbar|app-header|navbar)' <prototype>/ --include="*.html"
+```
+
+Confirm objectively, not by eye (desktop screenshots clamp below ~500px):
+`benchmark/check-overflow.sh <prototype> 390`. For any bar that overflows, the fix is a narrow-
+screen rule: **hide the secondary chip** (`@media (max-width: 680px){ .repo-chip{display:none} }`),
+tighten gaps/padding, and let the nav shrink (`min-width:0`) — never a horizontal-scrolling header.
+
 ---
 
 ## Report format
@@ -588,7 +607,7 @@ Produce `LINT.md` at the prototype root:
 ```markdown
 # Lint Report — {{timestamp}}
 
-**Rules checked:** 36  ·  **Passing:** N  ·  **Findings:** M
+**Rules checked:** 37  ·  **Passing:** N  ·  **Findings:** M
 
 ## Errors (N)
 
