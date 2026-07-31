@@ -55,7 +55,7 @@
   // metronomic. nav is a cheap route change; read fetches a list/detail; mutate is
   // a save/submit; upload is the deliberately-slow outlier.
   function fakeLatency(kind) {
-    const base = ({ nav: 220, read: 700, mutate: 380, upload: 2200 })[kind] || 600;
+    const base = ({ nav: 220, read: 700, mutate: 380, upload: 2200, stream: 90 })[kind] || 600;
     const jitter = 0.45; // ±45%, never uniform
     return (base * (1 - jitter) + Math.random() * base * 2 * jitter) * SPEED[speedMode];
   }
