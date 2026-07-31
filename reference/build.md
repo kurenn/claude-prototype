@@ -82,6 +82,11 @@ control bar (`body { padding-bottom }`) and ships two utilities; use them:
   inside its card instead of pushing the whole page wider. (Tailwind `overflow-x-auto` works too.)
 - **Toolbar / filter / header-action rows:** give the flex container `class="proto-actions"`
   (or Tailwind `flex flex-wrap`) so button clusters wrap to a second line rather than overflowing.
+- **App-shell top bar** (brand-left + nav + a right-side status/context chip): this reads as chrome,
+  not a toolbar, so it's the overflow that gets missed — a fixed-height flex row whose children
+  don't shrink has an intrinsic min-width (brand + nav + chip) that blows past 390. On narrow
+  screens **hide the secondary chip** and tighten gaps/padding; let the nav shrink (`min-width:0`).
+  Never make the header itself horizontally scroll. (See `checks/builtin-lint.md` rule 37.)
 - **Stat / KPI strips:** use `proto-grid` or `grid-cols-1 sm:grid-cols-2 lg:grid-cols-4` — never a
   fixed multi-column row that can't reflow.
 - **App-shell layouts** that scroll an inner `<main>` instead of the page: mirror the control-bar

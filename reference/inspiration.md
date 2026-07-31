@@ -143,3 +143,8 @@ Graduates → (meta) informed the corpus schema
 | AI-native UI vocabulary (thinking/streaming/tool-call/approval…) | aicss, beautiful-ui, orbs, agentation | `ai-native-ui.md` (new) | ✅ 2026-07-31 |
 | New micro-interactions (number pop-in, spinner→check, dissolve-on-remove, card-stack fan) | transitions.dev | `microinteractions.md` | ✅ 2026-07-31 |
 | npm-install snippet · Pro badge · GitHub/X pair · Colophon = legitimacy tells | family ①+② | `build.md` → Page archetypes → Legitimacy tells | ✅ 2026-07-31 |
+| Validated thinking-orb + streaming recipes (zero-dep) | dogfood: agent-console build | `ai-native-ui.md` → Starter recipes | ✅ 2026-07-31 |
+| App-shell top bar overflows at 390px | dogfood: agent-console build | `checks/builtin-lint.md` rule 37 + `build.md` | ✅ 2026-07-31 |
+
+*Rows sourced "dogfood: …" came from building with the skill, not a corpus site — the loop also
+graduates what our own output surfaces.*

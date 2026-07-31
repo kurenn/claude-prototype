@@ -84,6 +84,45 @@ work: actual file paths in the diff, plausible search results with real-looking 
 list with domain tasks ("Scaffold the component registry", "Wire up Stripe checkout"). Generic
 "Task 1 / Task 2" content is the tell that this isn't a real product.
 
+## Starter recipes (validated, zero-dep)
+
+Proven in a real build — copy and adapt, don't reinvent.
+
+**The thinking-orb** (the named-state signature, no WebGL) — a conic-gradient ring, masked to a
+ring, spinning; slower under calm, static under reduced-motion:
+```css
+.orb { width:20px; height:20px; border-radius:50%;
+  background: conic-gradient(from 0deg, rgb(var(--ink)/0) 0deg, rgb(var(--ink)) 300deg, rgb(var(--ink)/0) 360deg);
+  -webkit-mask: radial-gradient(circle at 50% 50%, transparent 34%, #000 36%);
+          mask: radial-gradient(circle at 50% 50%, transparent 34%, #000 36%);
+  animation: orb-spin 1.1s linear infinite; }
+@keyframes orb-spin { to { transform: rotate(360deg); } }
+html[data-motion="calm"] .orb { animation-duration: 1.6s; }         /* slower, still the "alive" cue */
+@media (prefers-reduced-motion: reduce) { .orb { animation: none; background: rgb(var(--ink)/.5); } }
+```
+
+**Streaming text** — reveal word-groups on the `stream` latency kind (added to the scaffold's
+`ui.js`), with a caret; instant under calm / reduced-motion so the Speed control still governs it:
+```js
+async function stream(node, text) {
+  if (document.documentElement.dataset.motion === 'calm' ||
+      matchMedia('(prefers-reduced-motion: reduce)').matches) { node.textContent = text; return; }
+  const words = text.split(' '); node.textContent = '';
+  const caret = Object.assign(document.createElement('span'), { className: 'stream-caret' });
+  node.appendChild(caret);
+  for (let i = 0; i < words.length; i += 3) {
+    caret.insertAdjacentText('beforebegin', (i ? ' ' : '') + words.slice(i, i + 3).join(' '));
+    await new Promise(r => setTimeout(r, UI.fakeLatency('stream')));   // Speed-scaled
+  }
+  caret.remove();
+}
+```
+
+**Tool-call card** is just a `[pending → running → result]` div: mount with a pulsing status dot +
+label, then swap the dot to done and append the result body. **Approval card** is a summary +
+Approve/Reject; on Approve use `UI.undoToast(...)` (optimistic-with-undo), never a blocking confirm —
+both are plain DOM + the platform APIs, no special component needed.
+
 ## Anti-slop for AI UIs
 
 - **No purple/violet "AI gradient."** The lazy signifier for "this is AI" is a violet→blue glow —

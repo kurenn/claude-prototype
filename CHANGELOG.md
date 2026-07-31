@@ -34,6 +34,13 @@ transitions.dev, landingfolio).
   spinner→check morph, dissolve-on-remove, and card-stack fan-on-hover — each motion-tier- and
   reduced-motion-gated.
 
+### Validated by dogfooding
+Built a coding-agent console with the new system end-to-end; two learnings graduated straight back:
+- **Validated zero-dep recipes** in `ai-native-ui.md` — the thinking-orb (conic-gradient ring) and
+  the streaming-text function, proven in a real build, are now copy-paste starters (not just prose).
+- **Lint rule 37** (`checks/builtin-lint.md`) + a `build.md` note — the app-shell top bar (brand +
+  nav + right-side chip) is the 390px overflow the toolbar rule misses; hide the chip on narrow.
+
 ## v0.4.0 — 2026-07-29
 
 ### Motion tiers
