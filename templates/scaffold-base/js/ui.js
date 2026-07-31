@@ -118,7 +118,17 @@
   // (speed-aware: no fixed duration, so fakeLatency('read') governs it) plus any
   // loaders a build registered via UI.registerLoader(). Wired to ⟳ Replay in the bar.
   const customLoaders = [];
-  function registerLoader(fn) { if (typeof fn === 'function') customLoaders.push(fn); }
+  function registerLoader(fn) {
+    if (typeof fn !== 'function') return;
+    customLoaders.push(fn);
+    // Let the Loading control un-hide itself if it hid for lack of anything to replay.
+    try { document.dispatchEvent(new CustomEvent('proto:loaders-changed')); } catch (e) {}
+  }
+  // Is there anything for ⟳ Replay to actually do? (loading.js hides the control if not,
+  // so Replay never reads as broken on a page that simulates no loading.)
+  function hasLoaders() {
+    return document.querySelectorAll('[data-skeleton-on-load]').length > 0 || customLoaders.length > 0;
+  }
   function replayLoading() {
     document.querySelectorAll('[data-skeleton-on-load]').forEach(function (container) {
       if (container.dataset.skeletonActive === '1') return; // already mid-load — don't stack
@@ -609,6 +619,6 @@
     trapFocus, releaseFocus, withViewTransition,
     // timing engine + a11y loading spine
     fakeLatency, fakeCall, withLoader,
-    setSpeed, getSpeed, replayLoading, registerLoader, announce,
+    setSpeed, getSpeed, replayLoading, registerLoader, hasLoaders, announce,
   };
 })();

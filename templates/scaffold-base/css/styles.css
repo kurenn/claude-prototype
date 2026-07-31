@@ -793,9 +793,20 @@ html[data-motion="expressive"] .enter {
   pointer-events: none;
 }
 /* Reserve space so the fixed control bar never occludes the last row of content.
-   App-shell layouts that scroll an inner <main> (instead of the page) should mirror
-   this padding-bottom on that scroll container. */
-body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
+   The clearance is a token so app-shell layouts (which scroll an inner <main> and so
+   DON'T inherit body's padding) can reserve the same space — see `.proto-app-shell`. */
+:root { --proto-controls-safe: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
+body { padding-bottom: var(--proto-controls-safe); }
+
+/* App-shell helper — a full-viewport shell whose inner <main> scrolls, with a top bar
+   and (optionally) a pinned footer/composer. It reserves control-bar clearance so the
+   pinned bottom element never hides under the floating #proto-controls. Structure:
+     <div class="proto-app-shell"> <header>…</header> <main>…scrolls…</main> <footer>…pinned…</footer> </div>
+   `100dvh` (not vh) so mobile browser chrome doesn't clip it. */
+.proto-app-shell { height: 100vh; height: 100dvh; display: flex; flex-direction: column;
+  padding-bottom: var(--proto-controls-safe); box-sizing: border-box; }
+.proto-app-shell > * { min-height: 0; }              /* let the flex child actually scroll */
+.proto-app-shell > main, .proto-app-shell > .proto-shell-main { flex: 1; overflow: auto; min-height: 0; }
 
 #proto-controls > .proto-bar {
   display: flex;
