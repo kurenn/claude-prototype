@@ -54,20 +54,51 @@ a copy of the source:
   density), not the paint — see "Choosing layouts" (Step 3) for the category vocabulary.
 - **Accent** — the one accent move: which color, and how much of the surface it spends.
 
-### The living corpus — read it, feed it
+### The living corpus — always consult it, then feed it
 
-The reading above is per-build; `reference/inspiration.md` is where it **persists** so the skill
-compounds. Use it both directions:
+`reference/inspiration.md` persists what past builds learned so the skill compounds. Consulting it is
+**mandatory within discovery, not an optional skim.** It runs in two tiers (Tier 1 always; Tier 2 when
+it earns its cost), then feeds back.
 
-- **Read from it** — once tone (Step 2) and register (Step 4) are set, skim the corpus for entries
-  whose **register/genre matches** and pull concrete, zero-dep moves into the direction (e.g. a dev-tool brief →
-  the near-black + mono-label + playground moves the corpus already distilled). It's on-demand, so it
-  costs the router nothing.
-- **Feed it** — when you study a genuinely good new reference, persist it as a corpus entry (schema at
-  the top of that file), or tell the user to run `/prototype intake <url…>` (`reference/subcommands.md`).
-  When a move recurs (≥3 entries is the trigger for a cross-site pattern — though a single site can
-  still graduate a self-contained move that's obviously right), propose promoting it into the menus.
-  This is the "ongoing" loop: **intake → corpus → graduate.**
+**Consult it *before* you present the design direction — not after.** The direction recap ends in the
+user's yes (the "ask before building" gate), so the corpus moves must be *in* what they approve. Key
+Tier 1 off the **emerging register/genre** (product-vs-brand and dev-tool/editorial/AI-native are clear
+from the tone + scope Q&A, before PRODUCT.md is formally written) so its moves shape the palette / type /
+signature you recap. Corpus moves **refine** the direction; they never silently override it. If you only
+reach the corpus at Step 4 and a matching move would change something already confirmed (the ground
+band, palette family, or type register), **re-present that change for a fresh yes** — don't fold it in
+behind the user's back.
+
+**Tier 1 — consult the distilled corpus (always).** Read `reference/inspiration.md` and pull the entries
+whose **register/genre matches** the app being prototyped; fold their **Steal** moves into the emerging
+direction and the DESIGN.md stances (e.g. a dev-tool/AI brief → the near-black ground + mono-label
+register + playground pattern + thinking-state taxonomy the corpus already distilled). Cheap (one
+on-demand file), register-gated (a florist brief matches nothing and correctly pulls nothing — the
+mandate is "consult," never "must find something"), and non-negotiable. Step 4 re-points here so it
+can't be skipped even on a rich-brief path.
+
+**Tier 2 — search the source sites live (when it earns its cost).** The corpus entries are *distilled* —
+to match the **specific** app you're building, go back to the source. When **a browser is available**
+(claude-in-chrome or the user's harness) **and** the app strongly matches a corpus genre or the user
+shared reference URLs this build:
+- Open **≤3 sites total** — the user-shared URLs and/or the best-matching corpus sources — and run **one
+  search pass each** (a few minutes, not open-ended browsing) for the exact components/sections this app
+  needs, not a generic re-skim.
+- Reuse the `intake` browse protocol (`reference/subcommands.md`): fresh tab, DNA-not-pixels, and the
+  **privacy guard** (only these URLs; discard anything that lands on the user's own content — never fold
+  it into the corpus).
+- **Use each site's own search where it has one** — a ⌘K palette, a component grid, or a filterable
+  gallery (landingfolio filters by industry/type; a matched entry may record its own search affordance).
+  Query for the app's domain + the components it needs (e.g. an agent console → *approval card*,
+  *streaming*, *tool-call*, *thinking state*; a payments dashboard → landingfolio *fintech*).
+- **Be bounded and transparent.** Say what you're checking ("scanning 2 corpus sources for agent-console
+  patterns"), take findings as *direction*, never a copy, and if no browser is available say so and
+  proceed on Tier 1 alone — **never block a build on Tier 2.**
+
+**Feed it back.** When Tier 2 surfaces a genuinely good pattern, persist it as a corpus entry (schema at
+the top of `inspiration.md`) or tell the user to run `/prototype intake <url…>`. When a move recurs (≥3
+entries for a cross-site pattern — a single site can still graduate a self-contained, obviously-right
+move), propose promoting it into the menus. This is the ongoing loop: **intake → corpus → graduate.**
 
 ### No reference? Point at a curated gallery
 
@@ -171,6 +202,12 @@ register: product   # "product" for app UI / dashboards / tools; "brand" for lan
 Pick `register` honestly: most prototypes (dashboards, app shells, tools) are **product**;
 a sales pitch page or marketing landing is **brand**. It changes which impeccable reference
 (brand vs product) the audit applies.
+
+**→ Corpus checkpoint (mandatory).** By now you should already have consulted `reference/inspiration.md`
+while shaping the direction (Step 2 → "The living corpus"). If you haven't, do it here before writing the
+stances below: pull the entries matching this register/genre and fold their moves in — and if a move
+would change something the user already confirmed, re-present it for a fresh yes rather than folding it
+in silently. Don't write a DESIGN.md stance for a corpus-matching app without having consulted it.
 
 ### DESIGN.md (palette, typography, spacing, motion)
 
