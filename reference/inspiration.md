@@ -9,9 +9,10 @@ The loop is **intake → corpus → graduate**:
 
 1. **Intake** — study a site (by hand, or `/prototype intake <url…>`, see `reference/subcommands.md`).
    Append a distilled entry below. Never copy a site; extract what's transferable.
-2. **Corpus** — during discovery, after tone/register are set, skim the entries whose **register**
-   matches and pull concrete moves into the direction. This file is on-demand (read only when
-   relevant), so it costs the always-loaded router nothing.
+2. **Corpus** — **consulting this is mandatory within discovery** (`reference/discovery.md` → "The
+   living corpus"), not an optional skim: pull the entries whose **register/genre** matches and fold
+   their moves into the direction *before* it's confirmed. Tier 2 adds a live search of the matching
+   source sites when a browser is available. The file is on-demand, so it costs the router nothing.
 3. **Graduate** — when a move recurs across **≥3 entries** (or is just obviously right), promote it
    into the menu the skill *always* reads (`color-palettes.md`, `type-pairings.md`, `build.md`,
    `microinteractions.md`, `ai-native-ui.md`) and tick it in the **graduation ledger** at the bottom.

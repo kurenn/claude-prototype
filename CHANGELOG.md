@@ -1,5 +1,28 @@
 # Changelog
 
+## v0.7.0 — 2026-08-02
+
+The **always-on inspiration release** — consulting the corpus stops being something the agent might
+remember and becomes a mandatory, two-tier step wired to the moment it's needed.
+
+### Corpus consult is now mandatory + reliably triggered
+- **Consulting `reference/inspiration.md` is a hard step within discovery**, not "skim if you remember"
+  (`discovery.md` + the corpus header). Still register-gated — a brief matching no entry correctly pulls
+  nothing; the mandate is "consult," never "must find something."
+- **It now fires *before* the design-direction confirm, so corpus moves are in what the user approves —
+  never a post-yes override.** Keyed off the emerging register/genre (clear from the tone + scope Q&A),
+  with a **Step-4 backstop checkpoint** so a rich-brief path can't skip it. If a corpus move would change
+  an already-confirmed direction, it's re-presented for a fresh yes. Closes the old timing seam (the
+  instruction used to key off `register`, set only at Step 4, so it could silently no-op).
+
+### New: Tier 2 — search the source sites live
+- Beyond reading distilled entries, the skill now **goes back to the source**: when a browser is
+  available and the app matches a corpus genre (or the user shared reference URLs), it opens the 1–3
+  best-matching sites and **searches within them for the specific components this app needs** (⌘K /
+  component grids / landingfolio's industry filter). Reuses the `intake` browse protocol + privacy
+  guard, is bounded and transparent, and falls back to Tier 1 alone when no browser is available —
+  never blocks a build. Findings can feed back into the corpus (the graduate loop).
+
 ## v0.6.0 — 2026-07-31
 
 The **app-shell release** — first-class support for the most common prototype shape (tools,
