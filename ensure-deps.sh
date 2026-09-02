@@ -112,7 +112,7 @@ fi
 if ! have_skill prompt-refiner; then
   echo ""
   echo "--- prompt-refiner ---"
-  install_prompt_refiner
+  install_prompt_refiner || echo "  prompt-refiner install did not complete"
 fi
 
 echo ""

@@ -47,9 +47,12 @@ for f in "$DIR"/*.html; do
 var d=this.contentDocument,w=this.contentWindow,sw=d.documentElement.scrollWidth,iw=w.innerWidth;
 document.getElementById('v').textContent=(sw>iw?'OVERFLOW':'OK')+' '+sw+' '+iw;};</script>
 HTML
+  # `|| true` is load-bearing: under `set -o pipefail` a non-matching grep (Chrome
+  # failed, probe never rendered) would abort the whole run here — silently, with no
+  # summary — instead of reaching the `inconclusive` verdict below that exists for it.
   out="$("$CHROME" --headless=new --disable-gpu --no-sandbox --virtual-time-budget=4000 \
         --dump-dom "http://localhost:$PORT/.ovprobe.html" 2>/dev/null \
-        | grep -oE 'id="v">[A-Z]+ [0-9]+ [0-9]+' | head -1 | sed 's/id="v">//')"
+        | grep -oE 'id="v">[A-Z]+ [0-9]+ [0-9]+' | head -1 | sed 's/id="v">//' || true)"
   checked=$((checked+1))
   verdict="${out%% *}"; rest="${out#* }"; sw="${rest%% *}"; iw="${rest##* }"
   case "$verdict" in

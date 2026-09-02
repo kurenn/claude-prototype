@@ -30,7 +30,7 @@ jobs:
           fi
 
       - name: Shellcheck benchmark scripts
-        run: shellcheck -S warning benchmark/*.sh ensure-deps.sh
+        run: shellcheck -S warning benchmark/*.sh checks/*.sh ensure-deps.sh
 
       - name: Syntax-check scaffold JS (copied into every prototype)
         run: |
@@ -40,6 +40,9 @@ jobs:
 
       - name: Syntax-check serve.py
         run: python3 -m py_compile templates/scaffold-base/serve.py
+
+      - name: Repo consistency (cited paths, benchmark coverage, docs/ parity)
+        run: bash checks/consistency.sh
 
       - name: SKILL.md frontmatter sanity
         run: |

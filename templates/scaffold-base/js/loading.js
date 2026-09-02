@@ -18,7 +18,7 @@
  */
 (function () {
   const SPEEDS = ['instant', 'real', 'slow'];
-  const STORAGE_KEY = 'proto-speed'; // mirrors SPEED_KEY in js/ui.js
+  const STORAGE_KEY = (window.PROTO_NS || 'proto-') + 'speed'; // mirrors SPEED_KEY in js/ui.js
 
   function getStored() { try { return localStorage.getItem(STORAGE_KEY); } catch (e) { return null; } }
 

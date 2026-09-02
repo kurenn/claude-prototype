@@ -25,7 +25,7 @@
 (function () {
   const TIERS = ['calm', 'standard', 'expressive']; // keep in sync with data-motion CSS + the anti-FOUC default
   const DEFAULT_TIER = 'expressive'; // landing/pitch register → expressive (chosen in DESIGN.md); keep in sync with anti-FOUC
-  const STORAGE_KEY = 'proto-motion';
+  const STORAGE_KEY = (window.PROTO_NS || 'proto-') + 'motion';
   const root = document.documentElement;
 
   function getStored() { try { return localStorage.getItem(STORAGE_KEY); } catch { return null; } }

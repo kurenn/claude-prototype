@@ -17,7 +17,7 @@
  */
 (function () {
   const LAYOUTS = ['editorial', 'index']; // feature grid: editorial = roomy 2-up, index = dense 3-up
-  const STORAGE_KEY = 'proto-layout';
+  const STORAGE_KEY = (window.PROTO_NS || 'proto-') + 'layout';
   const root = document.documentElement;
 
   function getStored() { try { return localStorage.getItem(STORAGE_KEY); } catch { return null; } }

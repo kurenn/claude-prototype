@@ -13,7 +13,7 @@
 (function () {
   const THEMES = ['studio', 'terminal', 'mono']; // edit to match your DESIGN.md
   const DARK_THEME = 'terminal'; // theme prefers-color-scheme:dark picks — rename alongside THEMES
-  const STORAGE_KEY = 'proto-theme';
+  const STORAGE_KEY = (window.PROTO_NS || 'proto-') + 'theme';
   const root = document.documentElement;
 
   function getStored() { try { return localStorage.getItem(STORAGE_KEY); } catch { return null; } }

@@ -13,7 +13,7 @@
  *   State.set('modal', 'signup');
  */
 (function () {
-  const SESSION_KEY = 'proto-history';
+  const SESSION_KEY = (window.PROTO_NS || 'proto-') + 'history';
   const MAX_HISTORY = 10;
 
   function esc(s) {
@@ -132,7 +132,10 @@
   });
 
   document.addEventListener('keydown', (e) => {
-    if (e.shiftKey && e.key === '?') renderHistoryDrawer();
+    // Don't hijack '?' while the user is typing — every prototype ships the feedback
+    // textarea, and a question mark mid-sentence would pop this drawer over it.
+    const typing = e.target && e.target.closest && e.target.closest('input, textarea, [contenteditable]');
+    if (!typing && e.shiftKey && e.key === '?') renderHistoryDrawer();
     if (e.key === 'Escape') {
       document.querySelector('.proto-history.visible')?.classList.remove('visible');
     }
