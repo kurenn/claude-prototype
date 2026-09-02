@@ -64,12 +64,13 @@ identical actions take *exactly* the same time. `UI.fakeLatency(kind)` returns m
 jitter, per tier:
 
 ```js
-UI.fakeLatency('nav')    // ~220ms base — a cheap route change
-UI.fakeLatency('read')   // ~700ms base — fetch a list/detail
-UI.fakeLatency('mutate') // ~380ms base — save/submit
-UI.fakeLatency('upload') // ~2200ms base — the deliberately-slow outlier
-// each × the global Speed multiplier (Instant 0 · Real 1 · Slow 2.5)
+UI.fakeLatency('read')   // pick the tier that fits the action
+// × the global Speed multiplier (Instant 0 · Real 1 · Slow 2.5)
 ```
+
+The tier names and their base durations are listed once, in `reference/build.md` →
+"Simulated loading — the timing engine". Deliberately not restated here: while they lived
+in both files a fifth tier (`stream`) was added to `ui.js` and neither copy picked it up.
 
 Await one directly with `UI.fakeCall(kind, { failRate })` — resolves after `fakeLatency(kind)`,
 or rejects when `failRate` (0–1) fires, so the error face (build.md "state matrix") is

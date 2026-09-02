@@ -223,7 +223,9 @@ wire on the happy path:
 
 - **`UI.fakeLatency(kind)`** — tiered, non-uniform latency (ms) with ±45% jitter so
   repeats never feel metronomic. Tiers: `nav` 220 · `read` 700 · `mutate` 380 ·
-  `upload` 2200. Scaled by the global Speed multiplier.
+  `upload` 2200 · `stream` 90 (per-chunk, for streamed text — see
+  `reference/ai-native-ui.md`). Scaled by the global Speed multiplier. **This is the only
+  place the tier names and base durations are written down** — `ui.js` is the code of record.
 - **`UI.fakeCall(kind, { failRate })`** — `await` a simulated call that resolves after
   `fakeLatency(kind)`, or rejects (to demo the error face) when `failRate` (0–1) fires.
 - **`UI.withLoader(work, { show, hide, delay, minVisible })`** — the anti-flash

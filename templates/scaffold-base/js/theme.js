@@ -32,8 +32,6 @@
     document.querySelectorAll('[data-theme-option]').forEach(btn => {
       btn.setAttribute('aria-pressed', String(btn.dataset.themeOption === name));
     });
-    // update any theme-label spans (for legacy cycle buttons)
-    document.querySelectorAll('[data-theme-label]').forEach(el => el.textContent = name);
     if (window.State) window.State.set('theme', name === THEMES[0] ? null : name);
     // Re-enable transitions once the new palette has painted (two frames later, so the
     // transition-less repaint is guaranteed to have landed first).
@@ -59,13 +57,6 @@
   // Segmented control: direct pick
   document.querySelectorAll('[data-theme-option]').forEach(btn => {
     btn.addEventListener('click', () => applyTheme(btn.dataset.themeOption));
-  });
-  // Legacy cycle button (kept for backwards compat)
-  document.querySelectorAll('[data-theme-switch]').forEach(btn => {
-    btn.addEventListener('click', () => {
-      const i = THEMES.indexOf(root.dataset.theme);
-      applyTheme(THEMES[(i + 1) % THEMES.length]);
-    });
   });
 
   window.Theme = { apply: applyTheme, list: THEMES };
