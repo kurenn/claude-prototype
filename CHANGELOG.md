@@ -1,5 +1,45 @@
 # Changelog
 
+## v0.9.0 — 2026-09-02
+
+**Copy gets a doctrine file.** Color, type, and motion each had one; copy had a constraint
+("Never lorem ipsum") with nothing behind it. `reference/copywriting.md` is the missing peer.
+
+### The premise
+Every copywriting resource that exists optimizes *persuasion for a real business*. Prototype
+copy is the inverse job — *verisimilitude for a product that doesn't exist*. Real marketing
+guides forbid inventing numbers; a prototype requires it. Research across GitHub, X and the
+skill marketplaces found no existing skill for this: not in Anthropic's official repo (19
+skills, no copywriting), and the strongest third-party ones carry explicit anti-fabrication
+clauses that are exactly backwards here. So this is written, not wired.
+
+### What's in it
+- **§1 Data realism** — the section nothing else covers, and the one that governs `js/data.js`:
+  non-round numbers ($1,847.20, not $1,000), lumpy distributions, name *rhythm* variety, dates
+  that cluster near now, an invented-but-coherent company ecosystem, and internal consistency
+  (totals sum, badge counts match list lengths, avatar initials match names, statuses agree with
+  dates, entities match across screens). Reviewers scan names, numbers and dates before they
+  read a sentence.
+- **§2** the subtler failure than lorem ipsum: domain-shaped filler that fits any product.
+  Three tests — visualizable, falsifiable, unique.
+- **§3 Voice by register** — `product` (verb-first, sentence case, no exclamation points,
+  labels never placeholder-only) vs `brand` (six rotatable headline shapes).
+- **§4 Banned vocabulary** — the copy-side twin of the gradient ban, including the structural
+  tells that survive a word swap (drama fragments, "It's not just X — it's Y", rule-of-three
+  lists whose third item is a vibe).
+- **§5 Microcopy inventory** — toasts, empty cells, notifications, tooltips, confirm dialogs,
+  page titles.
+
+### Also
+- `checks/builtin-lint.md` rule **12b** greps the banned vocabulary in generated HTML. Verified
+  clean against `templates/` and `docs/`, with no false positives on the reference docs.
+- Router pointers from `SKILL.md`, `build.md` Step 6, and `discovery.md`'s spec checklist.
+
+Distilled with attribution from marketing-skills (MIT), Harry Dry's landing-page guide, and the
+framing line in Anthropic's `frontend-design` skill. Vendored, not depended on.
+
+SKILL.md trigger cost: 2544 → 2569 tokens (ceiling 2600).
+
 ## v0.8.0 — 2026-09-02
 
 **Drops the prompt-refiner companion.** `/prototype` now writes the build spec itself.
