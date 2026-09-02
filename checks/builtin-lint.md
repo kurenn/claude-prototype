@@ -69,15 +69,15 @@ Modals must have `role="dialog"`, `aria-modal="true"`, and `aria-hidden` that fl
 
 ## Responsive
 
-### 8. No horizontal scroll at 375px
-Walk every page at 375×812 viewport. Zero horizontal scrollbar. Any overflow → fix.
+### 8. No horizontal scroll at 390px
+Walk every page at 390×844 viewport. Zero horizontal scrollbar. Any overflow → fix.
 Common culprits and fixes: wide `<table>` → wrap in `.proto-table-wrap`; header/filter
 button rows → `proto-actions` / `flex-wrap`; fixed multi-col stat strips → responsive grid.
 Also confirm the last row of content isn't hidden under the fixed control bar (the scaffold
 reserves `body { padding-bottom }`; app-shell layouts that scroll an inner `<main>` must
 mirror it there).
 
-### 9. Readable text at 375px
+### 9. Readable text at 390px
 Minimum 14px body on mobile. Headings should NOT overflow. Buttons min 44×44 target size.
 
 ### 10. No fixed widths on layout elements

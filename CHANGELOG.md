@@ -1,5 +1,43 @@
 # Changelog
 
+## v0.7.2 — 2026-09-02
+
+The **say-what-you-ship release** — the follow-ups listed as known-and-deferred in v0.7.1.
+Docs now describe the scaffold that actually ships, and one real fix that had been living
+only in the demo site graduates into the template.
+
+### README described the v0.2 scaffold
+- **The control bar is drawn as one row.** The ASCII diagram illustrating "it never wraps"
+  was itself drawn wrapped onto two lines, and showed three of the six sections. Now one
+  row with all six, plus the `overflow-x: auto` half of the rule it demonstrates.
+- **Motion and Loading are documented.** Both have shipped in the bar since v0.4/v0.6 and
+  appeared in neither the diagram nor the bullet list.
+- **The anatomy tree lists all 11 scripts, in load order** — `vt.js`, `motion.js` and
+  `loading.js` were missing.
+- The CI description now mentions `checks/consistency.sh`.
+
+### One phone floor instead of two
+`SKILL.md` and `benchmark/check-overflow.sh` said 390px; `builtin-lint.md` rules 8–9,
+`assess.md` and `CONTRIBUTING.md` said 375px — so a prototype could pass lint and fail the
+mechanical guard. Everything is 390px now (the value the contract and the tool already used).
+
+### SKILL.md stops naming commands it doesn't ship
+`/design-consultation`, `/design-shotgun`, `/design-html`, `/qa-only` and `/design-review`
+don't exist in this repo and aren't in the skill-detection table. Worst case was the static-mockup
+redirect firing inside the *fallback* path — the one entered precisely because companion skills
+failed to install. Removed; the constraint now states the rule instead of delegating it.
+Trigger-time cost drops 2598 → 2581 tokens.
+
+### Graduated: per-region skeleton shapes
+`resolveSkeletonTemplate` + `data-skeleton-template="<id>"` let a container point at a same-document
+`<template>` for its loading silhouette, instead of every region falling back to the generic card.
+It was added to `docs/js/ui.js` and never made it back to `templates/scaffold-base/js/ui.js`, so the
+fix existed only in the demo — exactly the drift `checks/consistency.sh` was added to surface. A
+generic card standing in for a table row is itself the layout shift skeletons exist to prevent.
+
+### Also
+- `install.sh` joins the CI shellcheck run (`benchmark/*.sh`, `checks/*.sh`, `ensure-deps.sh`).
+
 ## v0.7.1 — 2026-09-02
 
 The **drift release** — five bugs that shipped into every generated prototype, two that broke

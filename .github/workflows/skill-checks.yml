@@ -30,7 +30,7 @@ jobs:
           fi
 
       - name: Shellcheck benchmark scripts
-        run: shellcheck -S warning benchmark/*.sh checks/*.sh ensure-deps.sh
+        run: shellcheck -S warning benchmark/*.sh checks/*.sh ensure-deps.sh install.sh
 
       - name: Syntax-check scaffold JS (copied into every prototype)
         run: |

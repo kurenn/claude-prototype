@@ -419,7 +419,17 @@
   // Or use the combined helper:
   //   UI.fakeLoad(resultsGrid, 700, { count: 3 });
   //
-  // If no `template` option is provided, a generic card skeleton is used.
+  // If no `template` option is provided, a generic card skeleton is used — fine for a
+  // grid of cards, but wrong for anything else (a list of rows, a bar chart) since it
+  // won't match the real content's shape and will visibly shift layout on swap.
+  // Declare a per-region shape instead with `data-skeleton-template="<template id>"` on
+  // the container: `<template id="my-row-skel">…</template>` anywhere in the document,
+  // then `<div data-skeleton-on-load data-skeleton-template="my-row-skel">`. Every entry
+  // point (the page-load auto-wiring in app.js, ⟳ Replay, and the declarative
+  // `[data-retry]` handler below) all funnel through showSkeletons/fakeLoad, so setting
+  // the attribute once on the container is enough — no call site needs to pass
+  // `template` explicitly. An explicit `options.template` (a literal HTML string) still
+  // wins over the attribute for callers that build the markup in JS.
   const DEFAULT_SKELETON_TEMPLATE = `
     <article class="card skeleton-item">
       <div class="skeleton is-block"></div>
@@ -431,11 +441,25 @@
     </article>
   `;
 
+  // Resolves the skeleton markup for a container: explicit options.template wins, then
+  // a `data-skeleton-template="<id>"` pointing at a same-document `<template>` (its
+  // `.innerHTML` getter serializes the template's `.content` fragment per the HTML
+  // spec, so this reads back exactly what was authored), else the generic card.
+  function resolveSkeletonTemplate(container, options) {
+    if (options && options.template) return options.template;
+    const tplId = container && container.dataset && container.dataset.skeletonTemplate;
+    if (tplId) {
+      const tplEl = document.getElementById(tplId);
+      if (tplEl && tplEl.tagName === 'TEMPLATE') return tplEl.innerHTML;
+    }
+    return DEFAULT_SKELETON_TEMPLATE;
+  }
+
   function showSkeletons(container, options) {
     if (!container) return;
     options = options || {};
     const count = options.count || 3;
-    const template = options.template || DEFAULT_SKELETON_TEMPLATE;
+    const template = resolveSkeletonTemplate(container, options);
     if (container.dataset.skeletonActive === '1') return;
     container.dataset.stashedContent = container.innerHTML;
     const skeletonMarkup = Array.from({ length: count }, () => template).join('');
