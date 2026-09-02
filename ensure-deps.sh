@@ -19,7 +19,11 @@ set -eu
 # clone below goes to ~/.claude/skills. Checking a single root reports an already-installed
 # companion as MISSING and silently reinstalls it on every preflight.
 SKILL_ROOTS=("${HOME}/.claude/skills" "${HOME}/.agents/skills")
-INSTALL_DIR="${HOME}/.claude/skills"   # where *this* script clones to
+# The ONLY root Claude Code loads. Verified by cross-referencing both roots against a
+# session's skill list: a skill present only in ~/.agents/skills never appears, so being
+# "installed" there means installed-but-never-invocable — /prototype silently falls back
+# to builtin-lint. Anything found in another root gets linked in here.
+LOADABLE_DIR="${HOME}/.claude/skills"
 AUTO_YES=false
 CHECK_ONLY=false
 PATH_QUERY=""
@@ -48,13 +52,37 @@ skill_path() {
   return 1
 }
 
-have_skill() { skill_path "$1" >/dev/null 2>&1; }
+# Installed somewhere is not the same as usable. `have_skill` asks the question that
+# actually matters: can the Skill tool invoke it?
+have_skill() {
+  local name="$1" target real
+  target="${LOADABLE_DIR}/${name}"
+  real="$(readlink -f "${target}" 2>/dev/null || printf '%s' "${target}")"
+  [ -e "${target}/SKILL.md" ] || [ -e "${real}/SKILL.md" ]
+}
+
+# Symlink a skill installed in some other root into the one Claude Code reads.
+# `npx skills add --global` installs into ~/.agents/skills, so without this every
+# impeccable install completes successfully and stays uninvocable.
+ensure_loadable() {
+  local name="$1" src
+  have_skill "${name}" && return 0
+  src="$(skill_path "${name}")" || return 1
+  mkdir -p "${LOADABLE_DIR}"
+  ln -sfn "${src}" "${LOADABLE_DIR}/${name}"
+  echo "  ↳ linked ${LOADABLE_DIR}/${name} → ${src} (Claude Code only loads ${LOADABLE_DIR})"
+}
 
 status() {
   local name="$1" path
-  if path="$(skill_path "${name}")"; then
+  if have_skill "${name}"; then
+    path="$(skill_path "${name}")"
     echo "  ✓ ${name} — installed (${path})"
     return 0
+  fi
+  if path="$(skill_path "${name}")"; then
+    echo "  ✗ ${name} — at ${path}, but not loadable from ${LOADABLE_DIR}"
+    return 1
   fi
   echo "  ✗ ${name} — MISSING"
   return 1
@@ -80,6 +108,8 @@ install_impeccable() {
   # --global installs to ~/.agents/skills (not ~/.claude/skills — see SKILL_ROOTS);
   # --yes skips all prompts
   npx -y skills add pbakaus/impeccable --global --yes
+  # --global lands in ~/.agents/skills, which Claude Code does not read — link it over.
+  ensure_loadable impeccable
 }
 
 install_prompt_refiner() {
@@ -88,12 +118,12 @@ install_prompt_refiner() {
     return 1
   fi
   local repo="https://github.com/kurenn/prompt-refiner-skill.git"
-  local target="${INSTALL_DIR}/prompt-refiner"
+  local target="${LOADABLE_DIR}/prompt-refiner"
   if ! confirm "Install prompt-refiner via 'git clone ${repo} → ${target}'?"; then
     echo "  skipped prompt-refiner — /prototype will synthesize the spec inline"
     return 0
   fi
-  mkdir -p "${INSTALL_DIR}"
+  mkdir -p "${LOADABLE_DIR}"
   git clone --depth 1 "${repo}" "${target}"
   # Verify SKILL.md landed at the expected path
   if [ -f "${target}/SKILL.md" ]; then
@@ -111,6 +141,9 @@ if [ -n "${PATH_QUERY}" ]; then
 fi
 
 echo "Checking /prototype companion skills..."
+# Cheap repair first: a companion installed in another root only needs a symlink.
+ensure_loadable impeccable     >/dev/null 2>&1 || true
+ensure_loadable prompt-refiner >/dev/null 2>&1 || true
 missing=0
 status impeccable     || missing=$((missing + 1))
 status prompt-refiner || missing=$((missing + 1))

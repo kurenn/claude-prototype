@@ -2,32 +2,44 @@
 
 ## v0.7.4 — 2026-09-02
 
-**Preflight was reinstalling impeccable on every single run.** Reproduced on a machine with
-impeccable already installed:
+**impeccable was never actually running.** `/prototype` has been silently falling back to
+`checks/builtin-lint.md` on every build since the companion was introduced.
+
+`npx skills add pbakaus/impeccable --global` installs into `~/.agents/skills`. Claude Code
+does not load that root — verified by cross-referencing both roots against a live session's
+skill list:
 
 ```
-~/.agents/skills/impeccable/SKILL.md   exists
-$ ensure-deps.sh --check
-  ✗ impeccable — MISSING
+only in ~/.agents/skills:  impeccable                 -> absent from the session skill list
+only in ~/.claude/skills:  browser-harness            -> present
+                           remotion-motion-graphics   -> present
+in both:                   diagnose-crash, omarchy    -> present
 ```
 
-`npx skills add --global` installs into `~/.agents/skills`, but `ensure-deps.sh` only ever
-searched `~/.claude/skills` (where its own `git clone` puts prompt-refiner). Claude Code
-loads from both roots, so the companion worked — preflight just couldn't see it, and paid
-a network round-trip to reinstall it every time.
+(impeccable's frontmatter is valid, so malformed metadata is ruled out.) So the install
+succeeded, the skill sat on disk, and nothing could invoke it. `ensure-deps.sh` compounded
+this by searching only `~/.claude/skills`, so it reported MISSING and paid a network
+round-trip to reinstall — into the same unusable location — on every single preflight.
 
 ### Fixed
-- **`ensure-deps.sh` searches both roots.** New `skill_path()` returns where a skill actually
-  is; `status` now prints it. This also retires the old `have_skill`, whose
+- **`ensure_loadable()` symlinks a companion into `~/.claude/skills`** when it's installed in
+  another root. This is the fix that actually makes impeccable invocable; detection alone
+  would only have converted a noisy reinstall into a silent false "✓ installed".
+- **`have_skill()` now asks whether the Skill tool can invoke it**, not merely whether files
+  exist somewhere. Installed and usable are different questions, and only one of them matters.
+- **`skill_path()` searches both roots** and `status` prints where a skill was found, plus a
+  distinct message for "present but not loadable". Retires the old `have_skill`, whose
   `[ A ] || [ B ] && [ C ]` parsed as `([ A ] || [ B ]) && [ C ]` — not what its comment said.
-- **`reference/assess.md` no longer hardcodes `~/.agents/skills/impeccable/...`**, which broke
-  under the other installer and violated SKILL.md's own "no hardcoded paths" constraint.
+- **`reference/assess.md` no longer hardcodes** `~/.agents/skills/impeccable/...`, which
+  violated SKILL.md's own "no hardcoded paths" constraint.
 - **New `ensure-deps.sh --path=<skill>`** prints a companion's location (exit 1 if absent), so
-  callers resolve a path instead of guessing a root. The roots are now written down once.
+  callers resolve a root instead of guessing one.
 
-### Guard
-`checks/consistency.sh` gains check 4: no file outside `ensure-deps.sh` may hardcode a
-companion skill root. Negative-tested.
+### Guards
+- `checks/test-ensure-deps.sh` — sandboxed-`HOME` test covering all of it: detection in the
+  non-loadable root, the symlink repair, idempotence, and that a genuinely absent companion
+  still reports missing. In CI.
+- `checks/consistency.sh` check 4 — nothing outside `ensure-deps.sh` may hardcode a skill root.
 
 SKILL.md trigger cost: 2581 → 2592 tokens (ceiling 2600).
 

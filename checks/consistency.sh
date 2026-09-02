@@ -82,10 +82,12 @@ cmp -s docs/js/feedback.js templates/feedback-overlay/feedback.js \
 # companion with `ensure-deps.sh --path=<skill>`. A hardcoded root silently breaks
 # under the other installer — reference/assess.md pointed at ~/.agents/skills while
 # preflight only searched ~/.claude/skills, so impeccable reinstalled every run.
-# CHANGELOG.md and benchmark/results/ are excluded as historical records.
+# Exempt: ensure-deps.sh (defines the roots), test-ensure-deps.sh (builds a sandbox
+# fixture in one), this file (carries the pattern), and CHANGELOG.md / benchmark/results/
+# as historical records.
 echo "4. No hardcoded companion skill roots"
 stray=$(grep -rln '\.agents/skills' --include='*.md' --include='*.sh' --include='*.yml' . 2>/dev/null \
-        | grep -vE '^\./(ensure-deps\.sh|checks/consistency\.sh|CHANGELOG\.md|benchmark/results/)' || true)
+        | grep -vE '^\./(ensure-deps\.sh|checks/(consistency|test-ensure-deps)\.sh|CHANGELOG\.md|benchmark/results/)' || true)
 if [ -z "$stray" ]; then
   printf '  ✓ resolved via ensure-deps.sh --path, not hardcoded\n'
 else
