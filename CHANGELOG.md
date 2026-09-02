@@ -1,5 +1,36 @@
 # Changelog
 
+## v0.7.3 — 2026-09-02
+
+Cleanup pass. Three of the five deletion candidates from the v0.7.1 review held up on
+inspection; the other two were wrong and are documented below so they don't get proposed again.
+
+### Removed
+- **`theme.js`'s legacy cycle-button path** (`[data-theme-switch]` + `[data-theme-label]`) —
+  zero HTML in the repo uses either attribute. It was "kept for backwards compat" in a
+  greenfield template that has no back to be compatible with.
+- **`benchmark/results/skill-test-onboarding.md`** — a superseded run cited by nothing.
+
+### Fixed: the tier list had drifted in the copy nobody updated
+The latency tiers were written down in three places — `ui.js`, `build.md` and
+`microinteractions.md`. When the `stream` tier was added to `ui.js` in v0.5, **neither doc
+picked it up**, so both told a build that four tiers exist while `ai-native-ui.md` used
+`fakeLatency('stream')` in four places. `build.md` (the build-phase doc) is now the single
+written record and lists all five; `microinteractions.md` keeps the rationale and recipes
+and points there for the numbers.
+
+### Deliberately NOT removed
+- **`.empty-state`** was proposed for deletion as "superseded by `.state--empty`". It isn't:
+  `build.md` lists it in the keep-as-is platform set and instructs its use on every list/grid,
+  and `builtin-lint.md` rule greps for it. The styles.css comment saying it "stays as-is for
+  existing builds" reads as legacy but the class is live in current guidance.
+- **`benchmark/rebench.md`** was proposed for a 260 → 30 line trim. It's cited by
+  `README.md` as the repeatable A/B procedure and by `design-ab-2026-07-25.md` for the
+  n=2–3 × 4-brief spec — it's the standard the capstone's shortcuts were measured against.
+  Gutting it would delete the yardstick and leave two dangling citations.
+- **`design-ab-2026-06-08.md` / `-rerun-`** stay: `capstone-2026-07.md` cites them as the
+  evidence that variance dominates at n=1.
+
 ## v0.7.2 — 2026-09-02
 
 The **say-what-you-ship release** — the follow-ups listed as known-and-deferred in v0.7.1.
