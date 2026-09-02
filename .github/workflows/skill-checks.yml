@@ -44,6 +44,9 @@ jobs:
       - name: Repo consistency (cited paths, benchmark coverage, docs/ parity)
         run: bash checks/consistency.sh
 
+      - name: Companion-skill detection (sandboxed HOME)
+        run: bash checks/test-ensure-deps.sh
+
       - name: SKILL.md frontmatter sanity
         run: |
           python3 - <<'PY'
