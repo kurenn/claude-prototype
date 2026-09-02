@@ -1,9 +1,8 @@
 #!/usr/bin/env bash
-# Ensure companion skills are installed before /prototype runs.
+# Ensure the impeccable companion skill is installed before /prototype runs.
 #
-# Essential companions:
+# Companion:
 #   impeccable     — deep design assessment (https://impeccable.style/)
-#   prompt-refiner — Q&A → spec refinement
 #
 # Behavior:
 #   Default: prompt before installing (safe for interactive use).
@@ -112,45 +111,20 @@ install_impeccable() {
   ensure_loadable impeccable
 }
 
-install_prompt_refiner() {
-  if ! command -v git >/dev/null 2>&1; then
-    echo "  ✗ git not found. Install git first."
-    return 1
-  fi
-  local repo="https://github.com/kurenn/prompt-refiner-skill.git"
-  local target="${LOADABLE_DIR}/prompt-refiner"
-  if ! confirm "Install prompt-refiner via 'git clone ${repo} → ${target}'?"; then
-    echo "  skipped prompt-refiner — /prototype will synthesize the spec inline"
-    return 0
-  fi
-  mkdir -p "${LOADABLE_DIR}"
-  git clone --depth 1 "${repo}" "${target}"
-  # Verify SKILL.md landed at the expected path
-  if [ -f "${target}/SKILL.md" ]; then
-    echo "  ✓ prompt-refiner installed at ${target}"
-  else
-    echo "  ✗ clone succeeded but SKILL.md not found at ${target}/SKILL.md"
-    echo "    check repo layout: ${repo}"
-    return 1
-  fi
-}
-
 if [ -n "${PATH_QUERY}" ]; then
   skill_path "${PATH_QUERY}" || { echo "not installed: ${PATH_QUERY}" >&2; exit 1; }
   exit 0
 fi
 
-echo "Checking /prototype companion skills..."
+echo "Checking /prototype companion skill..."
 # Cheap repair first: a companion installed in another root only needs a symlink.
 ensure_loadable impeccable     >/dev/null 2>&1 || true
-ensure_loadable prompt-refiner >/dev/null 2>&1 || true
 missing=0
 status impeccable     || missing=$((missing + 1))
-status prompt-refiner || missing=$((missing + 1))
 
 if [ "${missing}" -eq 0 ]; then
   echo ""
-  echo "All companion skills installed. /prototype will use them automatically."
+  echo "impeccable installed. /prototype will use it automatically."
   exit 0
 fi
 
@@ -164,12 +138,6 @@ echo ""
 if ! have_skill impeccable; then
   echo "--- impeccable ---"
   install_impeccable || echo "  impeccable install did not complete"
-fi
-
-if ! have_skill prompt-refiner; then
-  echo ""
-  echo "--- prompt-refiner ---"
-  install_prompt_refiner || echo "  prompt-refiner install did not complete"
 fi
 
 echo ""

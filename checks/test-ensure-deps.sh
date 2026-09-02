@@ -41,8 +41,10 @@ HOME="$SANDBOX" bash "$REPO/ensure-deps.sh" --check >/dev/null 2>&1
 # A genuinely absent companion must still report missing. Capture first, then grep:
 # --check exits 1 by design when something is missing, and under `pipefail` that exit
 # would propagate through a successful grep (the check-overflow.sh bug, again).
-out2="$(HOME="$SANDBOX" bash "$REPO/ensure-deps.sh" --check 2>&1 || true)"
-if printf '%s' "$out2" | grep -q 'prompt-refiner — MISSING'; then
+EMPTY="$(mktemp -d)"
+out2="$(HOME="$EMPTY" bash "$REPO/ensure-deps.sh" --check 2>&1 || true)"
+rm -rf "$EMPTY"
+if printf '%s' "$out2" | grep -q 'impeccable — MISSING'; then
   printf '  ✓ still reports a genuinely absent companion\n'
 else
   note "absent companion not reported missing: $out2"

@@ -29,7 +29,7 @@ small vanilla JS files.
 
 ## The flow at a glance
 ```
-0. Preflight    → ensure-deps.sh auto-installs impeccable + prompt-refiner
+0. Preflight    → ensure-deps.sh auto-installs impeccable
 1–4. Discover   → mode check, Q&A, refine spec, design shaping   →  reference/discovery.md
 5–6. Build      → scaffold templates, control bar, data layer, screens  →  reference/build.md
 7–8. Assess     → impeccable (or builtin-lint) + browser QA      →  reference/assess.md
@@ -47,7 +47,7 @@ Before anything else, auto-install missing companions (idempotent, safe to re-ru
 ```
 bash ~/.claude/skills/prototype/ensure-deps.sh --yes
 ```
-Installs **impeccable** (deep design assessment) and **prompt-refiner** (Q&A → spec) — third-party companions from their marketplaces; it fetches remote code (drop `--yes` to review first). If
+Installs **impeccable** (deep design assessment) — a third-party companion from its marketplace; it fetches remote code (drop `--yes` to review first). If
 npx/Node or network is unavailable it prints guidance and continues — `/prototype` falls
 back to built-in checks and notes it in the final report.
 
@@ -59,7 +59,6 @@ skill list (in `<system-reminder>` messages) and deferred-tool list (loadable vi
 
 | Skill / tool | Used for | Fallback (only if auto-install failed) |
 |---|---|---|
-| `prompt-refiner` (skill) | Q&A answers → tight build spec | Synthesize the spec inline |
 | `impeccable` (`audit` + `critique`; needs `PRODUCT.md`) | Deep design assessment | `checks/builtin-lint.md` |
 | `teach-impeccable` (setup only) | Design direction (`DESIGN.md`) | Generate `DESIGN.md` inline |
 | `mcp__claude-in-chrome__*` (deferred MCP tools) | Screenshot + console QA | Local-server instructions + manual checklist |
@@ -77,7 +76,7 @@ skill; note it in the final report.
 ## The phases
 
 1. **Discover (steps 1–4)** → `reference/discovery.md`. Quick-vs-discovery mode, the 6-question
-   Q&A, refine the spec (prompt-refiner if present), shape a per-prototype `DESIGN.md`.
+   Q&A, write the build spec, shape a per-prototype `DESIGN.md`.
    Probe how it should **feel** (mood / physical scene), then present the committed **design
    direction** (mood + named palette & type pairing + one signature move) and wait for a real yes-or-tweak (never self-approve)
    before building — a design review, not a form.
@@ -115,7 +114,7 @@ These are load-bearing — they're what separates this from generic AI output.
 - **Never lorem ipsum.** Realistic, domain-matched content only — fake-looking content reads as "this isn't real."
 - **No build tools** (webpack, vite, npm). Tailwind CDN + vanilla JS only — load-bearing for "anyone can clone and run it."
 - **Respect scope.** 4 screens asked → 4 screens shipped. Extra screens are scope creep.
-- **Don't shortcut an available skill.** If `prompt-refiner` / `impeccable` / `claude-in-chrome` is in the session, using it is required, not optional — and never ship without the assess artifacts (LINT.md + self-critique stamps).
+- **Don't shortcut an available skill.** If `impeccable` / `claude-in-chrome` is in the session, using it is required, not optional — and never ship without the assess artifacts (LINT.md + self-critique stamps).
 - **One topic per turn** during discovery — conversational, not a form (tone and how it should *feel* are one topic).
 - **No hardcoded paths or user names** — this is open source.
 
