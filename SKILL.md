@@ -17,7 +17,7 @@ small vanilla JS files.
 ## When NOT to use
 - A real production feature — use the app's actual stack.
 - A one-off component or snippet — just write it inline.
-- A design system — use `/design-consultation` or `/teach-impeccable`.
+- A design system — use `/teach-impeccable`.
 
 ## Commands
 ```
@@ -93,8 +93,7 @@ just the reminder. Never fail for a missing optional skill; note it in the final
 5. **Ship (step 10)** — final message: what was built (screens, themes, interactions); the run
    command `cd <slug> && python3 serve.py`; share-URL tip (🔗 copies a URL reproducing the
    screen); feedback tip (💬 is always on, export JSON → `/prototype apply-feedback <file>`);
-   offer Vercel deploy only if the user seems ready to share; point to `/qa-only` and `/design-review`
-   for deeper passes.
+   offer Vercel deploy only if the user seems ready to share.
 
 **Iterate (any time after the first build)** → `reference/iterate.md`. Proactively offer to refine
 any screen — ask which page and how it should change (feel, layout, content, a specific element),
@@ -107,7 +106,7 @@ Subcommands (`variant`, `apply-feedback`, `intake`) → `reference/subcommands.m
 
 These are load-bearing — they're what separates this from generic AI output.
 
-- **Always interactive.** Every button, link, modal, tab, composer, filter works. No dead buttons. A "static mockup" is not a valid output — if that's what the user wants, redirect to `/design-shotgun` or `/design-html`.
+- **Always interactive.** Every button, link, modal, tab, composer, filter works. No dead buttons. A "static mockup" is not a valid output — if that's genuinely what the user wants, say so before building rather than shipping dead buttons.
 - **Always-visible control bar.** A bottom-center segmented control showing every theme + layout + persona + motion + loading option at once, plus share + feedback — never a click-to-reveal pill. Reviewers judge options they can see.
 - **The control bar never wraps.** `flex-wrap: nowrap` + `overflow-x: auto` is load-bearing: a two-line bar reads as broken, and once one thing looks broken the reviewer doubts everything else.
 - **Feedback is always on.** The 💬 button ships enabled on every screen — no URL flags, no hidden modes.

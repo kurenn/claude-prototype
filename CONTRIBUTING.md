@@ -36,7 +36,7 @@ Because the skill is loaded by Claude from `~/.claude/skills/`, edits take effec
 2. In Claude Code, run `/prototype` and build a test prototype.
 3. `cd` into the generated folder and run `python3 -m http.server 8000`.
 4. Verify the change. Flip every theme. Try `?feedback=1`. Try the share button.
-5. Check mobile width (375px in devtools).
+5. Check mobile width (390px in devtools — the floor SKILL.md and `benchmark/check-overflow.sh` both use).
 
 ## Testing a `SKILL.md` change
 

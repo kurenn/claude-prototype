@@ -67,7 +67,7 @@ Collect findings, fix them, re-run until clean. Commit each fix batch atomically
 
 If `impeccable` is genuinely absent (auto-install failed — no npx/Node/network), run the
 built-in checker in `checks/builtin-lint.md` (purple gradients, gradient text,
-low contrast, dead buttons/links, 375px overflow, console errors, missing alt text, nested
+low contrast, dead buttons/links, 390px overflow, console errors, missing alt text, nested
 cards, lorem ipsum, placeholder names, scope/screen count, build tooling, theme integrity,
 URL round-trip, etc.). Produce `LINT.md`, fix all errors, re-verify. Note in the output:
 *"For deeper design assessment, install impeccable: https://impeccable.style/"*.
@@ -82,9 +82,9 @@ If claude-in-chrome tools are present:
 1. Call `mcp__claude-in-chrome__tabs_context_mcp` first with `createIfEmpty: true`.
 2. Start a local server in the prototype folder: `python3 -m http.server <port>` (background).
 3. **Screenshot budget** — don't cover every combination. Minimum viable: at 1440 width, the default theme on every page (N screens); then the two non-default themes on 2–3 representative pages (hero, a content-heavy page, a form-heavy page). ~N + 6 shots, not N × themes × breakpoints.
-4. Resize to 375 and screenshot the top 2–3 pages for mobile spot-checks.
+4. Resize to 390 and screenshot the top 2–3 pages for mobile spot-checks.
 5. Read console on each page with `onlyErrors: true, pattern: "error|Error|failed|Failed"` — any error fails the check and must be fixed before shipping.
-6. Save under `<slug>/screenshots/` with names like `index-ivory-1440.png`, `category-obsidian-375.png`.
+6. Save under `<slug>/screenshots/` with names like `index-ivory-1440.png`, `category-obsidian-390.png`.
 7. **Keyboard-nav + screen-reader spot-check** — on any page with a modal, drive it by keyboard, not the mouse: open with Enter/Space on the trigger, confirm focus lands inside the modal, press Tab repeatedly and confirm it loops within the modal (never reaches the page behind it), press Shift+Tab from the first focusable element and confirm it wraps to the last, then press Esc and confirm focus returns to the trigger. Use `read_page` (or the accessibility tree) to confirm the modal exposes `role="dialog"` + `aria-modal="true"` and that its accessible name/label is non-empty — that's what a screen reader announces on open. One modal instance covers the pattern; you don't need to repeat this per screen.
 
 If tools are absent, print:

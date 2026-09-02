@@ -83,19 +83,22 @@ The skill triggers automatically on **"prototype", "mockup", "demo", "pitch page
 Every prototype ships a single, always-visible bar at the bottom — not a hidden settings pill. Reviewers judge the options they can *see*:
 
 ```
-┌──────────────────────────────────────────────────────────────────────────┐
-│  THEME  Slate · Obsidian · Paper   │   LAYOUT  Grid · List   │  🔗   💬   │
-│  PERSONA  New · Active · Power                                            │
-└──────────────────────────────────────────────────────────────────────────┘
+┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐
+│ THEME Studio·Terminal·Mono │ LAYOUT 2col·3col │ PERSONA Default·Empty │ MOTION Calm·Std·Exp │ LOADING ⟳ Replay Instant·Real·Slow │ Share │ Feedback │
+└─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┘
 ```
+
+Six sections and two actions, on **one row** — it scrolls sideways rather than wrapping.
 
 - **Theme** — 3 per-prototype themes; design tokens flip at runtime, URL-shareable.
 - **Layout** — 2–4 variants chosen for *this* product (Grid/Gallery/List, density, grid-N…).
 - **Persona** — 2–4 lifecycle states (new / active / power, or empty / busy) that swap the data, not just the chrome.
+- **Motion** — three tiers (Calm / Standard / Expressive) gating transition intensity, applied as `data-motion` on `<html>` before first paint.
+- **Loading** — ⟳ Replay re-runs the loading choreography; a 3-way Speed control (Instant / Real / Slow) scales every simulated latency at once.
 - **🔗 Share** — copies a URL reproducing the exact screen (theme + layout + persona + open modal + active tab).
 - **💬 Feedback** — always-on; click any element to pin a comment, then export JSON.
 
-It never wraps to a second line (`flex-wrap: nowrap` is load-bearing — a broken-looking bar costs you the reviewer's trust), and stays unobtrusive on every screen.
+It never wraps to a second line (`flex-wrap: nowrap` + `overflow-x: auto` is load-bearing — a two-line bar reads as broken, and once one thing looks broken the reviewer doubts everything else), and stays unobtrusive on every screen.
 
 ## How it works
 
@@ -138,13 +141,16 @@ acme-demo/
 ├── css/
 │   ├── styles.css       # theme tokens · control bar · skeletons · empty states
 │   └── feedback.css
-├── js/
+├── js/                  # listed in load order
+│   ├── vt.js            # cross-document View Transitions (in <head>, non-deferred)
 │   ├── state.js         # URL state + share + history drawer (Shift+?)
 │   ├── theme.js         # data-theme switcher
+│   ├── motion.js        # data-motion tier switcher (calm / standard / expressive)
 │   ├── layout.js        # data-layout switcher
 │   ├── data.js          # personas + shared content (single source of truth)
 │   ├── persona.js       # data-persona switcher
-│   ├── ui.js            # loading / toast / skeleton / confirm helpers
+│   ├── ui.js            # loading / toast / skeleton / confirm + the timing engine
+│   ├── loading.js       # ⟳ Replay + Speed controls for that engine
 │   ├── app.js           # page interactions (modals, tabs, filters, composer)
 │   └── feedback.js      # pin-to-element overlay (always on)
 ├── assets/images/       # real photos for photo-forward products — ask first
@@ -168,7 +174,7 @@ The skill doesn't just generate; it's backed by a benchmark so changes to *the s
 | **Design taste** | `benchmark/render.sh` + `design-judge.md` | Hierarchy, spacing, color discipline, AI-slop — via blind pairwise review of rendered screenshots |
 | **Context cost** | `benchmark/context-cost.sh` | Trigger-time token bloat in `SKILL.md` |
 
-A **GitHub Action** ([`skill-checks.yml`](.github/workflows/skill-checks.yml)) runs the browser-free guards on every PR: context-cost ceiling, shellcheck, JS/Python syntax of the scaffold, and `SKILL.md` frontmatter sanity. See [`benchmark/README.md`](benchmark/README.md) for the full methodology.
+A **GitHub Action** ([`skill-checks.yml`](.github/workflows/skill-checks.yml)) runs the browser-free guards on every PR: context-cost ceiling, shellcheck, JS/Python syntax of the scaffold, `SKILL.md` frontmatter sanity, and [`checks/consistency.sh`](checks/consistency.sh) (cited paths resolve, the benchmark covers every scaffold script, `docs/` hasn't forked the scaffold). See [`benchmark/README.md`](benchmark/README.md) for the full methodology.
 
 ## Companion skills
 

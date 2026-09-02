@@ -431,11 +431,27 @@
     </article>
   `;
 
+  // Resolves the skeleton markup for a container: explicit options.template wins, then
+  // a `data-skeleton-template="<id>"` pointing at a same-document `<template>` (its
+  // `.innerHTML` getter serializes the template's `.content` fragment per the HTML
+  // spec, so this reads back exactly what was authored), else the generic card.
+  // Shape matters: a generic card skeleton standing in for a table row or a list item
+  // is itself a layout shift when the real content lands.
+  function resolveSkeletonTemplate(container, options) {
+    if (options && options.template) return options.template;
+    const tplId = container && container.dataset && container.dataset.skeletonTemplate;
+    if (tplId) {
+      const tplEl = document.getElementById(tplId);
+      if (tplEl && tplEl.tagName === 'TEMPLATE') return tplEl.innerHTML;
+    }
+    return DEFAULT_SKELETON_TEMPLATE;
+  }
+
   function showSkeletons(container, options) {
     if (!container) return;
     options = options || {};
     const count = options.count || 3;
-    const template = options.template || DEFAULT_SKELETON_TEMPLATE;
+    const template = resolveSkeletonTemplate(container, options);
     if (container.dataset.skeletonActive === '1') return;
     container.dataset.stashedContent = container.innerHTML;
     const skeletonMarkup = Array.from({ length: count }, () => template).join('');
