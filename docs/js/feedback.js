@@ -20,7 +20,7 @@
   // Ensure visible (in case a template still carries .hidden)
   toggleBtn.classList.remove('hidden');
 
-  const STORAGE_KEY = 'proto-feedback';
+  const STORAGE_KEY = (window.PROTO_NS || 'proto-') + 'feedback';
   let commentMode = false;
   let comments = load();
 

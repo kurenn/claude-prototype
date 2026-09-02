@@ -30,7 +30,9 @@ class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
 def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
     socketserver.TCPServer.allow_reuse_address = True
-    with socketserver.TCPServer(("", port), NoCacheHandler) as httpd:
+    # Loopback only: a prototype is a local review tool, not something to publish
+    # to the LAN by starting a dev server on an untrusted network.
+    with socketserver.TCPServer(("127.0.0.1", port), NoCacheHandler) as httpd:
         print(f"Serving with no-cache headers at http://localhost:{port}")
         print("Ctrl+C to stop.")
         try:

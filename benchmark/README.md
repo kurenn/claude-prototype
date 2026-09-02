@@ -20,7 +20,7 @@ dropping dimension 1. You need both numbers to prove that.
 folder in **two tiers**, reporting a subtotal for each plus a combined total:
 
 - **Tier 1 — regression floor** ("did we break the basics?"). Present/absent checks
-  derived from SKILL.md's constraints and `checks/builtin-lint.md`: all eight JS files,
+  derived from SKILL.md's constraints and `checks/builtin-lint.md`: all eleven JS files,
   serve.py, docs; the control bar (present on every page, segmented, `flex-wrap:nowrap`);
   three-dimensional switching wired; interaction states (loading, toast, empty, skeleton);
   anti-slop content (no lorem, no placeholder names, no purple gradients); no build tooling;

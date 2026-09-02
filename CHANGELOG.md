@@ -1,5 +1,54 @@
 # Changelog
 
+## v0.7.1 — 2026-09-02
+
+The **drift release** — five bugs that shipped into every generated prototype, two that broke
+the tooling's own failure paths, and a CI guard so the next three don't accumulate silently.
+
+### Scaffold bugs (each one shipped in every prototype)
+- **`?` no longer opens the history drawer while you're typing.** The global keydown handler in
+  `state.js` had no `input`/`textarea`/`contenteditable` guard, so a reviewer typing a question
+  into the always-on feedback textarea got the debug drawer over their comment.
+- **Icon buttons survive `loadingButton` / `copyButton`.** Both saved and restored `textContent`,
+  which permanently deleted the `<svg>` from any `<button><svg/>Save</button>` on first click.
+  They now round-trip `innerHTML` and still write the *label* as text, so a label string can
+  never inject markup. Dropped the write-only `dataset.originalText` along the way.
+- **`localStorage` keys are namespaced per prototype.** All eight keys were fixed `proto-*`
+  strings on the shared `localhost` origin, so prototype B read prototype A's theme, persona
+  and — worst — feedback comments, which `/prototype apply-feedback` would then ingest. Screens
+  now carry `data-proto-app="<slug>"` and the anti-FOUC script defines `window.PROTO_NS` from it
+  before any `js/*.js` loads.
+- **The stored theme is validated before first paint.** The anti-FOUC script whitelisted
+  `data-motion` but applied `data-theme` raw, so a stale key from a renamed theme set flashed
+  undefined tokens until `theme.js` corrected it. It now checks `THEMES` the way motion already did.
+- **`serve.py` binds `127.0.0.1`, not every interface.** It printed `http://localhost:PORT` while
+  publishing the prototype to the LAN.
+
+### Tooling failure paths that failed
+- **`check-overflow.sh` reaches its `inconclusive` verdict.** Under `set -o pipefail` a
+  non-matching `grep` (Chrome failed, probe never rendered) aborted the run at the first bad
+  screen — silently, with no summary — making the branch built for exactly that case dead code.
+- **A failed `prompt-refiner` install no longer aborts preflight.** `install_impeccable` was
+  guarded; its sibling wasn't, so a `git clone` failure with no network killed the whole script
+  under `set -eu` — contradicting the graceful-degradation promise in SKILL.md.
+
+### New: `checks/consistency.sh` (wired into CI)
+Three cheap guards for the drift this repo actually accumulates — no browser, no Claude run:
+1. **Cited paths exist** — every `reference/` / `templates/` / `checks/` / `benchmark/` path named
+   in the living docs resolves. (`CHANGELOG.md` and `benchmark/results/` are excluded: historical
+   records are *expected* to name files that have since moved.)
+2. **The benchmark covers every scaffold script** — `score-output.sh`'s file list and load order are
+   derived from `templates/scaffold-base/`, not hardcoded, so adding a script can't silently stop
+   being scored. This caught real drift on the first run: `score-output.sh` still scored the 8-file
+   v0.2 scaffold, so a prototype missing the entire motion tier, loading engine and View Transitions
+   scored 100% on Tier 1. Now 11 files and the correct 10-script body order.
+3. **`docs/` hasn't forked the scaffold** — `docs/` is a hand-maintained prototype, so most of it is
+   expected to differ, but `state.js`, `vt.js`, `serve.py` and `feedback.js` carry no per-prototype
+   customization. When they drift, a scaffold fix has landed in only one of the two copies.
+
+All three are negative-tested. Note the script is deliberately `set -uo pipefail` *without* `-e`:
+every check should report before exiting — the same failure mode `check-overflow.sh` had.
+
 ## v0.7.0 — 2026-08-02
 
 The **always-on inspiration release** — consulting the corpus stops being something the agent might

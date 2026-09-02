@@ -61,7 +61,7 @@ extract_arr() {
 # ════════════════════════ TIER 1 — regression floor ════════════════════════
 TIER=1
 
-for j in state theme layout data persona ui app feedback; do
+for j in state theme motion layout data persona ui loading app feedback vt; do
   check 2 "js/$j.js present" "$(exists js/$j.js)" ""
 done
 check 3 "serve.py present"         "$(exists serve.py)"          "no-cache dev server"
@@ -162,15 +162,16 @@ else pc_data=0; pc_btn=0; fi
 check 5 "every persona keyed in data.js"      "$pc_data" "${pcount:-0} personas"
 check 4 "every persona has a control button"  "$pc_btn" ""
 
-# Script load order: every screen includes all 8 scripts in the required order
-order='state theme layout data persona ui app feedback'
+# Script load order: every screen includes all 10 body scripts in the required order.
+# (js/vt.js is deliberately excluded — it loads in <head>, before Tailwind.)
+order='state theme motion layout data persona ui loading app feedback'
 order_ok=1; checked=0
 while IFS= read -r p; do
   [ -z "$p" ] && continue; [ "$(basename "$p")" = "404.html" ] && continue
   checked=$((checked+1))
   # Only real <script src="js/X.js"> tags — not incidental js/x.js mentions in
   # inline-script bodies or comments (those would inflate the sequence).
-  seq=$(grep -oE 'src="js/(state|theme|layout|data|persona|ui|app|feedback)\.js"' "$p" | sed -E 's#src="js/##; s#\.js"##' | tr '\n' ' ' | sed 's/ $//')
+  seq=$(grep -oE 'src="js/(state|theme|motion|layout|data|persona|ui|loading|app|feedback)\.js"' "$p" | sed -E 's#src="js/##; s#\.js"##' | tr '\n' ' ' | sed 's/ $//')
   [ "$seq" = "$order" ] || order_ok=0
 done < <(html_pages)
 [ "$checked" -eq 0 ] && order_ok=0

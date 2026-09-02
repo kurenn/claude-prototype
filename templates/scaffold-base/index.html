@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="en" data-theme="studio" data-layout="3col" data-persona="default" data-motion="standard">
+<html lang="en" data-proto-app="{{SLUG}}" data-theme="studio" data-layout="3col" data-persona="default" data-motion="standard">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -12,9 +12,17 @@
     // Keep the theme name + dark fallback in sync with js/theme.js (THEMES / DARK_THEME),
     // and the motion default in sync with js/motion.js (DEFAULT_TIER).
     (function () {
+      // Namespace every localStorage key to this prototype. All prototypes are served
+      // from the same localhost origin, so fixed `proto-*` keys let one prototype read
+      // another's theme, persona and — worst — feedback comments. Every js/*.js reads
+      // PROTO_NS, and this block runs before any of them load.
+      window.PROTO_NS = (document.documentElement.dataset.protoApp || 'proto') + '-';
       try {
-        var t = localStorage.getItem('proto-theme');
-        if (t) {
+        // Validate against the known themes: a stale key (renamed theme set, or a
+        // prototype previously viewed on this origin) must not paint undefined tokens.
+        var THEMES = ['studio', 'terminal', 'mono']; // keep in sync with THEMES in js/theme.js
+        var t = localStorage.getItem(window.PROTO_NS + 'theme');
+        if (THEMES.indexOf(t) !== -1) {
           document.documentElement.setAttribute('data-theme', t);
         } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
           document.documentElement.setAttribute('data-theme', 'terminal'); // DARK_THEME in theme.js
@@ -24,7 +32,7 @@
         // rules resolve against whatever data-motion is set here — same reason as theme.
         // Validate against the known tiers first — tampered/stale localStorage should never
         // set a garbage data-motion value.
-        var m = localStorage.getItem('proto-motion');
+        var m = localStorage.getItem(window.PROTO_NS + 'motion');
         document.documentElement.setAttribute('data-motion', (m === 'calm' || m === 'expressive') ? m : 'standard');
       } catch (e) {}
     })();

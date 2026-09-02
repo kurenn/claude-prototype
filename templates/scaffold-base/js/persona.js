@@ -17,7 +17,7 @@
  */
 (function () {
   const PERSONAS = ['default', 'empty']; // CUSTOMIZE to match data.js
-  const STORAGE_KEY = 'proto-persona';
+  const STORAGE_KEY = (window.PROTO_NS || 'proto-') + 'persona';
   const root = document.documentElement;
 
   function getStored() { try { return localStorage.getItem(STORAGE_KEY); } catch { return null; } }

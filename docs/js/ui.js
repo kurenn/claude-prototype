@@ -99,7 +99,7 @@
   // Change the global demo speed. Persists like theme (localStorage) and keeps any
   // [data-speed-option] segmented buttons' aria-pressed in sync. js/loading.js wires
   // the control bar to this and restores the persisted value on load.
-  const SPEED_KEY = 'proto-speed';
+  const SPEED_KEY = (window.PROTO_NS || 'proto-') + 'speed';
   function setSpeed(mode) {
     // Whitelist, not a SPEED[mode] lookup — an inherited/garbage persisted value
     // (old localStorage, a stale URL param) falls back to 'real' instead of
@@ -254,15 +254,17 @@
   function loadingButton(btn, ms, callback) {
     if (btn.dataset.loadingActive === '1') return; // debounce double-click
     const wait = (ms == null) ? fakeLatency('mutate') : ms;
-    const original = btn.textContent;
+    // innerHTML, not textContent: buttons routinely wrap an icon (<svg/> + label), and
+    // restoring textContent would delete that icon permanently on the first click. The
+    // label itself is still written as text, so a label string can never inject markup.
+    const original = btn.innerHTML;
     const loadingText = btn.dataset.loading || 'Loading…';
     btn.dataset.loadingActive = '1';
     btn.disabled = true;
-    btn.dataset.originalText = original;
     btn.textContent = loadingText;
     btn.classList.add('is-loading');
     setTimeout(() => {
-      btn.textContent = original;
+      btn.innerHTML = original;
       btn.classList.remove('is-loading');
       btn.disabled = false;
       btn.dataset.loadingActive = '0';
@@ -295,7 +297,7 @@
     // Capture the pre-copy label only when the button isn't already showing the
     // success state — otherwise a re-click mid-window (before the previous
     // revert fires) would capture "Copied!" itself as the thing to revert to.
-    const original = btn.dataset.copyActive === '1' ? btn._copyOriginal : btn.textContent;
+    const original = btn.dataset.copyActive === '1' ? btn._copyOriginal : btn.innerHTML;
     btn._copyOriginal = original;
 
     function swapLabel() {
@@ -304,7 +306,7 @@
       btn.classList.add('is-copied');
       clearTimeout(btn._copyT);
       btn._copyT = setTimeout(() => {
-        btn.textContent = original;
+        btn.innerHTML = original;
         btn.classList.remove('is-copied');
         btn.dataset.copyActive = '0';
       }, revertMs);
