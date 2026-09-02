@@ -73,7 +73,7 @@ don't reinvent it.
 When the agent proposes a mutation (send email, run migration, place order), show an **approval card**:
 a plain-language summary + a preview/diff + **Approve / Reject**. On Approve, use
 **optimistic-with-undo** (`UI.undoToast`) rather than a blocking confirm — the action appears done
-with a 5s Undo, matching the microinteractions doctrine. Destructive proposals name the consequence
+with a 6s Undo, matching the microinteractions doctrine. Destructive proposals name the consequence
 in the button ("Approve & send"), never a bare "OK".
 
 ## Demo content — make the agent's world real

@@ -368,22 +368,27 @@
       return;
     }
 
-    // retry — default demo behavior so `[data-retry]` is never dead markup: re-run
-    // the nearest region's loader (its `[data-skeleton-on-load]` ancestor, or the
-    // `.state`/`.state--error` box itself as a fallback) through the engine, so
-    // Retry → loading → content is demoable out of the box. `hasAttribute`, not a
-    // truthy dataset check — `data-retry` is a boolean attribute with no value.
-    // A shipped prototype should replace this with real retry/refetch logic that
-    // preserves input (see reference/build.md → "The state matrix").
+    // retry — default demo behavior so `[data-retry]` is never dead markup: re-run the
+    // nearest region's loader (its `[data-skeleton-on-load]` ancestor, or the
+    // `.state`/`.state--error` box itself) through the engine. `hasAttribute`, not a
+    // truthy dataset check — bare `data-retry` is valid and carries no value.
+    //
+    // Point it at a success face to demo recovery: `data-retry="<template id>"` swaps
+    // that template in before the loader runs, so Retry → skeletons → content. Without
+    // it the region can only restore what it was already showing — the error face —
+    // so a bare [data-retry] is Retry → skeletons → the same error, which is a fine
+    // demo of a retry that failed again, but is NOT a recovery demo.
+    // A shipped prototype replaces this with real retry/refetch logic that preserves
+    // input (see reference/build.md → "The state matrix").
     if (el.hasAttribute('data-retry')) {
       e.preventDefault();
       const region = el.closest('[data-skeleton-on-load]') || el.closest('.state');
-      if (region) {
-        const count = parseInt(region.dataset.skeletonCount, 10) || 3;
-        fakeLoad(region, null, { count: count });
-      } else {
-        replayLoading();
-      }
+      if (!region) { replayLoading(); return; }
+      const tplId = el.dataset.retry || region.dataset.retrySuccess;
+      const tpl = tplId ? document.getElementById(tplId) : null;
+      if (tpl && tpl.tagName === 'TEMPLATE') region.innerHTML = tpl.innerHTML;
+      const count = parseInt(region.dataset.skeletonCount, 10) || 3;
+      fakeLoad(region, null, { count: count });
       return;
     }
 

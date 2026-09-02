@@ -73,9 +73,11 @@ for f in js/state.js js/vt.js serve.py; do
   cmp -s "docs/$f" "templates/scaffold-base/$f" \
     || { note "docs/$f has diverged from templates/scaffold-base/$f"; shared_ok=0; }
 done
-cmp -s docs/js/feedback.js templates/feedback-overlay/feedback.js \
-  || { note "docs/js/feedback.js has diverged from templates/feedback-overlay/feedback.js"; shared_ok=0; }
-[ "$shared_ok" -eq 1 ] && printf '  ✓ 4 shared files identical\n'
+for f in js/feedback.js:feedback.js css/feedback.css:feedback.css; do
+  cmp -s "docs/${f%%:*}" "templates/feedback-overlay/${f##*:}" \
+    || { note "docs/${f%%:*} has diverged from templates/feedback-overlay/${f##*:}"; shared_ok=0; }
+done
+[ "$shared_ok" -eq 1 ] && printf '  ✓ 5 shared files identical\n'
 
 # ── 4. Nothing hardcodes a companion skill's install root ─────────────────
 # The roots live once, in ensure-deps.sh (SKILL_ROOTS); everything else resolves a
