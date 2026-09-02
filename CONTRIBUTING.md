@@ -5,7 +5,7 @@ Thanks for considering a contribution. This skill is small and opinionated — P
 ## What's in scope
 
 - **Template improvements** — cleaner scaffold HTML/CSS/JS; better defaults.
-- **Better detection of optional skills** — more reliable checks for impeccable, prompt-refiner, claude-in-chrome presence.
+- **Better detection of optional skills** — more reliable checks for impeccable and claude-in-chrome presence.
 - **More built-in lint rules** — extending `checks/builtin-lint.md` with checks that don't require impeccable.
 - **Feedback overlay polish** — keyboard shortcuts, better pin positioning, better selector heuristics.
 - **Example prototypes** — dropping a reference prototype under `examples/` that demonstrates the skill's output.

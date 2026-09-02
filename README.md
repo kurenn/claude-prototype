@@ -105,7 +105,7 @@ It never wraps to a second line (`flex-wrap: nowrap` + `overflow-x: auto` is loa
 `/prototype` runs four phases. The skill uses **progressive disclosure** — `SKILL.md` is a lean router; each phase's detail loads from `reference/` only when reached.
 
 ```
-0. Preflight  →  ensure impeccable + prompt-refiner are installed
+0. Preflight  →  ensure impeccable is installed
 1. Discover   →  Quick-or-Discovery, Q&A, refine spec, write PRODUCT.md + DESIGN.md
 2. Build      →  scaffold from templates, wire control bar + data + interaction states, build each screen
 3. Assess     →  impeccable audit + critique (or built-in lint), fix findings, browser QA
@@ -183,7 +183,6 @@ A **GitHub Action** ([`skill-checks.yml`](.github/workflows/skill-checks.yml)) r
 | Skill | What it adds | Auto-install |
 |---|---|---|
 | [impeccable](https://impeccable.style/) | Design direction + assessment (`audit` + `critique`) | `npx -y skills add pbakaus/impeccable --global --yes` |
-| [prompt-refiner](https://github.com/kurenn/prompt-refiner-skill) | Q&A answers → structured build spec | `git clone … ~/.claude/skills/prompt-refiner` |
 | claude-in-chrome (MCP) | Screenshot grid + console-error QA | Configured in Claude Code MCP settings |
 
 If auto-install fails (no `npx`, no network), `/prototype` falls back to [`checks/builtin-lint.md`](checks/builtin-lint.md) and says so in its report. Run the preflight manually anytime:
@@ -233,6 +232,6 @@ Issues and PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). CI runs the s
 
 ## Credits & license
 
-Built on [impeccable](https://impeccable.style/) (design assessment) and [prompt-refiner](https://github.com/kurenn/prompt-refiner-skill) (Q&A → spec). Vanilla JS, Tailwind CDN, Google Fonts — nothing else.
+Built on [impeccable](https://impeccable.style/) (design assessment). Vanilla JS, Tailwind CDN, Google Fonts — nothing else.
 
 MIT — see [LICENSE](LICENSE).

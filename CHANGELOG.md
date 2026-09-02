@@ -1,5 +1,36 @@
 # Changelog
 
+## v0.8.0 — 2026-09-02
+
+**Drops the prompt-refiner companion.** `/prototype` now writes the build spec itself.
+
+### Why
+Step 3 delegated "turn the Q&A answers into a spec" to a second skill — but `discovery.md`
+already specifies that spec as an explicit 8-item checklist (name, pitch, tone, screens,
+flow, themes, layouts, content domain, interactions). A companion whose job is to produce
+that checklist is doing work the checklist itself already directs, and the delegation was
+never measured: the only A/B that names it
+(`benchmark/results/design-ab-2026-07-25.md:22`) ran in fallback mode with the companion
+*off*, on both sides. There is no evidence it beat writing the spec inline.
+
+Note this is unlike the impeccable bug in v0.7.4 — prompt-refiner *was* being invoked when
+present. This is a judgment call about value, not a dead path.
+
+### What goes away
+- `install_prompt_refiner()` — the only `git clone` in `ensure-deps.sh`, and the only
+  network fetch besides the impeccable `npx`. Its `set -eu` abort hole (fixed in v0.7.1)
+  and the redundant-clone bug (it is commonly installed as a *plugin*, which preflight
+  cannot see) are both moot rather than fixed.
+- Four `SKILL.md` mentions, the detection-table row, the README companion row, and the
+  `discovery.md` Step 3 detection paragraph.
+
+`ensure-deps.sh` is now impeccable-only: 144 lines, one installer, one failure mode.
+SKILL.md trigger cost: 2592 → **2544** tokens.
+
+### Not changed
+`discovery.md`'s spec checklist stays exactly as it was — it is now the contract rather
+than a fallback description, so Step 3 reads "hit every item explicitly."
+
 ## v0.7.5 — 2026-09-02
 
 The remaining scaffold findings from the v0.7.1 review. Everything here ships into every

@@ -129,9 +129,8 @@ safe to treat as a family.
 
 ## Step 3: Refine the spec
 
-**Detection:** look for `prompt-refiner` in the available-skills list. If present, invoke
-it via the Skill tool with the Q&A answers — don't synthesize inline. If absent,
-synthesize inline.
+Turn the Q&A answers into the spec yourself. The contract is the checklist below — hit
+every item explicitly rather than writing prose that gestures at them.
 
 The spec must include:
 - Product name + one-line pitch
