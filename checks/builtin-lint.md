@@ -102,6 +102,16 @@ grep -riE "(John Doe|Jane Doe|User [0-9]+|Item [0-9]+|Example Corp)" <prototype>
 ```
 Flag and replace with plausible names.
 
+### 12b. No AI-slop vocabulary
+```
+grep -riE "(game.?changing|revolutionary|disruptive|next.level|10x|supercharge|seamless(ly)?|leverage|utilize|unlock the power|cutting.edge|best.in.class|elevate your|empower your team|fast.paced world)" <prototype>/ --include="*.html"
+```
+The copy-side twin of the gradient ban — these read as generated as fast as a purple-on-black
+hero does. Replace per `reference/copywriting.md` §4 (`utilize → use`, `seamless → smooth` or
+delete). Also scan by eye for the structural tells that survive a word swap: one-line sentence
+fragments for drama, "It's not just X — it's Y", and rule-of-three lists whose third item is a
+vibe.
+
 ### 13. Dates should be recent and realistic
 Flag dates older than 2 years or in the far future (unless the product is a calendar/planner).
 

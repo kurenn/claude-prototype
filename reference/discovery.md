@@ -139,7 +139,7 @@ The spec must include:
 - Primary user flow (sequence of screens)
 - Theme names (3 by default, e.g. "studio" / "terminal" / "mono"; 2 if user prefers simple light/dark)
 - **Layout variants** — 2–4 chosen for THIS prototype (see "Choosing layouts" below). Never a generic "2col / 3col".
-- Content domain for realistic copy
+- Content domain for realistic copy (craft rules: `reference/copywriting.md`)
 - Notable interactions (modals, tabs, toasts)
 
 ### Choosing layouts
