@@ -105,11 +105,12 @@
     pop.style.top  = Math.min(ctx.y + 10, window.innerHeight - 220) + 'px';
     pop.innerHTML = `
       <div class="proto-fb-popover-body">
-        <div class="proto-fb-types">
+        <fieldset class="proto-fb-types">
+          <legend class="proto-fb-sr">Feedback type</legend>
           <label><input type="radio" name="fb-type" value="bug"> bug</label>
           <label><input type="radio" name="fb-type" value="change" checked> change</label>
           <label><input type="radio" name="fb-type" value="question"> question</label>
-        </div>
+        </fieldset>
         <textarea placeholder="What's the feedback?" rows="4"></textarea>
         <div class="proto-fb-popover-actions">
           <button data-fb-cancel>Cancel</button>
@@ -189,8 +190,10 @@
       document.body.appendChild(pin);
     });
   }
+  // Resize only. Pins are absolutely positioned in *document* coordinates (left/top
+  // already include scrollX/scrollY), so scrolling cannot move them — re-rendering on
+  // scroll rebuilt every pin and forced a reflow per pin per tick for no visual change.
   window.addEventListener('resize', renderPins);
-  window.addEventListener('scroll', renderPins, { passive: true });
 
   // ---------- PANEL ----------
   let panel;
@@ -198,6 +201,7 @@
     if (!panel) {
       panel = document.createElement('aside');
       panel.className = 'proto-fb-panel';
+      panel.setAttribute('aria-label', 'Feedback comments');
       document.body.appendChild(panel);
     }
     const here = location.pathname.split('/').pop() || 'index.html';
@@ -259,10 +263,10 @@
       <h4>${title}</h4>
       <ul>
         ${items.map(c => `
-          <li class="proto-fb-item proto-fb-type-${c.type}">
+          <li class="proto-fb-item proto-fb-type-${escapeHtml(c.type)}">
             <div class="proto-fb-meta">
-              <span class="proto-fb-badge">${c.type}</span>
-              <span class="proto-fb-page">${c.page}</span>
+              <span class="proto-fb-badge">${escapeHtml(c.type)}</span>
+              <span class="proto-fb-page">${escapeHtml(c.page)}</span>
               <button data-fb-del="${c.id}" aria-label="Delete">×</button>
             </div>
             <p>${escapeHtml(c.note)}</p>

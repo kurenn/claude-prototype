@@ -39,11 +39,28 @@ body.proto-fb-active * { cursor: crosshair !important; }
   box-shadow: 0 10px 40px rgb(0 0 0 / .2);
 }
 .proto-fb-popover-body { padding: .75rem; display: grid; gap: .5rem; }
+/* A <fieldset> for the a11y grouping only — reset every box style it ships with.
+   `min-width: 0` is load-bearing: fieldsets carry an intrinsic min-width that
+   otherwise refuses to shrink inside the popover's flex column. */
 .proto-fb-types {
   display: flex;
   gap: .5rem;
   font-size: .8rem;
   color: rgb(var(--ink2));
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+}
+/* Visually hidden, still announced — the <legend> naming the radio group. */
+.proto-fb-sr {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
 }
 .proto-fb-types label { display: inline-flex; gap: .25rem; align-items: center; }
 .proto-fb-popover textarea {

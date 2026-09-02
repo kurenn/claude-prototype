@@ -72,7 +72,13 @@
     }
   }
 
+  // Defer to ui.js — both files drive the same shared `.proto-toast` element, and only
+  // ui.js's version clears a still-armed undoToast()'s hover/focus-pause listeners. When
+  // state.js kept its own copy, a Share toast fired after an undo inherited "hovering
+  // pauses dismissal" and hung on screen. ui.js loads before any click can call this;
+  // the inline fallback only covers a screen that somehow ships without it.
   function toast(msg) {
+    if (window.UI && typeof window.UI.toast === 'function') return window.UI.toast(msg);
     let el = document.querySelector('.proto-toast');
     if (!el) {
       el = document.createElement('div');

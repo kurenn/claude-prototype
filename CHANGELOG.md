@@ -1,5 +1,47 @@
 # Changelog
 
+## v0.7.5 — 2026-09-02
+
+The remaining scaffold findings from the v0.7.1 review. Everything here ships into every
+generated prototype.
+
+### Retry could never succeed
+`[data-retry]`'s default handler ran the region's loader, and `showSkeletons` stashes the
+region's *current* innerHTML — which is the error face — so Retry went error → skeletons →
+the same error, forever. The comment claimed "Retry → loading → content is demoable out of
+the box"; it wasn't.
+
+`data-retry="<template id>"` now swaps that template's markup into the region before the
+loader runs, so Retry → skeletons → content. A bare `data-retry` still re-shows the error,
+which is a legitimate "the retry failed again" demo — and the comment now says so instead
+of promising recovery. Verified headlessly: the template path recovers, the bare path
+re-errors.
+
+### One toast owner
+`state.js` and `ui.js` both drove the shared `.proto-toast` element, but only ui.js's
+version cleared a still-armed `undoToast()`'s hover/focus-pause listeners — so a Share
+toast fired after an undo inherited "hovering pauses dismissal" and hung on screen.
+`state.js` now delegates to `UI.toast`, keeping a small inline fallback.
+
+### Feedback overlay
+- **Every interpolation is escaped.** `c.type` and `c.page` went into `innerHTML` raw while
+  `note` / `element_text` / `url` were correctly escaped.
+- **Dropped the scroll re-render.** Pins are absolutely positioned in *document* coordinates
+  (their left/top already include `scrollX`/`scrollY`), so scrolling cannot move them — the
+  unthrottled `scroll` listener rebuilt every pin and forced a reflow per pin per tick for
+  no visual change. Resize still re-renders, because layout actually changes.
+
+### Accessibility
+- **Skip link** — `.proto-skip` as the first element in `<body>`, targeting `<main id="main"
+  tabindex="-1">`. Without it a keyboard user re-tabs the whole nav on every screen.
+- **The feedback type radios are a real group** — `<fieldset>` + a visually-hidden
+  `<legend>`, instead of three bare labels.
+- **The feedback panel `<aside>` has an accessible name.**
+
+### Also
+- The undo window is 6000ms in `ui.js`; `ai-native-ui.md` said 5s. Now 6s.
+- `consistency.sh` pins `docs/css/feedback.css` alongside the other shared files (5 now).
+
 ## v0.7.4 — 2026-09-02
 
 **impeccable was never actually running.** `/prototype` has been silently falling back to

@@ -722,6 +722,23 @@ html[data-motion="expressive"] .enter {
 .empty-state p { margin: 0 auto; max-width: 32rem; }
 .empty-state .actions { margin-top: 1.25rem; display: inline-flex; gap: .5rem; }
 
+/* Skip link — the first tabbable element on the page, visually hidden until focused.
+   Without it a keyboard user tabs the whole nav again on every screen. */
+.proto-skip {
+  position: absolute;
+  left: .75rem;
+  top: -3rem;
+  z-index: var(--z-sticky);
+  padding: .5rem .875rem;
+  border-radius: var(--radius);
+  background: rgb(var(--accent));
+  color: rgb(var(--accent-ink));
+  font-size: .875rem;
+  text-decoration: none;
+  transition: top .15s ease;
+}
+.proto-skip:focus { top: .75rem; }
+
 /* Screen-reader-only — visually hidden but read aloud. Powers the shared polite
    live region (`.proto-status`, created lazily by ui.js's UI.announce) that every
    loader speaks "Loading…" / "Loaded." through. Also usable on any visually-implicit

@@ -66,6 +66,9 @@ silently falls back to builtin-lint without it. Don't run `impeccable teach`; wr
 
 ### Baseline every screen needs
 - `<html data-proto-app="<slug>" data-theme="<default>" data-layout="<default>" data-persona="<default>">` with spec defaults. **`data-proto-app` is required and must be the prototype's slug** — it namespaces every `localStorage` key (theme, layout, persona, motion, speed, history, and feedback comments). Every prototype is served from the same `localhost` origin, so leaving the `{{SLUG}}` placeholder in makes one prototype read another's stored state — including its feedback comments, which `/prototype apply-feedback` would then ingest. `data-persona` here is cosmetic before first paint — `persona.js` overwrites it on load from `PERSONAS[0]` (URL param → localStorage → array order), so the array order is what actually governs the default; keep them in agreement.
+- `<a class="proto-skip" href="#main">Skip to content</a>` as the **first element in `<body>`**,
+  with the page's `<main id="main" tabindex="-1">`. Visually hidden until focused (`.proto-skip`
+  ships in styles.css); without it a keyboard user re-tabs the whole nav on every screen.
 - The inline anti-FOUC `<script>` from `scaffold-base/index.html`'s `<head>`, copied verbatim onto every screen, placed before the stylesheet `<link>`s and the Tailwind CDN script — it sets `data-theme` from localStorage/`prefers-color-scheme` before first paint so navigating between screens on a non-default theme doesn't flash. Two things in it are per-prototype: the `THEMES` array and the `DARK_THEME` fallback must match `js/theme.js` (a stored theme not in the array is ignored, so a stale key can't paint undefined tokens), and it defines `window.PROTO_NS` from `data-proto-app` before any `js/*.js` loads.
 - `<script src="js/vt.js"></script>` in `<head>`, **non-deferred**, right after the anti-FOUC script and before the Tailwind CDN script — it wires cross-document View Transitions (`pagereveal` fires before first paint, so a deferred/body-end load would miss it). This is separate from the body-end script list below.
 - The persistent `<header>` and `#proto-controls` bar each carry a distinct `view-transition-name` (`app-header` / `app-controls`, set in both `styles.css` and inline) so the chrome holds still across navigations. Keep the two names distinct on any screen where both exist. `styles.css` scopes the name to `body > header` (the top-level header only, a direct child of `<body>`) — not bare `header` — so it doesn't also pick up an unrelated nested `<header>` (the feedback overlay's panel has its own, and a builder's `<article><header>` would too); a second element claiming the same name aborts the whole transition.
@@ -207,7 +210,15 @@ one icon + title + body + a single action button. Wire the empties off personas
 `[data-retry]` isn't dead markup out of the box — `ui.js` ships a default delegated click
 handler that replays the nearest region's loader (its `[data-skeleton-on-load]` ancestor, or
 the `.state`/`.state--error` box itself) through the timing engine, so Retry → loading is
-demoable without any wiring. A real prototype should still replace this with logic that
+demoable without any wiring. **To demo recovery, point it at a success face:**
+`data-retry="<template id>"` swaps that `<template>`'s content into the region before the
+loader runs, giving Retry → skeletons → content. A bare `data-retry` can only restore what
+the region was already showing — the error face — so it demos a retry that *failed again*,
+which is honest but is not a recovery demo. Author the success markup once:
+```html
+<template id="invoices-loaded"> … the populated rows … </template>
+<div class="state state--error" role="alert"> … <button data-retry="invoices-loaded">Retry</button> </div>
+``` A real prototype should still replace this with logic that
 re-runs the actual failed call and preserves input — the default is a stand-in, not the fix.
 
 `checks/builtin-lint.md` rule 35 (state-matrix completeness) flags a primary collection
