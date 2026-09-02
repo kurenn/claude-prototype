@@ -9,37 +9,55 @@
 #   Default: prompt before installing (safe for interactive use).
 #   --yes / -y: auto-confirm (useful from Claude Code when the LLM decides to install).
 #   --check: report status without installing (exit 0 if all present, 1 if missing).
+#   --path=<skill>: print where <skill> is installed and exit (1 if not found), so
+#     callers resolve a companion's location instead of hardcoding a root.
 
 set -eu
 
-SKILLS_DIR="${HOME}/.claude/skills"
+# Skill roots, searched in order. Claude Code loads from both, and the two installers
+# disagree: `npx skills add --global` puts impeccable in ~/.agents/skills, while the git
+# clone below goes to ~/.claude/skills. Checking a single root reports an already-installed
+# companion as MISSING and silently reinstalls it on every preflight.
+SKILL_ROOTS=("${HOME}/.claude/skills" "${HOME}/.agents/skills")
+INSTALL_DIR="${HOME}/.claude/skills"   # where *this* script clones to
 AUTO_YES=false
 CHECK_ONLY=false
+PATH_QUERY=""
 
 for arg in "$@"; do
   case "${arg}" in
     --yes|-y) AUTO_YES=true ;;
     --check)  CHECK_ONLY=true ;;
-    *) echo "Usage: $0 [--yes|-y] [--check]" >&2; exit 2 ;;
+    --path=*) PATH_QUERY="${arg#--path=}" ;;
+    *) echo "Usage: $0 [--yes|-y] [--check] [--path=<skill>]" >&2; exit 2 ;;
   esac
 done
 
-have_skill() {
-  local name="$1"
-  # Accept regular dir, symlink, or any readable path
-  [ -e "${SKILLS_DIR}/${name}/SKILL.md" ] || \
-  [ -e "${SKILLS_DIR}/${name}" ] && [ -e "$(readlink -f "${SKILLS_DIR}/${name}" 2>/dev/null || echo "${SKILLS_DIR}/${name}")/SKILL.md" ]
+# Prints where a skill is installed, or returns 1. Counts as installed when
+# <root>/<name>/SKILL.md resolves — directly or through a symlink (install.sh --link).
+skill_path() {
+  local name="$1" root target real
+  for root in "${SKILL_ROOTS[@]}"; do
+    target="${root}/${name}"
+    real="$(readlink -f "${target}" 2>/dev/null || printf '%s' "${target}")"
+    if [ -e "${target}/SKILL.md" ] || [ -e "${real}/SKILL.md" ]; then
+      printf '%s\n' "${target}"
+      return 0
+    fi
+  done
+  return 1
 }
 
+have_skill() { skill_path "$1" >/dev/null 2>&1; }
+
 status() {
-  local name="$1"
-  if have_skill "${name}"; then
-    echo "  ✓ ${name} — installed"
+  local name="$1" path
+  if path="$(skill_path "${name}")"; then
+    echo "  ✓ ${name} — installed (${path})"
     return 0
-  else
-    echo "  ✗ ${name} — MISSING"
-    return 1
   fi
+  echo "  ✗ ${name} — MISSING"
+  return 1
 }
 
 confirm() {
@@ -59,7 +77,8 @@ install_impeccable() {
     echo "  skipped impeccable — /prototype will use built-in lint fallback"
     return 0
   fi
-  # --global installs to ~/.claude/skills; --yes skips all prompts
+  # --global installs to ~/.agents/skills (not ~/.claude/skills — see SKILL_ROOTS);
+  # --yes skips all prompts
   npx -y skills add pbakaus/impeccable --global --yes
 }
 
@@ -69,12 +88,12 @@ install_prompt_refiner() {
     return 1
   fi
   local repo="https://github.com/kurenn/prompt-refiner-skill.git"
-  local target="${SKILLS_DIR}/prompt-refiner"
+  local target="${INSTALL_DIR}/prompt-refiner"
   if ! confirm "Install prompt-refiner via 'git clone ${repo} → ${target}'?"; then
     echo "  skipped prompt-refiner — /prototype will synthesize the spec inline"
     return 0
   fi
-  mkdir -p "${SKILLS_DIR}"
+  mkdir -p "${INSTALL_DIR}"
   git clone --depth 1 "${repo}" "${target}"
   # Verify SKILL.md landed at the expected path
   if [ -f "${target}/SKILL.md" ]; then
@@ -85,6 +104,11 @@ install_prompt_refiner() {
     return 1
   fi
 }
+
+if [ -n "${PATH_QUERY}" ]; then
+  skill_path "${PATH_QUERY}" || { echo "not installed: ${PATH_QUERY}" >&2; exit 1; }
+  exit 0
+fi
 
 echo "Checking /prototype companion skills..."
 missing=0

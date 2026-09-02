@@ -191,6 +191,7 @@ If auto-install fails (no `npx`, no network), `/prototype` falls back to [`check
 ```bash
 bash ~/.claude/skills/prototype/ensure-deps.sh --check    # report status only
 bash ~/.claude/skills/prototype/ensure-deps.sh --yes      # install non-interactively
+bash ~/.claude/skills/prototype/ensure-deps.sh --path=impeccable   # where is it installed?
 ```
 
 ## Repo layout

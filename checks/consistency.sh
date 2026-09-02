@@ -77,6 +77,23 @@ cmp -s docs/js/feedback.js templates/feedback-overlay/feedback.js \
   || { note "docs/js/feedback.js has diverged from templates/feedback-overlay/feedback.js"; shared_ok=0; }
 [ "$shared_ok" -eq 1 ] && printf '  ✓ 4 shared files identical\n'
 
+# ── 4. Nothing hardcodes a companion skill's install root ─────────────────
+# The roots live once, in ensure-deps.sh (SKILL_ROOTS); everything else resolves a
+# companion with `ensure-deps.sh --path=<skill>`. A hardcoded root silently breaks
+# under the other installer — reference/assess.md pointed at ~/.agents/skills while
+# preflight only searched ~/.claude/skills, so impeccable reinstalled every run.
+# CHANGELOG.md and benchmark/results/ are excluded as historical records.
+echo "4. No hardcoded companion skill roots"
+stray=$(grep -rln '\.agents/skills' --include='*.md' --include='*.sh' --include='*.yml' . 2>/dev/null \
+        | grep -vE '^\./(ensure-deps\.sh|checks/consistency\.sh|CHANGELOG\.md|benchmark/results/)' || true)
+if [ -z "$stray" ]; then
+  printf '  ✓ resolved via ensure-deps.sh --path, not hardcoded\n'
+else
+  while IFS= read -r f; do
+    note "$f hardcodes a skills root — resolve it with ensure-deps.sh --path=<skill>"
+  done <<< "$stray"
+fi
+
 echo "──────────────────────────────────────────────"
 if [ "$fail" -eq 0 ]; then echo "  PASS — repo is internally consistent"; else echo "  FAIL — see above"; fi
 exit "$fail"

@@ -50,7 +50,9 @@ impeccable's setup is non-optional — it requires `PRODUCT.md` at the prototype
 loads context before any command. Step 4 already wrote `PRODUCT.md` + `DESIGN.md` into the
 folder, so the gate is satisfied. Verify from the prototype folder:
 ```bash
-node ~/.agents/skills/impeccable/scripts/load-context.mjs   # expect "hasProduct": true
+# impeccable's install root varies by installer — resolve it, never hardcode one
+IMP=$(bash ~/.claude/skills/prototype/ensure-deps.sh --path=impeccable)
+node "$IMP/scripts/load-context.mjs"   # expect "hasProduct": true
 ```
 If `hasProduct` is false, impeccable will try to run its interactive `teach` and you'll end
 up on the fallback — write `PRODUCT.md` first (see discovery.md Step 4), don't run `teach`.

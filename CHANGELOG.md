@@ -1,5 +1,36 @@
 # Changelog
 
+## v0.7.4 — 2026-09-02
+
+**Preflight was reinstalling impeccable on every single run.** Reproduced on a machine with
+impeccable already installed:
+
+```
+~/.agents/skills/impeccable/SKILL.md   exists
+$ ensure-deps.sh --check
+  ✗ impeccable — MISSING
+```
+
+`npx skills add --global` installs into `~/.agents/skills`, but `ensure-deps.sh` only ever
+searched `~/.claude/skills` (where its own `git clone` puts prompt-refiner). Claude Code
+loads from both roots, so the companion worked — preflight just couldn't see it, and paid
+a network round-trip to reinstall it every time.
+
+### Fixed
+- **`ensure-deps.sh` searches both roots.** New `skill_path()` returns where a skill actually
+  is; `status` now prints it. This also retires the old `have_skill`, whose
+  `[ A ] || [ B ] && [ C ]` parsed as `([ A ] || [ B ]) && [ C ]` — not what its comment said.
+- **`reference/assess.md` no longer hardcodes `~/.agents/skills/impeccable/...`**, which broke
+  under the other installer and violated SKILL.md's own "no hardcoded paths" constraint.
+- **New `ensure-deps.sh --path=<skill>`** prints a companion's location (exit 1 if absent), so
+  callers resolve a path instead of guessing a root. The roots are now written down once.
+
+### Guard
+`checks/consistency.sh` gains check 4: no file outside `ensure-deps.sh` may hardcode a
+companion skill root. Negative-tested.
+
+SKILL.md trigger cost: 2581 → 2592 tokens (ceiling 2600).
+
 ## v0.7.3 — 2026-09-02
 
 Cleanup pass. Three of the five deletion candidates from the v0.7.1 review held up on

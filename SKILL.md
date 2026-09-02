@@ -69,9 +69,10 @@ auto-install failure (no npx/Node, no network). Shortcutting an available skill 
 worse prototype.
 
 Note: the `<system-reminder>` skill list is captured at session start and doesn't refresh
-mid-session. If preflight just installed a skill, it's on disk at `~/.claude/skills/<name>/`
-and invokable via Bash even if the Skill tool lags a session — check the filesystem, not
-just the reminder. Never fail for a missing optional skill; note it in the final report.
+mid-session. If preflight just installed a skill it's on disk and invokable via Bash even if
+the Skill tool lags a session — resolve where with `ensure-deps.sh --path=<name>` (roots vary
+by installer), and trust the filesystem over the reminder. Never fail for a missing optional
+skill; note it in the final report.
 
 ## The phases
 
