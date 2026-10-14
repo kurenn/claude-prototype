@@ -46,7 +46,7 @@ Most AI-generated prototypes look like every other one: purple gradients, gradie
 
 | Generic AI output | What this skill ships |
 |---|---|
-| "Modern SaaS" with no questions asked | A short **discovery Q&A** (tone, inspiration, audience, scope) drives real, domain-matched content |
+| "Modern SaaS" with no questions asked | A short **discovery Q&A** (tone, inspiration, audience, scope) drives real, domain-matched content, cross-checked against ~500 real-brand DESIGN.md files fetched live by domain |
 | Lorem ipsum, "John Doe", `Example Corp` | Realistic copy and data, persona-driven from `js/data.js` |
 | Dead `href="#"` buttons | Every button, modal, tab, and filter actually works |
 | One static screen | **Theme · Layout · Persona** switchers + interaction states (loading, toast, empty, skeleton, 404) |
@@ -202,7 +202,9 @@ claude-prototype/
 │   ├── discovery.md      #   1: mode · Q&A · spec · PRODUCT.md + DESIGN.md
 │   ├── build.md          #   2: scaffold · control bar · data · screens
 │   ├── assess.md         #   3: impeccable audit/critique · browser QA
-│   └── subcommands.md    #   variant + apply-feedback
+│   ├── inspiration.md    #   living corpus of studied sites
+│   ├── design-index.md   #   ~500 DESIGN.md files (slug · name · tags), fetched live
+│   └── subcommands.md    #   variant + apply-feedback + intake
 ├── templates/            # scaffold-base · feedback-overlay · demo-docs
 ├── checks/builtin-lint.md# fallback assessment when impeccable is absent
 ├── benchmark/            # output · overflow · design · context-cost guards

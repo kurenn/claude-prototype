@@ -1,5 +1,31 @@
 # Changelog
 
+## v0.9.0 — 2026-10-13
+
+**The design-file index.** Discovery can now match a brief against ~500 real-brand DESIGN.md
+files and pull the closest 1–3 live.
+
+### Why
+The inspiration corpus is 11 entries in three families (indie dev-tool, AI-native, editorial). A
+fintech, retail, or travel brief matched nothing in Tier 1 and fell back to the generic menus.
+shadcn.io/design catalogs 500 DESIGN.md files across 29 domain tags. That covers the gap.
+
+### What ships
+- `reference/design-index.md`: `slug · name · tags` per file, plus the tag list. No file contents.
+- `reference/design-index.py`: stdlib regenerator (one page fetch, parses the directory's tags).
+- `reference/discovery.md` → "The design-file index": grep the index (named brand first, else
+  domain tag), fetch ≤3 matches from `/design/<slug>/raw`, read their DNA into the menus. Brand
+  names in the Inspiration answer route here first, and the Step 4 corpus checkpoint now names it.
+
+### Why an index and not the files
+shadcn.io's terms forbid scraping and redistributing its content, and this repo is public under
+MIT. Committing the 500 files (~18MB) would re-license someone else's work. A per-build fetch of
+1–3 files is ordinary use; the site itself says to feed the files to an AI tool. Fetching live
+also keeps them current.
+
+### Not changed
+SKILL.md (trigger cost stays at 2544 tokens): discovery.md already routes the inspiration step.
+
 ## v0.8.0 — 2026-09-02
 
 **Drops the prompt-refiner companion.** `/prototype` now writes the build spec itself.
