@@ -20,7 +20,15 @@ it's already strong.
 - `reference/design-index.py`: stdlib re-vendor script (one tarball download of a pinned commit).
 - `reference/discovery.md` → "The design-file index": grep the index (named brand first, else
   domain), read ≤3 matches locally, take their DNA into the menus. Brand names in the
-  Inspiration answer route here first, and the Step 4 corpus checkpoint now names it.
+  Inspiration answer route here first, and the Step 4 corpus checkpoint now names it. With no
+  domain hit, it greps the summaries for the brief's feel, so most builds land a file.
+- **Fonts come from the matched file.** The primary file's own Google Fonts, or the free
+  substitutes it names (69 of 84 do), are the pairing; `type-pairings.md` is the fallback. The
+  coffee rerun showed why: two builds read Oura (a light editorial serif) and both still shipped
+  the menu's first playful face.
+- `type-pairings.md`: Quick mode's "vary the display" is now a rule (product-name letter count
+  mod 3), since independent runs all took the first option. Two-tone briefs take the display from
+  the dominant tone and the body from the other.
 
 ### Why vendored, and why this collection
 Builds shouldn't depend on a website being up. The A/B ran against shadcn.io/design's 500 files

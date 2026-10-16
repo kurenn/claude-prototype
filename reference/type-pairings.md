@@ -6,8 +6,16 @@ generated prototypes distinctive instead of defaulting to the invisible sans eve
 
 ## How the skill uses this
 
-1. Discovery Step 2 captures the **tone**. Map it to a row below.
-2. **Quick mode** — pick a display from the tone's row (vary it across runs — don't always grab the first) plus its body.
+0. **A matched design file comes first.** When discovery matched a primary file in
+   `reference/designs/`, its free fonts (its own Google Fonts, or the substitutes it names) are the
+   pairing — see `reference/discovery.md` → "The design-file index", rule 4. This table is the
+   fallback for when no file matched or the file offers no usable free font. The reflex-reject list
+   below applies either way.
+1. Discovery Step 2 captures the **tone**. Map it to a row below. Two tones in one brief ("editorial,
+   a little playful") → display from the dominant tone's row, body from the other's.
+2. **Quick mode** — pick a display from the tone's row plus its body. Runs don't remember each other,
+   so "vary it" needs a rule: count the letters in the product name and take display #(count mod 3)+1
+   ("Halfmoon Roasters" → 16 letters → #2).
 3. **Discovery mode** — state the recommendation in one line and offer the alternate or a free
    choice, e.g. *"For an editorial tone I'd pair Instrument Serif headings with Newsreader body —
    or Fraunces + DM Sans if you want more warmth. Sound good?"* Recommend, don't interrogate.
