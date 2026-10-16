@@ -1016,7 +1016,6 @@ h1, h2, h3, .display { font-family: 'Manrope', system-ui, sans-serif; }
 .nav-links a:not(.btn) { color: rgb(var(--ink2)); text-decoration: none; }
 .nav-links a[aria-current="page"] { color: rgb(var(--ink)); font-weight: 600; }
 @media (hover: hover) { .nav-links a:not(.btn):hover { color: rgb(var(--ink)); } }
-@media (max-width: 520px) { .nav-links .nav-gh { display: none; } }
 
 /* ---------- BUTTONS ---------- */
 .btn {
@@ -1095,16 +1094,17 @@ html[data-theme="void"] .btn-primary { background: rgb(var(--elevated-2)); color
 .code-body .c-comment { color: rgb(var(--ink3)); }
 .code-body .c-prompt  { color: rgb(var(--ink)); font-weight: 700; }
 
-/* ---------- FACTS (real numbers only) ---------- */
-.factbar { display: grid; gap: var(--space-5); grid-template-columns: repeat(2, minmax(0, 1fr)); }
-@media (min-width: 720px) { .factbar { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.fact-num {
-  font-family: 'JetBrains Mono', ui-monospace, monospace;
-  font-weight: 500; font-size: clamp(1.6rem, 1.2rem + 1.4vw, 2.2rem);
-  line-height: 1; letter-spacing: -.03em; color: rgb(var(--ink));
-  font-variant-numeric: tabular-nums;
-}
-.fact-lbl { margin-top: .5rem; font-size: var(--text-sm); color: rgb(var(--ink2)); line-height: 1.4; }
+/* ---------- LANDING: one screen — points + links, no cards ---------- */
+.points { margin-top: var(--space-7); display: grid; gap: .7rem; max-width: 46ch; }
+.points li { position: relative; padding-left: 1.4rem; font-size: 1.05rem; line-height: 1.5; color: rgb(var(--ink2)); }
+.points li::before { content: "–"; position: absolute; left: 0; color: rgb(var(--ink3)); }
+.points b { color: rgb(var(--ink)); font-weight: 600; }
+.links { margin-top: var(--space-7); display: flex; flex-wrap: wrap; gap: .6rem 1.75rem; font-weight: 600; }
+.links a { color: rgb(var(--ink)); text-decoration: none; border-bottom: 1px solid rgb(var(--hairline)); padding-bottom: .15rem; }
+@media (hover: hover) { .links a:hover { border-color: rgb(var(--ink)); } }
+.hero.is-solo { min-height: calc(100vh - 12rem); padding-bottom: var(--space-9); }
+.is-solo .code-card { max-width: 48rem; }
+@media (max-width: 760px) { .is-solo .code-body { white-space: pre-wrap; font-size: .76rem; } }  /* breaks at the <wbr> hints, not mid-word */
 
 /* ---------- MARGIN NOTES (the signature) ----------
    Wide screens: a right-hand column of always-open notes beside the section.
@@ -1129,193 +1129,6 @@ html[data-theme="void"] .btn-primary { background: rgb(var(--elevated-2)); color
 .mnote p { margin-top: .5rem; }
 .mnote b { color: rgb(var(--ink2)); font-weight: 500; }
 .mnote a { color: rgb(var(--ink2)); text-underline-offset: 2px; }
-
-/* ==========================================================================
- * LIVE RE-SKINNABLE DEMO  (THE SIGNATURE)
- * The device carries its OWN token block, scoped to .demo-stage[data-demo-theme].
- * Flipping data-demo-theme re-skins every child live via a token cross-fade
- * (each demo element transitions its resolved color). Its "alive" states use the
- * demo's own accent, so each demo theme keeps exactly one accent.
- * ========================================================================== */
-
-.demo-stage[data-demo-theme="dawn"] {
-  --surface: 255 251 244; --elevated: 250 244 234; --elevated-2: 244 236 223;
-  --ink: 28 22 17; --ink2: 92 82 71; --ink3: 112 101 89;
-  --hairline: 228 219 205; --muted: 168 156 140;
-  --accent: 230 79 38; --accent-ink: 28 22 17;
-  --signal: var(--accent); --signal-ink: var(--accent-ink);
-}
-.demo-stage[data-demo-theme="dusk"] {
-  --surface: 26 22 20; --elevated: 34 29 26; --elevated-2: 44 38 34;
-  --ink: 244 238 230; --ink2: 188 178 166; --ink3: 138 128 116;
-  --hairline: 56 49 44; --muted: 110 100 90;
-  --accent: 240 96 52; --accent-ink: 26 22 20;
-  --signal: var(--accent); --signal-ink: var(--accent-ink);
-}
-.demo-stage[data-demo-theme="steel"] {
-  --surface: 236 238 241; --elevated: 244 246 249; --elevated-2: 226 229 234;
-  --ink: 26 30 36; --ink2: 78 85 94; --ink3: 122 130 140;
-  --hairline: 210 214 220; --muted: 150 158 168;
-  --accent: 230 79 38; --accent-ink: 26 30 36;   /* ember holds as the one accent, even on cool steel */
-  --signal: var(--accent); --signal-ink: var(--accent-ink);
-}
-
-.demo-device {
-  background: rgb(var(--surface));
-  border: 1px solid rgb(var(--hairline));
-  border-radius: calc(var(--radius) + 6px);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-}
-/* Token cross-fade: every child eases its resolved colors when data-demo-theme
-   flips. Reduced motion clamps this globally. */
-.demo-device, .demo-device * {
-  transition: background-color .45s var(--ease-out-quart),
-              border-color .45s var(--ease-out-quart),
-              color .45s var(--ease-out-quart),
-              fill .45s var(--ease-out-quart),
-              box-shadow .45s var(--ease-out-quart);
-}
-/* App-bar of the device — a genuine product header (brand + live state +
-   controls), deliberately NOT a decorative window frame. */
-.demo-topbar {
-  display: flex; align-items: center; gap: .75rem;
-  padding: .75rem 1rem; border-bottom: 1px solid rgb(var(--hairline));
-  background: rgb(var(--elevated));
-  flex-wrap: wrap;
-}
-.demo-brand { display: inline-flex; align-items: center; gap: .5rem; line-height: 1; }
-.demo-brand .mark {
-  width: 1.6rem; height: 1.6rem; border-radius: 7px; flex: none;
-  background: rgb(var(--accent)); color: rgb(var(--accent-ink));
-  display: inline-flex; align-items: center; justify-content: center;
-  font-family: 'Manrope', sans-serif; font-weight: 800; font-size: .9rem;
-}
-.demo-brand .name { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .95rem; color: rgb(var(--ink)); }
-/* LIVE pill — the signal hue announcing "this is a live, running UI". */
-.demo-live {
-  display: inline-flex; align-items: center; gap: .4rem;
-  font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .12em; text-transform: uppercase;
-  color: rgb(var(--signal-ink)); background: rgb(var(--signal));
-  padding: .25rem .5rem; border-radius: 999px; line-height: 1;
-}
-.demo-live .beat { width: 6px; height: 6px; border-radius: 999px; background: rgb(var(--signal-ink)); }
-
-.demo-controls { margin-left: auto; display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
-.demo-ctl { display: inline-flex; align-items: center; gap: .4rem; }
-.demo-ctl-lbl { font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--ink3)); }
-.demo-seg { display: inline-flex; background: rgb(var(--elevated-2)); border: 1px solid rgb(var(--hairline)); border-radius: 999px; padding: 2px; gap: 2px; }
-.demo-seg button {
-  font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .02em;
-  padding: .28rem .55rem; border-radius: 999px; border: 0; background: transparent;
-  color: rgb(var(--ink2)); cursor: pointer; line-height: 1;
-}
-@media (hover: hover) { .demo-seg button:hover { color: rgb(var(--ink)); } }
-/* ACTIVE demo control = the signal hue → "this is what's live right now". */
-.demo-seg button[aria-pressed="true"] { background: rgb(var(--signal)); color: rgb(var(--signal-ink)); font-weight: 600; }
-
-.demo-body { padding: 1.1rem; display: grid; grid-template-columns: minmax(0, 1fr); gap: 1rem; }
-
-/* stat tiles */
-.demo-tiles { display: grid; gap: .75rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.demo-tile { background: rgb(var(--elevated)); border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); padding: .8rem .85rem; }
-.demo-tile .k { font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--ink3)); }
-.demo-tile .v { margin-top: .3rem; font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 1.5rem; line-height: 1; color: rgb(var(--ink)); font-variant-numeric: tabular-nums; }
-.demo-tile .d { margin-top: .3rem; font-size: .7rem; color: rgb(var(--ink2)); }
-.demo-tile .d.up { color: rgb(var(--signal-ink)); background: rgb(var(--signal)); display: inline-block; padding: .05rem .35rem; border-radius: 999px; }
-
-/* mini chart */
-.demo-panel { background: rgb(var(--elevated)); border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); padding: .9rem; }
-.demo-panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin-bottom: .7rem; }
-.demo-panel-head .t { font-family: 'Manrope', sans-serif; font-weight: 700; font-size: .9rem; color: rgb(var(--ink)); }
-.demo-panel-head .s { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: rgb(var(--ink3)); }
-.demo-chart { display: flex; align-items: flex-end; gap: .45rem; height: 92px; }
-/* .col needs its OWN definite height (100%, resolving against .demo-chart's
-   92px) — without it, the column sizes to its content (bar+label) rather
-   than stretching, so .demo-bar's `height: NN%` below has nothing definite
-   to resolve against and collapses to its min-height sliver. justify-content:
-   flex-end then anchors the bar+label group to the bottom of that 92px box
-   (a shared baseline), so the bars grow upward from the bottom like a real chart. */
-.demo-chart .col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: .35rem; height: 100%; }
-.demo-bar { width: 100%; border-radius: 4px 4px 0 0; background: rgb(var(--ink) / .18); min-height: 4px; }
-.demo-bar.f { background: rgb(var(--accent)); }              /* filled = ember (large fill) */
-.demo-bar.live { background: rgb(var(--signal)); }           /* latest / live = signal */
-.demo-chart .col .xl { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: rgb(var(--ink3)); }
-
-/* recent list */
-.demo-list { display: grid; gap: .1rem; }
-.demo-row { display: flex; align-items: center; gap: .7rem; padding: .55rem .2rem; border-bottom: 1px solid rgb(var(--hairline)); }
-.demo-row:last-child { border-bottom: 0; }
-.demo-av { width: 1.9rem; height: 1.9rem; border-radius: 999px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: rgb(var(--elevated-2)); color: rgb(var(--ink2)); font-family: 'JetBrains Mono', monospace; font-size: .7rem; font-weight: 600; }
-.demo-row .who { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .1rem; }
-.demo-row .who .n { display: block; font-size: .82rem; color: rgb(var(--ink)); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.demo-row .who .m { display: block; font-size: .7rem; color: rgb(var(--ink2)); font-family: 'JetBrains Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.demo-row .amt { font-family: 'JetBrains Mono', monospace; font-size: .8rem; color: rgb(var(--ink)); font-variant-numeric: tabular-nums; }
-.demo-status { font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .06em; text-transform: uppercase; padding: .18rem .45rem; border-radius: 999px; border: 1px solid rgb(var(--hairline)); color: rgb(var(--ink2)); }
-.demo-status.live { color: rgb(var(--signal-ink)); background: rgb(var(--signal)); border-color: transparent; }
-
-.demo-toolbar { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
-.demo-btn {
-  display: inline-flex; align-items: center; gap: .4rem; line-height: 1;
-  font-size: .78rem; font-weight: 600; padding: .5rem .8rem; border-radius: var(--radius);
-  border: 1px solid transparent; cursor: pointer;
-  background: rgb(var(--ink)); color: rgb(var(--surface));   /* ink-filled → passes any size */
-}
-.demo-btn.ghost { background: transparent; color: rgb(var(--ink)); border-color: rgb(var(--hairline)); }
-.demo-note { font-family: 'JetBrains Mono', monospace; font-size: .7rem; color: rgb(var(--ink3)); margin-left: auto; }
-
-/* demo layout toggle: focus mode drops the list, spotlights the chart */
-.demo-stage[data-demo-layout="focus"] .demo-list-panel { display: none; }
-.demo-stage[data-demo-layout="focus"] .demo-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.demo-stage[data-demo-layout="compact"] .demo-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-@media (max-width: 560px) {
-  .demo-tiles { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-  .demo-controls { width: 100%; margin-left: 0; }
-}
-
-/* Empty (first-run) + error faces for the demo's primary collection. Shown/hidden
-   via data-persona-show / data-persona-hide (js/data.js) — the control bar's
-   Persona toggle flips the demo between its populated and first-run states. */
-.demo-state .state { min-height: 9rem; }
-
-/* ---------- FEATURE GRID (01–07) ---------- */
-.feature { position: relative; }
-.feature-num {
-  font-family: 'JetBrains Mono', monospace;
-  font-weight: 500; font-size: 1.15rem; letter-spacing: .02em;
-  color: rgb(var(--ink3));
-}
-.feature-title { margin-top: .5rem; font-family: 'Manrope', sans-serif; font-weight: 700; font-size: 1.3rem; letter-spacing: -.01em; line-height: 1.12; color: rgb(var(--ink)); }
-.feature-body { margin-top: .5rem; font-size: var(--text-base); line-height: 1.55; color: rgb(var(--ink2)); }
-.feature-top { border-top: 1px solid rgb(var(--hairline)); padding-top: var(--space-4); }
-
-/* ---------- BEFORE / AFTER ---------- */
-.ba-grid { display: grid; gap: var(--space-5); grid-template-columns: 1fr; }
-@media (min-width: 820px) { .ba-grid { grid-template-columns: 1fr 1fr; } }
-.ba-card { border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); overflow: hidden; background: rgb(var(--elevated)); display: flex; flex-direction: column; }
-.ba-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .7rem 1rem; border-bottom: 1px solid rgb(var(--hairline)); background: rgb(var(--elevated-2)); }
-.ba-head .lbl { font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--ink2)); }
-.ba-tag { font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .04em; padding: .18rem .45rem; border-radius: 999px; border: 1px solid rgb(var(--hairline)); color: rgb(var(--ink3)); }
-.ba-tag.good { color: rgb(var(--surface)); background: rgb(var(--ink)); border-color: transparent; }
-.ba-body { padding: var(--space-5); flex: 1; }
-
-/* "slop" mock — deliberately generic: centered, flat, muted, low hierarchy.
-   Evokes the tell WITHOUT shipping a real gradient / lorem / flagged name. */
-.slop { text-align: center; color: rgb(var(--ink3)); }
-.slop .mm { width: 2.5rem; height: 2.5rem; border-radius: 999px; background: rgb(var(--muted) / .3); margin: 0 auto .8rem; }
-.slop .h { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; font-weight: 600; font-size: 1.25rem; color: rgb(var(--ink2)); letter-spacing: -.01em; }
-.slop .p { font-family: system-ui, sans-serif; font-size: .9rem; margin-top: .5rem; color: rgb(var(--ink3)); max-width: 22rem; margin-left: auto; margin-right: auto; }
-.slop .pill { margin-top: 1rem; display: inline-block; font-family: system-ui, sans-serif; font-size: .8rem; padding: .5rem 1.1rem; border-radius: 999px; background: rgb(var(--muted) / .25); color: rgb(var(--ink3)); }
-.slop-tells { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; justify-content: center; }
-
-/* considered side */
-.after .k { font-family: 'JetBrains Mono', monospace; font-size: .7rem; letter-spacing: .14em; text-transform: uppercase; color: rgb(var(--ink2)); }
-.after .h { font-family: 'Manrope', sans-serif; font-weight: 800; font-size: 1.7rem; line-height: 1.05; letter-spacing: -.02em; color: rgb(var(--ink)); margin-top: .5rem; max-width: 16ch; }
-.after .p { font-size: .95rem; color: rgb(var(--ink2)); margin-top: .7rem; line-height: 1.5; max-width: 30ch; }
-.after-tells { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; }
-
-/* ---------- CLOSING / INSTALL ---------- */
-.closing .section-title { max-width: 18ch; }
 
 /* Footer */
 .site-foot { border-top: 1px solid rgb(var(--hairline)); }

@@ -127,59 +127,6 @@
     window.UI?.fakeLoad?.(container, duration, { count });
   });
 
-  // ---- LIVE RE-SKINNABLE DEMO (the signature move) ------------------------
-  // Flipping the device's own Theme control swaps data-demo-theme on the stage;
-  // the demo carries its own scoped token block, so every child re-skins live via
-  // a token cross-fade (CSS transitions on .demo-device * ease each resolved
-  // color). The View control swaps data-demo-layout. Interactive/active bits use
-  // the reserved SIGNAL hue (lime) — on this page, lime means "this is alive."
-  const stage = document.querySelector('.demo-stage');
-  if (stage) {
-    function wireDemoSeg(attr, prop) {
-      const btns = document.querySelectorAll('[' + attr + ']');
-      btns.forEach(btn => {
-        btn.addEventListener('click', () => {
-          stage.dataset[prop] = btn.getAttribute(attr);
-          btns.forEach(b => b.setAttribute('aria-pressed', String(b === btn)));
-        });
-      });
-    }
-    wireDemoSeg('data-demo-theme-opt', 'demoTheme');
-    wireDemoSeg('data-demo-layout-opt', 'demoLayout');
-
-    // ---- The state matrix, live: Sync → error → Retry → success ----
-    const listPanel = stage.querySelector('[data-demo-list]');
-    if (listPanel) {
-      const rows    = listPanel.querySelector('[data-demo-rows]');
-      const errFace = listPanel.querySelector('[data-demo-error]');
-      const syncBtn = listPanel.querySelector('[data-demo-sync]');
-      const retryBtn = listPanel.querySelector('[data-demo-retry]');
-      let syncedOk = false;
-
-      function showError() { if (rows) rows.hidden = true; if (errFace) errFace.hidden = false; }
-      function restoreList() {
-        if (errFace) errFace.hidden = true;
-        if (rows) { rows.hidden = false; window.UI && UI.fakeLoad(rows, null, { count: 3 }); }
-      }
-
-      if (syncBtn) {
-        syncBtn.addEventListener('click', () => {
-          // First sync surfaces the error face; the Retry inside it then succeeds —
-          // a real, reachable error→retry loop, not dead markup.
-          if (!syncedOk) { showError(); }
-          else { restoreList(); window.UI && UI.toast('Synced — subscriptions up to date', 'success'); }
-        });
-      }
-      if (retryBtn) {
-        retryBtn.addEventListener('click', () => {
-          syncedOk = true;
-          restoreList();
-          window.UI && UI.toast('Synced — 3 subscriptions up to date', 'success');
-        });
-      }
-    }
-  }
-
   // Expose for console debugging
   window.App = { openModal, closeModal, selectTab };
 })();

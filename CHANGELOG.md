@@ -13,6 +13,10 @@ vendored design files the way getdesign.md does: one page per file.
   - **Themes:** **Mint** (Mintlify's palette), **Linen** (Oura's) and **Void** (Resend's).
   - **Signature:** margin notes that explain the page's own design decisions.
   - **Calm motion.**
+  - **Landing:** one screen, after opensop.ai's simplicity: headline, lead, the install command,
+    five points, three links. The demo, facts, feature cards, comparison and teaser were cut.
+    The control bar there shows only Theme, Motion, Share and Feedback, because a one-screen
+    page has nothing for the other controls to change.
   - **Content:** brought up to v0.9.0, with numbers checked against the repo.
   - Both theme blocks and the type choice are documented in `docs/DESIGN.md` and `docs/PRODUCT.md`.
 - **Library** (`designs.html`): all 84 files with real colour strips. Search and filtering by
@@ -28,7 +32,7 @@ vendored design files the way getdesign.md does: one page per file.
   free face. `design-index.py` runs it after re-vendoring.
 
 ### Not changed
-The skill itself: SKILL.md and the reference playbooks. The live demo's markup and code are kept.
+The skill itself: SKILL.md and the reference playbooks.
 
 ## v0.9.0 — 2026-10-16
 

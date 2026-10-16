@@ -4,8 +4,8 @@ register: brand   # a landing page plus a reference library, for people deciding
 
 ## Product purpose
 The public site for /prototype, a Claude Code skill that builds clickable, zero-dependency HTML
-prototypes. The landing page shows what the skill does (live, re-skinnable demo included) and
-how to install it; the design-file library shows the 84 real-brand DESIGN.md files the skill
+prototypes. The landing page is one screen, after opensop.ai's simplicity: what the skill is, how to
+install it, five points and three links; the design-file library shows the 84 real-brand DESIGN.md files the skill
 reads, one page per file with its palette, type and components drawn live.
 
 ## Users

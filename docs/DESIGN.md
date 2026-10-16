@@ -19,8 +19,7 @@ family. Approved by the maintainer on 2026-10-16, with the palette taken from tw
 ## Color
 One accent per theme, spent as a fill: Mint's mint (always with ink on it; it's ~1.9:1 as text
 on white, so never text), Linen's blue with white on it, and Void's white pill (a monochrome inversion). Links and focus use ink.
-No gradients. The live demo keeps its own token block (Cardinal Coffee's palette) and its
-"alive" states use the demo's own accent.
+No gradients. On the landing page the accent is spent once, on the install Copy button.
 
 ## Typography
 Manrope 400–800, tracking −0.035 to −0.045em on display (Cal.com's tight-tracking signature),
@@ -31,6 +30,11 @@ wordmark and the margin notes. Scale: the committed 1.25 ratio in `css/styles.cs
 72rem column; on ≥1100px a 14rem right column holds the margin notes. Sections separate with a
 hairline and space, never boxes. Radius 8px (12px in Linen); buttons are pills in Mint (Mintlify) and Linen
 (Oura), 8px in Void (Resend). Shadows near-zero (Mint) or none (Void).
+
+## Landing page
+One screen, after opensop.ai's simplicity: headline, a two-line lead, the install command (the
+one accent), five points, three links. The live demo, facts strip, feature cards, comparison and
+teaser were cut; flipping the page's own Theme is the demo now, and the design-file pages carry the proof.
 
 ## Signature move
 **Margin notes** (`.mnote`): small monospace notes beside each section that explain the page's
@@ -49,4 +53,6 @@ the library. No brand logos anywhere.
 ## Control bar
 Theme Mint / Linen / Void · Layout Editorial / Index (feature grid 2-up vs 3-up; library cards roomy vs
 dense; design pages stacked vs palette-and-type side by side) · Persona Live / New (New shows
-first-run explainers and the demo's empty state) · Motion · Loading · Share · Feedback.
+first-run explainers) · Motion · Loading · Share · Feedback. The landing page shows only Theme,
+Motion, Share and Feedback: a one-screen page has no layout, persona or loading state to change,
+and a control that changes nothing is a dead button.

@@ -15,12 +15,19 @@ Assessed with **impeccable** (audit + critique), plus browser QA over CDP on eve
 
 ## Detector (`detect.mjs`): 5 remaining, all verified
 
-- `overused-font` (Roboto) and `marketing-buzzword` ("Empower your workflow"): the deliberate
-  "Generic AI output" sample on the landing page. Intentional.
+- `overused-font` (Roboto) and `marketing-buzzword` ("Empower your workflow") came from the
+  deliberate "Generic AI output" sample. That card left with the landing simplification below.
 - `flat-type-hierarchy` ×3: the 10.4–11.5px steps come from the shared control bar (scaffold
   chrome). The page content uses the committed scale.
 - Earlier false positives, not counted above: `broken-image` hits on `<img>` inside CSS comments, and the
   scaffold's `--spring` easing, used only by the Expressive motion tier.
+
+## Landing simplification (after the critique)
+
+The landing page went to one screen: headline, lead, install, five points, three links, with a
+slim control bar (Theme, Motion, Share, Feedback). The detector reports one finding there,
+`flat-type-hierarchy`, from the control bar's label sizes. All 84 design pages, the library and
+404 were re-checked: no errors and no overflow at 390 or 1440.
 
 ## Critique (impeccable `critique`), dual-agent — 28/40 before fixes
 
