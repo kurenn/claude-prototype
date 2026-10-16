@@ -10,7 +10,7 @@ Assessed with **impeccable** (audit + critique), plus browser QA over CDP on eve
 | Accessibility | 3 | Focus ring now ink (was the mint accent, ~1.9:1). Text floors ≥11px for UI, ≥12px for notes. Shared control-bar labels stay at scaffold sizes. |
 | Performance | 3 | No build, Tailwind CDN (prints its production warning). Per-file JSON fetched on demand. |
 | Responsive | 3 | No horizontal scroll at 390 on any page. Nav links wrap to their own row on phones. |
-| Theming | 4 | Every colour is a token. Mint and Void both checked. The demo carries its own token block. |
+| Theming | 4 | Every colour is a token. Mint, Linen and Void all checked. The demo carries its own token block. |
 | Implementation integrity | 3 | Detector findings 70 → 5, all verified below. |
 
 ## Detector (`detect.mjs`): 5 remaining, all verified

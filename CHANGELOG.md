@@ -10,7 +10,7 @@ vendored design files the way getdesign.md does: one page per file.
 - **Redesign** (`docs/`), clean and minimal, chosen by the skill's own design-file rule:
   - **Type:** Manrope plus JetBrains Mono. Manrope is Cal.com's named free substitute; Inter was
     rejected as a reflex.
-  - **Themes:** **Mint** (Mintlify's palette) and **Void** (Resend's).
+  - **Themes:** **Mint** (Mintlify's palette), **Linen** (Oura's) and **Void** (Resend's).
   - **Signature:** margin notes that explain the page's own design decisions.
   - **Calm motion.**
   - **Content:** brought up to v0.9.0, with numbers checked against the repo.

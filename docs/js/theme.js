@@ -11,7 +11,7 @@
  * whenever either changes here.
  */
 (function () {
-  const THEMES = ['mint', 'void']; // mint = Mintlify's light system, void = Resend's dark one
+  const THEMES = ['mint', 'linen', 'void']; // Mintlify's light system, Oura's warm paper, Resend's dark one
   const DARK_THEME = 'void'; // theme prefers-color-scheme:dark picks — rename alongside THEMES
   const STORAGE_KEY = (window.PROTO_NS || 'proto-') + 'theme';
   const root = document.documentElement;

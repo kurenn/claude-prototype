@@ -20,7 +20,7 @@
       try {
         // Validate against the known themes: a stale key (renamed theme set, or a
         // prototype previously viewed on this origin) must not paint undefined tokens.
-        var THEMES = ['mint', 'void']; // keep in sync with THEMES in js/theme.js
+        var THEMES = ['mint', 'linen', 'void']; // keep in sync with THEMES in js/theme.js
         var t = new URLSearchParams(location.search).get('theme') || localStorage.getItem(window.PROTO_NS + 'theme');
         if (THEMES.indexOf(t) !== -1) {
           document.documentElement.setAttribute('data-theme', t);
@@ -128,9 +128,9 @@ cd my-demo &amp;&amp; python3 serve.py</pre>
       <details class="mnote" open>
         <summary>why it looks like this</summary>
         <p><b>type</b> · Manrope, one family in weights only. Cal.com's DESIGN.md names it as the free stand-in for Cal Sans. Its other pick, Inter, is on the skill's reflex-reject list.</p>
-        <p><b>palette</b> · Mint is Mintlify's system, Void is Resend's. Flip Theme in the bar below.</p>
-        <p><b>accent</b> · mint is a fill with ink on it, never text: it's ~1.9:1 on white.</p>
-        <p><b>buttons</b> · pills in Mint, 8px corners in Void. Each theme keeps its source's shape.</p>
+        <p><b>palette</b> · Mint is Mintlify's system, Linen is Oura's, Void is Resend's. Flip Theme in the bar below.</p>
+        <p><b>accent</b> · one per theme, spent as a fill: Mintlify's mint with ink on it (it's ~1.9:1 as text on white), Oura's blue with white, Resend's white pill.</p>
+        <p><b>buttons</b> · pills in Mint and Linen, 8px corners in Void. Each theme keeps its source's shape.</p>
       </details>
     </div>
   </section>
@@ -425,7 +425,7 @@ cd my-demo &amp;&amp; python3 serve.py</pre>
         <div class="section-head reveal">
           <span class="eyebrow">Design files</span>
           <h2 class="section-title">84 real design systems, read before it designs.</h2>
-          <p class="section-lead">When a brief names a brand or a domain, the skill greps a library of real-brand DESIGN.md files, reads up to three, and takes their free fonts and design DNA, never the brand itself. This site's type and both themes came from three of them.</p>
+          <p class="section-lead">When a brief names a brand or a domain, the skill greps a library of real-brand DESIGN.md files, reads up to three, and takes their free fonts and design DNA, never the brand itself. This site's type and all three themes came from four of them.</p>
         </div>
         <details class="mnote" open>
           <summary>why</summary>
@@ -498,6 +498,7 @@ git clone https://github.com/kurenn/claude-prototype ~/.claude/skills/prototype
         <span class="proto-bar-label">Theme</span>
         <div class="proto-seg-group">
           <button class="proto-seg" data-theme-option="mint" aria-pressed="true">Mint</button>
+          <button class="proto-seg" data-theme-option="linen" aria-pressed="false">Linen</button>
           <button class="proto-seg" data-theme-option="void" aria-pressed="false">Void</button>
         </div>
       </div>

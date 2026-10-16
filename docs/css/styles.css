@@ -14,6 +14,7 @@
  * PALETTE — two themes, each taken from a vendored design file (reference/designs/):
  *   mint — Mintlify's light system: white canvas, near-black ink, neutral greys, one
  *          mint accent. Mint is a FILL with ink on it, never text on white (~1.9:1).
+ *   linen — Oura's warm paper: cream canvas, white cards, near-black ink, one blue accent.
  *   void — Resend's dark system: true-black canvas, cool-white ink, and a white pill
  *          as the "accent" (a monochrome inversion, no hue).
  * Type comes from a third file (Cal.com → Manrope, its named free substitute).
@@ -38,6 +39,26 @@ html[data-theme="mint"] {
   --shadow-sm: none;         /* Mintlify separates with hairlines, not shadow */
   --shadow-md: 0 1px 2px rgb(10 10 10 / .04);
   --shadow-lg: 0 8px 24px rgb(10 10 10 / .06);
+}
+
+html[data-theme="linen"] {
+  --surface:  247 241 232;   /* canvas #f7f1e8 — Oura's warm paper */
+  --elevated: 255 255 255;   /* surface #ffffff — white cards on paper */
+  --elevated-2: 236 236 236; /* surface-grey #ececec */
+  --ink:       28  27  26;   /* ink #1c1b1a */
+  --ink2:      74  71  65;   /* stone #4a4741 */
+  --ink3:     107  68  61;   /* clay #6b443d — Oura's ash #838280 is ~3.5:1 on paper, too faint for small text */
+  --hairline: 225 220 211;   /* hairline #e1dcd3 */
+  --muted:    204 202 199;   /* silver #cccac7 */
+  --accent:    42 114 222;   /* primary #2a72de — a blue, not the cream+amber reflex */
+  --accent-ink: 255 255 255; /* on-primary — 4.6:1 */
+  --signal:    42 114 222;
+  --signal-ink: 255 255 255;
+  --status-error: 227 58 34; /* error #e33a22 */
+  --radius: 12px;            /* rounded.md */
+  --shadow-sm: 0 1px 2px rgb(57 34 30 / .04);
+  --shadow-md: 0 1px 3px rgb(57 34 30 / .05), 0 6px 16px rgb(57 34 30 / .05);
+  --shadow-lg: 0 8px 28px rgb(57 34 30 / .08);
 }
 
 html[data-theme="void"] {
@@ -953,6 +974,7 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
  * ========================================================================== */
 
 html[data-theme="mint"] { --btn-radius: 9999px; }  /* Mintlify: pill buttons */
+html[data-theme="linen"] { --btn-radius: 9999px; } /* Oura: pill buttons */
 html[data-theme="void"] { --btn-radius: 8px; }     /* Resend: 8px buttons */
 
 .eyebrow {

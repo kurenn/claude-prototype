@@ -20,7 +20,7 @@
       try {
         // Validate against the known themes: a stale key (renamed theme set, or a
         // prototype previously viewed on this origin) must not paint undefined tokens.
-        var THEMES = ['mint', 'void']; // keep in sync with THEMES in js/theme.js
+        var THEMES = ['mint', 'linen', 'void']; // keep in sync with THEMES in js/theme.js
         var t = new URLSearchParams(location.search).get('theme') || localStorage.getItem(window.PROTO_NS + 'theme');
         if (THEMES.indexOf(t) !== -1) {
           document.documentElement.setAttribute('data-theme', t);
@@ -171,6 +171,7 @@
         <span class="proto-bar-label">Theme</span>
         <div class="proto-seg-group">
           <button class="proto-seg" data-theme-option="mint" aria-pressed="true">Mint</button>
+          <button class="proto-seg" data-theme-option="linen" aria-pressed="false">Linen</button>
           <button class="proto-seg" data-theme-option="void" aria-pressed="false">Void</button>
         </div>
       </div>
