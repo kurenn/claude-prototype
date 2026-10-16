@@ -24,7 +24,7 @@
  */
 (function () {
   const TIERS = ['calm', 'standard', 'expressive']; // keep in sync with data-motion CSS + the anti-FOUC default
-  const DEFAULT_TIER = 'expressive'; // landing/pitch register → expressive (chosen in DESIGN.md); keep in sync with anti-FOUC
+  const DEFAULT_TIER = 'calm'; // a reading site → calm (fades only); keep in sync with anti-FOUC
   const STORAGE_KEY = (window.PROTO_NS || 'proto-') + 'motion';
   const root = document.documentElement;
 

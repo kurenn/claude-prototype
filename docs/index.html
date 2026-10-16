@@ -1,11 +1,12 @@
 <!doctype html>
-<!-- prototype · pre-emit: P5 H4 E4 S4 R4 V4 — weakest: Execution. Reconciled after lint + browser QA: ember-flood contrast holds (large-text only; all small labels ride fills/chips), zero console errors, no 390px overflow, state matrix complete. E stays 4, not 5 — the flood's large-text contrast (~3.7:1) clears the AA-large bar but with modest margin, and the hero build-in / theme-morph feel still wants a live-tuning pass. -->
-<html lang="en" data-proto-app="claude-prototype" data-theme="daylight" data-layout="editorial" data-persona="default" data-motion="expressive">
+<!-- prototype · pre-emit: P4 H4 E3 S4 R4 V4 — weakest: Execution. Lowered from E4 after critique: the hero grid overflowed below 1100px and the focus ring used the mint accent (~1.9:1). Both fixed; E stays 3 because the kept demo still carries another product's palette. -->
+<html lang="en" data-proto-app="claude-prototype" data-theme="mint" data-layout="editorial" data-persona="default" data-motion="calm">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>claude-prototype — prototypes that refuse to look AI-generated</title>
-  <meta name="description" content="A Claude Code skill that generates production-feel, zero-dependency HTML prototypes — Tailwind CDN and vanilla JS, no build step, clone and run." />
+  <meta name="description" content="A Claude Code skill that builds clickable, zero-dependency HTML prototypes from real design files — Tailwind CDN and vanilla JS, no build step." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%2300d4a4' stroke='%230a0a0a' stroke-opacity='.15'/%3E%3C/svg%3E" />
 
   <script>
     // Anti-FOUC: apply stored theme + motion tier before first paint.
@@ -19,16 +20,16 @@
       try {
         // Validate against the known themes: a stale key (renamed theme set, or a
         // prototype previously viewed on this origin) must not paint undefined tokens.
-        var THEMES = ['daylight', 'ember', 'paper']; // keep in sync with THEMES in js/theme.js
-        var t = localStorage.getItem(window.PROTO_NS + 'theme');
+        var THEMES = ['mint', 'void']; // keep in sync with THEMES in js/theme.js
+        var t = new URLSearchParams(location.search).get('theme') || localStorage.getItem(window.PROTO_NS + 'theme');
         if (THEMES.indexOf(t) !== -1) {
           document.documentElement.setAttribute('data-theme', t);
         } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.documentElement.setAttribute('data-theme', 'ember'); // DARK_THEME in theme.js
+          document.documentElement.setAttribute('data-theme', 'void'); // DARK_THEME in theme.js
         }
-        // This landing defaults to the expressive tier (see DESIGN.md → Motion).
+        // A reading site defaults to the calm tier (fades only).
         var m = localStorage.getItem(window.PROTO_NS + 'motion');
-        document.documentElement.setAttribute('data-motion', (m === 'calm' || m === 'standard') ? m : 'expressive');
+        document.documentElement.setAttribute('data-motion', (m === 'standard' || m === 'expressive') ? m : 'calm');
       } catch (e) {}
     })();
   </script>
@@ -36,11 +37,11 @@
   <!-- Cross-document View Transitions — non-deferred, before Tailwind CDN. -->
   <script src="js/vt.js"></script>
 
-  <!-- Fonts: Bricolage Grotesque (display) · Instrument Sans (body) · Chivo Mono
-       (eyebrows/numbers/code/badges) · Fraunces opsz (one editorial wordmark moment). -->
+  <!-- Fonts: Manrope (one family, weights only — Cal.com's named free substitute for
+       Cal Sans) · JetBrains Mono (code, labels, numbers, margin notes). -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Instrument+Sans:wght@400;500&family=Chivo+Mono:wght@400;500;700&family=Fraunces:ital,opsz,wght@0,9..144,600;1,9..144,600&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
 
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
@@ -60,10 +61,9 @@
             'accent-ink':'rgb(var(--accent-ink)  / <alpha-value>)',
           },
           fontFamily: {
-            heading:   ['Bricolage Grotesque', 'system-ui', 'sans-serif'],
-            body:      ['Instrument Sans', 'system-ui', 'sans-serif'],
-            mono:      ['Chivo Mono', 'ui-monospace', 'monospace'],
-            editorial: ['Fraunces', 'Georgia', 'serif'],
+            heading: ['Manrope', 'system-ui', 'sans-serif'],
+            body:    ['Manrope', 'system-ui', 'sans-serif'],
+            mono:    ['JetBrains Mono', 'ui-monospace', 'monospace'],
           },
           borderRadius: { proto: 'var(--radius)' },
         },
@@ -73,37 +73,38 @@
 
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/feedback.css" />
+  <link rel="stylesheet" href="css/designs.css" />
 </head>
 <body class="bg-surface text-ink font-body antialiased">
 
-  <!-- ============================ HERO (ember flood) ============================ -->
-  <header class="ember-flood hero" style="view-transition-name: app-header">
+  <header class="masthead" style="view-transition-name: app-header">
     <div class="wrap">
       <nav class="site-nav" aria-label="Primary">
         <a class="wordmark" href="index.html">claude-prototype<span class="dot">/</span></a>
-        <a class="btn btn-flood" href="https://github.com/kurenn/claude-prototype">Get the skill&nbsp;↗</a>
-      </nav>
-
-      <div class="hero-inner">
-        <span class="hero-eyebrow"><span class="tick" aria-hidden="true"></span>Claude Code skill · v0.4.0</span>
-
-        <div class="hero-title-wrap">
-          <h1 class="hero-title">
-            <span class="ln" style="--l:0"><span>Prototypes that</span></span>
-            <span class="ln" style="--l:1"><span>refuse to look</span></span>
-            <span class="ln" style="--l:2"><span>AI-generated.</span></span>
-          </h1>
-          <span class="hero-scan" aria-hidden="true"></span>
+        <div class="nav-links">
+          <a href="designs.html">Design files</a>
+          <a class="nav-gh" href="https://github.com/kurenn/claude-prototype">GitHub&nbsp;↗</a>
+          <a class="btn btn-accent btn-sm" href="index.html#install">Get the skill</a>
         </div>
+      </nav>
+    </div>
+  </header>
 
+  <main>
+  <!-- ============================ HERO ============================ -->
+  <section class="hero">
+    <div class="wrap has-notes">
+      <div>
+        <span class="hero-eyebrow"><span class="tick" aria-hidden="true"></span>Claude Code skill · v0.9.0</span>
+        <h1 class="hero-title">Prototypes that refuse to look AI&#8209;generated.</h1>
         <p class="hero-lead">
           Type <span class="font-mono" style="font-weight:700">/prototype</span> in Claude Code and get a clickable,
-          themeable, zero-dependency HTML prototype — Tailwind CDN and vanilla JS, no build step, clone&nbsp;and&nbsp;run.
+          themeable HTML prototype. It asks how the thing should feel, reads real design files, and confirms a
+          direction with you before it builds a single screen. Tailwind CDN and vanilla JS, no build step.
         </p>
-
         <div class="hero-cta">
-          <a class="btn btn-flood btn-lg" href="#demo">See it re-skin itself&nbsp;↓</a>
-          <a class="btn btn-flood btn-lg" href="#features">What it does&nbsp;→</a>
+          <a class="btn btn-primary btn-lg" href="#demo">See it re-skin itself&nbsp;↓</a>
+          <a class="btn btn-ghost btn-lg" href="designs.html">Browse the design files&nbsp;→</a>
         </div>
 
         <div class="code-card">
@@ -123,37 +124,50 @@ git clone https://github.com/kurenn/claude-prototype ~/.claude/skills/prototype
 cd my-demo &amp;&amp; python3 serve.py</pre>
         </div>
       </div>
-    </div>
-  </header>
 
-  <!-- ============================ FACT STRIP (real facts) ============================ -->
-  <section class="section" style="padding-top:var(--space-7);padding-bottom:var(--space-6)">
+      <details class="mnote" open>
+        <summary>why it looks like this</summary>
+        <p><b>type</b> · Manrope, one family in weights only. Cal.com's DESIGN.md names it as the free stand-in for Cal Sans. Its other pick, Inter, is on the skill's reflex-reject list.</p>
+        <p><b>palette</b> · Mint is Mintlify's system, Void is Resend's. Flip Theme in the bar below.</p>
+        <p><b>accent</b> · mint is a fill with ink on it, never text: it's ~1.9:1 on white.</p>
+        <p><b>buttons</b> · pills in Mint, 8px corners in Void. Each theme keeps its source's shape.</p>
+      </details>
+    </div>
+  </section>
+
+  <!-- ============================ FACTS (real numbers, checked against the repo) ============================ -->
+  <section class="section" style="padding-top:var(--space-7);padding-bottom:var(--space-7)">
     <div class="wrap">
       <div class="factbar">
-        <div class="fact reveal" style="--i:0"><div class="fact-num">35</div><div class="fact-lbl">slop-gate lint rules run before handoff</div></div>
-        <div class="fact reveal" style="--i:1"><div class="fact-num">6</div><div class="fact-lbl">axes of pre-emit self-critique per screen</div></div>
-        <div class="fact reveal" style="--i:2"><div class="fact-num">3</div><div class="fact-lbl">motion tiers — calm · standard · expressive</div></div>
-        <div class="fact reveal" style="--i:3"><div class="fact-num">0</div><div class="fact-lbl">build steps — Tailwind CDN + vanilla JS</div></div>
+        <div class="fact reveal" style="--i:0"><div class="fact-num">84</div><div class="fact-lbl">real-brand design files it reads before it designs</div></div>
+        <div class="fact reveal" style="--i:1"><div class="fact-num">37</div><div class="fact-lbl">slop-gate lint rules run before handoff</div></div>
+        <div class="fact reveal" style="--i:2"><div class="fact-num">6</div><div class="fact-lbl">axes of self-critique on every screen</div></div>
+        <div class="fact reveal" style="--i:3"><div class="fact-num">0</div><div class="fact-lbl">build steps: Tailwind CDN and vanilla JS</div></div>
       </div>
     </div>
   </section>
 
-  <!-- ============================ THE LIVE RE-SKINNABLE DEMO (signature) ============================ -->
   <section class="section" id="demo">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">The signature — a live demo</span>
-        <h2 class="section-title">The product, demonstrating itself.</h2>
-        <div class="rule-accent" aria-hidden="true"></div>
-        <p class="section-lead">
-          Below is a real, running mini-dashboard — one of the kind the skill outputs. Flip its
-          <strong>Theme</strong> or <strong>View</strong> and it re-skins live, tokens cross-fading in place.
-          Everything that's <em>alive</em> — the active control, the live row, today's bar — lights up in one
-          reserved signal hue. Nothing else on this page uses it.
-        </p>
+      <div class="has-notes">
+        <div class="section-head reveal">
+          <span class="eyebrow">The signature, live</span>
+          <h2 class="section-title">The product, demonstrating itself.</h2>
+          <p class="section-lead">
+            Below is a real, running mini-dashboard of the kind the skill outputs. Flip its
+            <strong>Theme</strong> or <strong>View</strong> and it re-skins live, tokens cross-fading in place.
+            Everything that's <em>alive</em>, the active control, the live row and today's bar, lights up in
+            the demo's one accent.
+          </p>
+        </div>
+        <details class="mnote" open>
+          <summary>why</summary>
+          <p><b>signature</b> · the demo carries its own token block, so it re-skins without touching the page around it.</p>
+          <p><b>persona</b> · flip Persona to New for its first-run empty state.</p>
+        </details>
       </div>
 
-      <div class="demo-stage reveal" data-demo-theme="dusk" data-demo-layout="dashboard" style="margin-top:var(--space-6)">
+      <div class="demo-stage reveal" data-demo-theme="dawn" data-demo-layout="dashboard" style="margin-top:var(--space-6)">
         <div class="demo-device">
           <!-- device app-bar (a real product header — not re-drawn browser chrome) -->
           <div class="demo-topbar">
@@ -167,8 +181,8 @@ cd my-demo &amp;&amp; python3 serve.py</pre>
               <div class="demo-ctl">
                 <span class="demo-ctl-lbl">Theme</span>
                 <div class="demo-seg" role="group" aria-label="Demo theme">
-                  <button type="button" data-demo-theme-opt="dawn"  aria-pressed="false">Dawn</button>
-                  <button type="button" data-demo-theme-opt="dusk"  aria-pressed="true">Dusk</button>
+                  <button type="button" data-demo-theme-opt="dawn"  aria-pressed="true">Dawn</button>
+                  <button type="button" data-demo-theme-opt="dusk"  aria-pressed="false">Dusk</button>
                   <button type="button" data-demo-theme-opt="steel" aria-pressed="false">Steel</button>
                 </div>
               </div>
@@ -295,49 +309,51 @@ cd my-demo &amp;&amp; python3 serve.py</pre>
   </section>
 
   <!-- ============================ FEATURE GRID (01–07) ============================ -->
+
+  <!-- ============================ FEATURES ============================ -->
   <section class="section" id="features">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">What it actually does</span>
-        <h2 class="section-title">Seven things that keep it from looking generated.</h2>
-        <div class="rule-accent" aria-hidden="true"></div>
+      <div class="has-notes">
+        <div class="section-head reveal">
+          <span class="eyebrow">What it actually does</span>
+          <h2 class="section-title">Six things that keep it from looking generated.</h2>
+        </div>
+        <details class="mnote" open>
+          <summary>why</summary>
+          <p><b>layout</b> · Editorial is 2-up, Index is a dense 3-up. That's the Layout control below.</p>
+        </details>
       </div>
 
       <div class="proto-grid" style="margin-top:var(--space-6)">
         <article class="feature feature-top reveal" style="--i:0">
           <div class="feature-num">01</div>
           <h3 class="feature-title">Interactive discovery</h3>
-          <p class="feature-body">It asks how the thing should <em>feel</em> before it builds. A short Q&amp;A — tone, inspiration, audience, scope — drives real, domain-matched content, and it confirms the design direction with you before writing a single screen.</p>
+          <p class="feature-body">It asks how the thing should <em>feel</em> before it builds. A short Q&amp;A on tone, inspiration, audience and scope drives real, domain-matched content, and it confirms the design direction with you before writing a single screen.</p>
         </article>
         <article class="feature feature-top reveal" style="--i:1">
           <div class="feature-num">02</div>
-          <h3 class="feature-title">Anti-slop design intelligence</h3>
-          <p class="feature-body">Tone-keyed font and palette menus with anti-monoculture rotation, plus guards against the category reflex and the “tasteful AI editorial” cluster — warm + display-serif + amber — that's become its own machine-made tell.</p>
+          <h3 class="feature-title">Real design files, not guesses</h3>
+          <p class="feature-body">It greps 84 vendored real-brand DESIGN.md files for your brand or domain, reads up to three, and takes their free fonts and design DNA, never the brand. Tone-keyed font and palette menus are the fallback, with guards against the category reflex.</p>
         </article>
         <article class="feature feature-top reveal" style="--i:2">
           <div class="feature-num">03</div>
           <h3 class="feature-title">A QA loop that critiques itself</h3>
-          <p class="feature-body">A pre-emit self-critique scores every screen on six hostile-reviewer axes, 35 slop-gate lint rules run before handoff, and a blind design judge ranks rendered output. Assess is a non-skippable completion gate.</p>
+          <p class="feature-body">A pre-emit self-critique scores every screen on six hostile-reviewer axes, 37 slop-gate lint rules run before handoff, and a blind design judge ranks rendered output. Assess is a completion gate you can't skip.</p>
         </article>
         <article class="feature feature-top reveal" style="--i:3">
           <div class="feature-num">04</div>
-          <h3 class="feature-title">Premium motion, zero deps</h3>
-          <p class="feature-body">Cross-document View Transitions, a fake-latency loading engine with spinner-delay discipline, and three motion tiers the skill picks from context — all vanilla, all degrading cleanly under reduced motion.</p>
+          <h3 class="feature-title">Zero dependencies, no build</h3>
+          <p class="feature-body">Plain HTML, Tailwind via CDN and a few vanilla JS files, deployable to any static host as it is. View Transitions, a fake-latency loading engine and three motion tiers come built in, all degrading cleanly under reduced motion.</p>
         </article>
         <article class="feature feature-top reveal" style="--i:4">
           <div class="feature-num">05</div>
           <h3 class="feature-title">The always-on control bar</h3>
-          <p class="feature-body">Every prototype ships one visible bar — Theme · Layout · Persona · Motion · Loading · Share · Feedback. It never wraps to a second line, and reviewers judge the options they can see. It's the one you're looking at now.</p>
+          <p class="feature-body">Every prototype ships one visible bar: Theme, Layout, Persona, Motion, Loading, Share and Feedback. It never wraps to a second line, and reviewers judge the options they can see. It's the one at the bottom of this page.</p>
         </article>
         <article class="feature feature-top reveal" style="--i:5">
           <div class="feature-num">06</div>
-          <h3 class="feature-title">Clone-and-run, no build</h3>
-          <p class="feature-body">Plain HTML, Tailwind via CDN, a handful of vanilla JS files. No webpack, no Node, no framework — it deploys to any static host as-is. If it needs a build step, it isn't a prototype.</p>
-        </article>
-        <article class="feature feature-top reveal" style="--i:6">
-          <div class="feature-num">07</div>
           <h3 class="feature-title">Decisions stated on purpose</h3>
-          <p class="feature-body">Signature move, icon stance, imagery stance, motion tier — every prototype names them in <span class="font-mono" style="font-size:.9em">DESIGN.md</span>. Design by decision, not by accident.</p>
+          <p class="feature-body">Signature move, icon stance, imagery stance, motion tier: every prototype names them in its DESIGN.md. Design by decision, not by accident, the way the notes in this page's margin do.</p>
         </article>
       </div>
     </div>
@@ -346,10 +362,15 @@ cd my-demo &amp;&amp; python3 serve.py</pre>
   <!-- ============================ BEFORE / AFTER ============================ -->
   <section class="section" id="contrast">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">The whole point</span>
-        <h2 class="section-title">One of these looks generated. One was decided.</h2>
-        <div class="rule-accent" aria-hidden="true"></div>
+      <div class="has-notes">
+        <div class="section-head reveal">
+          <span class="eyebrow">The whole point</span>
+          <h2 class="section-title">One of these looks generated. One was decided.</h2>
+        </div>
+        <details class="mnote" open>
+          <summary>why</summary>
+          <p><b>left card</b> · built from reflexes the lint rules catch: everything centered, a system font, copy that could sell anything, and a button that goes nowhere.</p>
+        </details>
       </div>
 
       <div class="ba-grid" style="margin-top:var(--space-6)">
@@ -365,9 +386,9 @@ cd my-demo &amp;&amp; python3 serve.py</pre>
               <div class="p">Empower your workflow. Streamline everything. Scale effortlessly with our all-in-one platform.</div>
               <div class="pill">Get Started</div>
               <div class="slop-tells">
-                <span class="ba-tag">purple → blue gradient</span>
-                <span class="ba-tag">glassmorphism</span>
-                <span class="ba-tag">Inter, centered</span>
+                <span class="ba-tag">centered everything</span>
+                <span class="ba-tag">vague copy</span>
+                <span class="ba-tag">system font</span>
                 <span class="ba-tag">dead buttons</span>
               </div>
             </div>
@@ -381,12 +402,12 @@ cd my-demo &amp;&amp; python3 serve.py</pre>
           </div>
           <div class="ba-body">
             <div class="after">
-              <div class="k">Cardinal Coffee · v2</div>
-              <div class="h">Ship the roast while it's still warm.</div>
-              <div class="p">One accent. Real hierarchy. Type that carries the page, and every button wired to something.</div>
+              <div class="k">claude-prototype · v0.9.0</div>
+              <div class="h">Prototypes that refuse to look AI&#8209;generated.</div>
+              <div class="p">One family in weights only. One accent, spent as a fill. Hairlines instead of boxes, and every button wired to something.</div>
               <div class="after-tells">
-                <span class="ba-tag good">one accent + reserved signal</span>
-                <span class="ba-tag">committed type scale</span>
+                <span class="ba-tag good">one accent</span>
+                <span class="ba-tag">fonts from a design file</span>
                 <span class="ba-tag">left-aligned hierarchy</span>
                 <span class="ba-tag">everything clickable</span>
               </div>
@@ -397,98 +418,75 @@ cd my-demo &amp;&amp; python3 serve.py</pre>
     </div>
   </section>
 
-  <!-- ============================ VARIANT WALL ============================ -->
-  <section class="section" id="range">
+  <!-- ============================ DESIGN FILES (teaser) ============================ -->
+  <section class="section" id="design-files">
     <div class="wrap">
-      <div class="section-head reveal">
-        <span class="eyebrow">The range</span>
-        <h2 class="section-title">Same skill. Whatever tone the brief asks for.</h2>
-        <div class="rule-accent" aria-hidden="true"></div>
-        <p class="section-lead">Tone drives the type and palette — not a template. Four families it reaches for, each a deliberate, disciplined direction rather than a coat of paint.</p>
+      <div class="has-notes">
+        <div class="section-head reveal">
+          <span class="eyebrow">Design files</span>
+          <h2 class="section-title">84 real design systems, read before it designs.</h2>
+          <p class="section-lead">When a brief names a brand or a domain, the skill greps a library of real-brand DESIGN.md files, reads up to three, and takes their free fonts and design DNA, never the brand itself. This site's type and both themes came from three of them.</p>
+        </div>
+        <details class="mnote" open>
+          <summary>why</summary>
+          <p><b>source</b> · <a href="https://github.com/VoltAgent/awesome-design-md">VoltAgent/awesome-design-md</a>, MIT, vendored at a pinned commit.</p>
+          <p><b>brands</b> · own their names and identities. Not affiliated.</p>
+        </details>
       </div>
 
-      <div class="variant-grid" style="margin-top:var(--space-6)">
-        <div class="variant v-mono reveal" style="--i:0">
-          <div class="canvas">
-            <span class="kicker">systems · v2</span>
-            <span class="big">uptime.sh</span>
-            <span class="v-swatch" aria-hidden="true"><i class="k"></i><i class="a"></i><i class="m"></i></span>
-          </div>
-          <div class="foot"><span class="name">observability</span><span class="tone">technical</span></div>
-        </div>
-        <div class="variant v-edit reveal" style="--i:1">
-          <div class="canvas">
-            <span class="kicker">field notes</span>
-            <span class="big">Slow&nbsp;Press</span>
-            <span class="v-swatch" aria-hidden="true"><i class="k"></i><i class="h"></i><i class="a"></i></span>
-          </div>
-          <div class="foot"><span class="name">quarterly</span><span class="tone">editorial</span></div>
-        </div>
-        <div class="variant v-play reveal" style="--i:2">
-          <div class="canvas">
-            <span class="kicker">juice co.</span>
-            <span class="big">Bloom!</span>
-            <span class="v-swatch" aria-hidden="true"><i class="a"></i><i class="k"></i><i class="m"></i></span>
-          </div>
-          <div class="foot"><span class="name">storefront</span><span class="tone">playful</span></div>
-        </div>
-        <div class="variant v-min reveal" style="--i:3">
-          <div class="canvas">
-            <span class="kicker">studio</span>
-            <span class="big">Åre Atelier</span>
-            <span class="v-swatch" aria-hidden="true"><i class="h"></i><i class="k"></i><i class="m"></i></span>
-          </div>
-          <div class="foot"><span class="name">portfolio</span><span class="tone">minimal</span></div>
-        </div>
-      </div>
+      <ul class="lib-grid lib-teaser" data-lib-teaser="cal mintlify resend claude stripe ferrari" aria-label="Six of the design files" style="margin-top:var(--space-6)"></ul>
+      <a class="btn btn-ghost" href="designs.html" style="margin-top:var(--space-6)">Browse all 84 design files&nbsp;→</a>
     </div>
   </section>
 
-  <!-- ============================ CLOSING / INSTALL (ember flood + Fraunces moment) ============================ -->
-  <section class="ember-flood closing section" id="install">
-    <div class="wrap reveal" style="position:relative;z-index:2">
-      <p class="editorial-mark">proto<span class="it">type</span>.</p>
-
-      <p class="hero-lead" style="max-width:30ch;margin-top:var(--space-4)">
-        Install once, then build prototypes by talking to Claude. It's open source, and it runs anywhere a browser opens.
-      </p>
-
-      <div class="code-card" style="margin-top:var(--space-6)">
-        <div class="code-card-head">
-          <span class="lbl">get started</span>
-          <button class="code-copy" type="button"
-                  data-copy="git clone https://github.com/kurenn/claude-prototype ~/.claude/skills/prototype"
-                  data-copy-success="Copied ✓">Copy</button>
-        </div>
+  <!-- ============================ CLOSING / INSTALL ============================ -->
+  <section class="section closing" id="install">
+    <div class="wrap has-notes">
+      <div class="reveal">
+        <span class="eyebrow">Get started</span>
+        <h2 class="section-title">Install once. Then just describe what you want.</h2>
+        <div class="code-card">
+          <div class="code-card-head">
+            <span class="lbl">get started</span>
+            <button class="code-copy" type="button"
+                    data-copy="git clone https://github.com/kurenn/claude-prototype ~/.claude/skills/prototype"
+                    data-copy-success="Copied ✓">Copy</button>
+          </div>
 <pre class="code-body"><span class="c-comment"># clone into Claude Code's skills directory</span>
 git clone https://github.com/kurenn/claude-prototype ~/.claude/skills/prototype
 
 <span class="c-comment"># restart the session, then just type</span>
 <span class="c-prompt">/prototype</span></pre>
+        </div>
+        <div class="hero-cta">
+          <a class="btn btn-accent btn-lg" href="https://github.com/kurenn/claude-prototype">Get the skill on GitHub&nbsp;↗</a>
+          <a class="btn btn-ghost btn-lg" href="https://github.com/kurenn/claude-prototype/blob/main/CHANGELOG.md">Read the changelog</a>
+        </div>
       </div>
-
-      <div class="hero-cta">
-        <a class="btn btn-flood btn-lg" href="https://github.com/kurenn/claude-prototype">Get the skill on GitHub&nbsp;↗</a>
-        <a class="btn btn-flood btn-lg" href="https://github.com/kurenn/claude-prototype/blob/main/CHANGELOG.md">Read the changelog</a>
-      </div>
-
-      <p class="hero-eyebrow" style="margin-top:var(--space-5)">MIT · v0.4.0 · zero dependencies</p>
+      <details class="mnote" open>
+        <summary>why</summary>
+        <p><b>motion</b> · calm, fades only: this is a page for reading. Try Std or Exp in the bar.</p>
+        <p><b>accent</b> · spent twice on this page: the nav button and this one.</p>
+      </details>
     </div>
   </section>
+  </main>
 
   <!-- ============================ FOOTER ============================ -->
   <footer class="site-foot">
     <div class="wrap">
       <div class="foot-row">
-        <span class="wordmark" style="color:rgb(var(--ink))">claude-prototype<span class="dot" style="color:rgb(var(--ink3))">/</span></span>
+        <span class="wordmark">claude-prototype<span class="dot">/</span></span>
         <nav class="foot-links" aria-label="Footer">
+          <a href="designs.html">Design files</a>
           <a href="https://github.com/kurenn/claude-prototype">GitHub</a>
           <a href="https://github.com/kurenn/claude-prototype#readme">README</a>
           <a href="https://github.com/kurenn/claude-prototype/blob/main/CHANGELOG.md">Changelog</a>
           <a href="https://impeccable.style/">impeccable</a>
+          <a href="https://github.com/VoltAgent/awesome-design-md">awesome-design-md</a>
           <a href="https://github.com/kurenn/claude-prototype/blob/main/LICENSE">MIT license</a>
         </nav>
-        <span style="font-family:'Chivo Mono',monospace;font-size:.72rem;color:rgb(var(--ink2))">Built with claude-prototype</span>
+        <span class="foot-made">Built with claude-prototype</span>
       </div>
     </div>
   </footer>
@@ -499,9 +497,8 @@ git clone https://github.com/kurenn/claude-prototype ~/.claude/skills/prototype
       <div class="proto-bar-section">
         <span class="proto-bar-label">Theme</span>
         <div class="proto-seg-group">
-          <button class="proto-seg" data-theme-option="daylight" aria-pressed="true">Daylight</button>
-          <button class="proto-seg" data-theme-option="ember"    aria-pressed="false">Ember</button>
-          <button class="proto-seg" data-theme-option="paper"    aria-pressed="false">Paper</button>
+          <button class="proto-seg" data-theme-option="mint" aria-pressed="true">Mint</button>
+          <button class="proto-seg" data-theme-option="void" aria-pressed="false">Void</button>
         </div>
       </div>
       <div class="proto-bar-section">
@@ -521,9 +518,9 @@ git clone https://github.com/kurenn/claude-prototype ~/.claude/skills/prototype
       <div class="proto-bar-section">
         <span class="proto-bar-label">Motion</span>
         <div class="proto-seg-group">
-          <button class="proto-seg" data-motion-option="calm"       aria-pressed="false">Calm</button>
+          <button class="proto-seg" data-motion-option="calm"       aria-pressed="true">Calm</button>
           <button class="proto-seg" data-motion-option="standard"   aria-pressed="false">Std</button>
-          <button class="proto-seg" data-motion-option="expressive" aria-pressed="true">Exp</button>
+          <button class="proto-seg" data-motion-option="expressive" aria-pressed="false">Exp</button>
         </div>
       </div>
       <div class="proto-bar-section">
@@ -552,6 +549,8 @@ git clone https://github.com/kurenn/claude-prototype ~/.claude/skills/prototype
   <script src="js/ui.js"></script>
   <script src="js/loading.js"></script>
   <script src="js/app.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/library.js"></script>
   <script src="js/feedback.js"></script>
 </body>
 </html>

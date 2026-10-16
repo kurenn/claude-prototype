@@ -4,11 +4,12 @@ reference/design-index.md from it.
 
 Pinned to one upstream commit so the files only change when we choose to re-vendor.
 The build itself never touches the network: discovery reads reference/designs/<slug>.md.
+Afterwards it runs design-pages.py, which refreshes the site copy in docs/designs/.
 
     python3 reference/design-index.py            # re-vendor the pinned commit
     python3 reference/design-index.py <sha>      # move the pin to another commit
 """
-import collections, io, pathlib, re, sys, tarfile, urllib.request
+import collections, io, pathlib, re, runpy, sys, tarfile, urllib.request
 
 REPO = "VoltAgent/awesome-design-md"
 SHA = sys.argv[1] if len(sys.argv) > 1 else "3b605329240ce735b510037cca322f1831fdd7f8"
@@ -69,3 +70,6 @@ lines = [
 ]
 (HERE / "design-index.md").write_text("\n".join(lines), encoding="utf-8")
 print(f"vendored {len(files)} files at {SHA[:7]}; {len(cats)} categories")
+
+# The site serves its own copy of the files (GitHub Pages only serves docs/).
+runpy.run_path(str(HERE / "design-pages.py"), run_name="__main__")

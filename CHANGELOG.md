@@ -1,5 +1,35 @@
 # Changelog
 
+## v0.10.0 — 2026-10-16
+
+**The site, rebuilt with the skill, plus a design-file library.** kurenn.github.io/claude-prototype
+still showed v0.4.0 and its old look. It's now rebuilt with `/prototype` itself, and it shows the 84
+vendored design files the way getdesign.md does: one page per file.
+
+### What ships
+- **Redesign** (`docs/`), clean and minimal, chosen by the skill's own design-file rule:
+  - **Type:** Manrope plus JetBrains Mono. Manrope is Cal.com's named free substitute; Inter was
+    rejected as a reflex.
+  - **Themes:** **Mint** (Mintlify's palette) and **Void** (Resend's).
+  - **Signature:** margin notes that explain the page's own design decisions.
+  - **Calm motion.**
+  - **Content:** brought up to v0.9.0, with numbers checked against the repo.
+  - Both theme blocks and the type choice are documented in `docs/DESIGN.md` and `docs/PRODUCT.md`.
+- **Library** (`designs.html`): all 84 files with real colour strips. Search and filtering by
+  category both live in the URL. It has loading, empty and error states.
+- **Per-file pages** (`design.html?f=<slug>`), each drawn from the file's own tokens:
+  - a live preview, with light/dark when the file has dark surfaces;
+  - every colour with its job;
+  - the type hierarchy set in the file's free fonts;
+  - the full file, with copy and download.
+  - Each page credits VoltAgent and says the brand isn't affiliated.
+- **`reference/design-pages.py`** writes `docs/designs/` (the site's copy, because Pages serves only
+  `docs/`) and asks Google Fonts once per family which fonts exist, so every role previews in a real
+  free face. `design-index.py` runs it after re-vendoring.
+
+### Not changed
+The skill itself: SKILL.md and the reference playbooks. The live demo's markup and code are kept.
+
 ## v0.9.0 — 2026-10-16
 
 **Vendored real-brand design files.** Discovery can now match a brief against 84 real-brand
