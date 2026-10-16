@@ -4,7 +4,7 @@ The skill already reads a **shared reference's DNA** per build (`reference/disco
 "Reading a shared reference"). This file is where that reading **persists** so each build gets
 smarter than the last. It is a staging area, not a style to copy: entries are distilled to
 *lessons*, and proven lessons **graduate** into the always-consulted menus. For domains this corpus
-doesn't cover, discovery also greps `reference/design-index.md` and fetches matching files live.
+doesn't cover, discovery also greps `reference/design-index.md` and reads the matching files in `reference/designs/`.
 
 The loop is **intake → corpus → graduate**:
 

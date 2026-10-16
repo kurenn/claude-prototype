@@ -1,27 +1,32 @@
 # Changelog
 
-## v0.9.0 — 2026-10-13
+## v0.9.0 — 2026-10-16
 
-**The design-file index.** Discovery can now match a brief against ~500 real-brand DESIGN.md
-files and pull the closest 1–3 live.
+**Vendored real-brand design files.** Discovery can now match a brief against 84 real-brand
+DESIGN.md files kept in the repo and read the closest 1–3, with no network call.
 
 ### Why
 The inspiration corpus is 11 entries in three families (indie dev-tool, AI-native, editorial). A
 fintech, retail, or travel brief matched nothing in Tier 1 and fell back to the generic menus.
-shadcn.io/design catalogs 500 DESIGN.md files across 29 domain tags. That covers the gap.
+In a blind A/B (`benchmark/results/design-ab-2026-10-13.md`), real-brand design files won the
+retail brief 2–0, where the corpus has nothing, and lost the banking × dev-tool brief 0–2, where
+it's already strong.
 
 ### What ships
-- `reference/design-index.md`: `slug · name · tags` per file, plus the tag list. No file contents.
-- `reference/design-index.py`: stdlib regenerator (one page fetch, parses the directory's tags).
+- `reference/designs/<slug>.md`: 84 DESIGN.md files from
+  [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) at `3b60532`,
+  with its MIT `LICENSE` beside them. Credited in the README.
+- `reference/design-index.md`: `slug · name · category · summary` per file, plus the categories.
+- `reference/design-index.py`: stdlib re-vendor script (one tarball download of a pinned commit).
 - `reference/discovery.md` → "The design-file index": grep the index (named brand first, else
-  domain tag), fetch ≤3 matches from `/design/<slug>/raw`, read their DNA into the menus. Brand
-  names in the Inspiration answer route here first, and the Step 4 corpus checkpoint now names it.
+  domain), read ≤3 matches locally, take their DNA into the menus. Brand names in the
+  Inspiration answer route here first, and the Step 4 corpus checkpoint now names it.
 
-### Why an index and not the files
-shadcn.io's terms forbid scraping and redistributing its content, and this repo is public under
-MIT. Committing the 500 files (~18MB) would re-license someone else's work. A per-build fetch of
-1–3 files is ordinary use; the site itself says to feed the files to an AI tool. Fetching live
-also keeps them current.
+### Why vendored, and why this collection
+Builds shouldn't depend on a website being up. The A/B ran against shadcn.io/design's 500 files
+fetched live, but its terms forbid scraping and redistribution, so they can't live in a public MIT
+repo. VoltAgent's collection is MIT and can. It's smaller (84) and thinner on food, travel and
+health, so those briefs still lean on the corpus and the menus.
 
 ### Not changed
 SKILL.md (trigger cost stays at 2544 tokens): discovery.md already routes the inspiration step.

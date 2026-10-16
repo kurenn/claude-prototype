@@ -1,46 +1,71 @@
 #!/usr/bin/env python3
-"""Regenerate reference/design-index.md from the shadcn.io DESIGN.md directory.
+"""Vendor VoltAgent/awesome-design-md (MIT) into reference/designs/ and regenerate
+reference/design-index.md from it.
 
-Stores only slug, name and category tags. The files themselves are fetched live,
-one at a time, during discovery (reference/discovery.md -> "The design-file index").
-shadcn.io's terms forbid bulk scraping and redistribution, so never extend this to
-download file contents.
+Pinned to one upstream commit so the files only change when we choose to re-vendor.
+The build itself never touches the network: discovery reads reference/designs/<slug>.md.
 
-    python3 reference/design-index.py
+    python3 reference/design-index.py            # re-vendor the pinned commit
+    python3 reference/design-index.py <sha>      # move the pin to another commit
 """
-import collections, json, pathlib, re, urllib.request
+import collections, io, pathlib, re, sys, tarfile, urllib.request
 
-SRC = "https://www.shadcn.io/design"
-OUT = pathlib.Path(__file__).with_name("design-index.md")
+REPO = "VoltAgent/awesome-design-md"
+SHA = sys.argv[1] if len(sys.argv) > 1 else "3b605329240ce735b510037cca322f1831fdd7f8"
+HERE = pathlib.Path(__file__).parent
+DEST = HERE / "designs"
+SLUG = re.compile(r"^[a-z0-9][a-z0-9.\-]*$")  # folder names become file names: no paths
 
-req = urllib.request.Request(SRC, headers={"User-Agent": "Mozilla/5.0"})
-html = urllib.request.urlopen(req, timeout=30).read().decode()
-# The directory ships as Next.js flight data: JS string literals pushed into __next_f.
-payload = "".join(json.loads(f'"{c}"') for c in re.findall(r'self\.__next_f\.push\(\[1,"(.*?)"\]\)', html, re.S))
+blob = urllib.request.urlopen(f"https://codeload.github.com/{REPO}/tar.gz/{SHA}", timeout=60).read()
+files, readme, license_ = {}, "", ""
+with tarfile.open(fileobj=io.BytesIO(blob)) as tar:  # read members by name; never extractall
+    for m in tar.getmembers():
+        parts = m.name.split("/")[1:]
+        if not m.isfile():
+            continue
+        if parts == ["README.md"]:
+            readme = tar.extractfile(m).read().decode()
+        elif parts == ["LICENSE"]:
+            license_ = tar.extractfile(m).read().decode()
+        elif len(parts) == 3 and parts[0] == "design-md" and parts[2] == "DESIGN.md" and SLUG.match(parts[1]):
+            files[parts[1]] = tar.extractfile(m).read().decode()
+if len(files) < 50 or "MIT License" not in license_:
+    raise SystemExit(f"{len(files)} files, license ok={'MIT License' in license_}: upstream layout changed")
 
-entries = {}
-for m in re.finditer(r'\{"slug":"([^"]+)","name":"([^"]+)"(?:(?!\{"slug").)*?"tags":(\[[^\]]*\])', payload, re.S):
-    entries[m.group(1)] = (m.group(2), json.loads(m.group(3)))
-if len(entries) < 100:
-    raise SystemExit(f"only {len(entries)} entries parsed; the page format probably changed")
+# Category, name and one-line description come from the upstream README's collection list.
+meta, cat = {}, "Uncategorized"
+for line in readme.splitlines():
+    if line.startswith("### "):
+        cat = line[4:].strip()
+    elif m := re.match(r"- \[\*\*(.+?)\*\*\]\(https://getdesign\.md/([^/]+)/design-md\) - (.+)", line):
+        meta[m.group(2)] = (m.group(1), cat, m.group(3).strip())
 
-tags = collections.Counter(t for _, ts in entries.values() for t in ts)
+DEST.mkdir(exist_ok=True)
+for old in DEST.glob("*.md"):
+    old.unlink()
+for slug, text in files.items():
+    (DEST / f"{slug}.md").write_text(text, encoding="utf-8")
+(DEST / "LICENSE").write_text(license_, encoding="utf-8")
+
+rows = {s: meta.get(s, (s, "Uncategorized", "")) for s in files}
+cats = collections.Counter(c for _, c, _ in rows.values())
 lines = [
-    "# Design-file index — match here, fetch live",
+    "# Design-file index — grep here, read locally",
     "",
-    f"{len(entries)} DESIGN.md files from {SRC} (slug · name · tags). Contents are **not** stored",
-    "here: fetch a matched file from `https://www.shadcn.io/design/<slug>/raw` at build time.",
+    f"{len(files)} real-brand DESIGN.md files, vendored from [{REPO}](https://github.com/{REPO})",
+    f"at `{SHA[:7]}` (MIT, © VoltAgent — see `reference/designs/LICENSE`). Each one lives at",
+    "`reference/designs/<slug>.md`; nothing is fetched at build time. Format: `slug · name · category · summary`.",
     "How and when to use this: `reference/discovery.md` → \"The design-file index\".",
-    "Regenerate with `python3 reference/design-index.py`. Don't read this whole file — grep it.",
+    "Re-vendor with `python3 reference/design-index.py [<sha>]`. Grep this file; don't read it whole.",
     "",
-    "## Tags",
+    "## Categories",
     "",
-    *(f"- {t} ({n})" for t, n in tags.most_common()),
+    *(f"- {c} ({n})" for c, n in cats.most_common()),
     "",
     "## Entries",
     "",
-    *(f"{s} · {name} · {'; '.join(ts)}" for s, (name, ts) in sorted(entries.items())),
+    *(f"{s} · {n} · {c} · {d}" for s, (n, c, d) in sorted(rows.items())),
     "",
 ]
-OUT.write_text("\n".join(lines), encoding="utf-8")
-print(f"wrote {OUT} ({len(entries)} entries, {len(tags)} tags)")
+(HERE / "design-index.md").write_text("\n".join(lines), encoding="utf-8")
+print(f"vendored {len(files)} files at {SHA[:7]}; {len(cats)} categories")
