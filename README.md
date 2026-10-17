@@ -208,6 +208,7 @@ claude-prototype/
 │   └── subcommands.md    #   variant + apply-feedback + intake
 ├── templates/            # scaffold-base · feedback-overlay · demo-docs
 ├── checks/builtin-lint.md# fallback assessment when impeccable is absent
+├── docs/                 # the project site (GitHub Pages), built with the skill · designs/ = its copy of the files
 ├── benchmark/            # output · overflow · design · context-cost guards
 ├── .github/workflows/    # CI: skill-checks.yml
 ├── install.sh · ensure-deps.sh
@@ -240,7 +241,8 @@ Built on [impeccable](https://impeccable.style/) (design assessment). Vanilla JS
 The real-brand design files in `reference/designs/` come from
 [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) by
 [VoltAgent](https://github.com/VoltAgent), vendored at a pinned commit under its MIT license
-(kept in [`reference/designs/LICENSE`](reference/designs/LICENSE)). Thank you to them and its
+(kept in [`reference/designs/LICENSE`](reference/designs/LICENSE)), and browsable on the
+[project site](https://kurenn.github.io/claude-prototype/designs.html). Thank you to them and its
 contributors. The brands' names, marks and visual identities belong to their owners; the skill reads
 the files for design DNA and never reproduces a brand.
 

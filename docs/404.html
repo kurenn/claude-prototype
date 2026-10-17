@@ -1,10 +1,16 @@
 <!doctype html>
-<html lang="en" data-proto-app="claude-prototype" data-theme="daylight" data-layout="editorial" data-persona="default" data-motion="expressive">
+<!-- prototype · pre-emit: P3 H4 E4 S3 R4 V4 — weakest: Specificity. A plain not-found page; it now carries the full shell (nav, footer, control bar). -->
+<html lang="en" data-proto-app="claude-prototype" data-theme="mint" data-layout="editorial" data-persona="default" data-motion="calm">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Not found · claude-prototype</title>
+  <meta name="description" content="This page doesn't exist." />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ccircle cx='8' cy='8' r='6' fill='%2300d4a4' stroke='%230a0a0a' stroke-opacity='.15'/%3E%3C/svg%3E" />
+
   <script>
+    // Anti-FOUC: apply stored theme + motion tier before first paint.
+    // Keep in sync with js/theme.js (THEMES / DARK_THEME) and js/motion.js (DEFAULT_TIER).
     (function () {
       // Namespace every localStorage key to this prototype. All prototypes are served
       // from the same localhost origin, so fixed `proto-*` keys let one prototype read
@@ -14,62 +20,163 @@
       try {
         // Validate against the known themes: a stale key (renamed theme set, or a
         // prototype previously viewed on this origin) must not paint undefined tokens.
-        var THEMES = ['daylight', 'ember', 'paper']; // keep in sync with THEMES in js/theme.js
-        var t = localStorage.getItem(window.PROTO_NS + 'theme');
+        var THEMES = ['mint', 'linen', 'void']; // keep in sync with THEMES in js/theme.js
+        var t = new URLSearchParams(location.search).get('theme') || localStorage.getItem(window.PROTO_NS + 'theme');
         if (THEMES.indexOf(t) !== -1) {
           document.documentElement.setAttribute('data-theme', t);
         } else if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
-          document.documentElement.setAttribute('data-theme', 'ember');
+          document.documentElement.setAttribute('data-theme', 'void'); // DARK_THEME in theme.js
         }
+        // A reading site defaults to the calm tier (fades only).
         var m = localStorage.getItem(window.PROTO_NS + 'motion');
-        document.documentElement.setAttribute('data-motion', (m === 'calm' || m === 'standard') ? m : 'expressive');
+        document.documentElement.setAttribute('data-motion', (m === 'standard' || m === 'expressive') ? m : 'calm');
       } catch (e) {}
     })();
   </script>
+
+  <!-- Cross-document View Transitions — non-deferred, before Tailwind CDN. -->
   <script src="js/vt.js"></script>
+
+  <!-- Fonts: Manrope (one family, weights only — Cal.com's named free substitute for
+       Cal Sans) · JetBrains Mono (code, labels, numbers, margin notes). -->
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@700;800&family=Instrument+Sans:wght@400;500&family=Chivo+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet" />
+
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    tailwind.config = { theme: { extend: {
-      colors: {
-        surface:  'rgb(var(--surface)  / <alpha-value>)',
-        elevated: 'rgb(var(--elevated) / <alpha-value>)',
-        accent:   'rgb(var(--accent)   / <alpha-value>)',
-        muted:    'rgb(var(--muted)    / <alpha-value>)',
-        ink:      'rgb(var(--ink)      / <alpha-value>)',
-        ink2:     'rgb(var(--ink2)     / <alpha-value>)',
-        ink3:        'rgb(var(--ink3)        / <alpha-value>)',
-        hairline:    'rgb(var(--hairline)    / <alpha-value>)',
-        'elevated-2':'rgb(var(--elevated-2)  / <alpha-value>)',
-        'accent-ink':'rgb(var(--accent-ink)  / <alpha-value>)',
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            surface:  'rgb(var(--surface)  / <alpha-value>)',
+            elevated: 'rgb(var(--elevated) / <alpha-value>)',
+            accent:   'rgb(var(--accent)   / <alpha-value>)',
+            muted:    'rgb(var(--muted)    / <alpha-value>)',
+            ink:      'rgb(var(--ink)      / <alpha-value>)',
+            ink2:     'rgb(var(--ink2)     / <alpha-value>)',
+            ink3:        'rgb(var(--ink3)        / <alpha-value>)',
+            hairline:    'rgb(var(--hairline)    / <alpha-value>)',
+            'elevated-2':'rgb(var(--elevated-2)  / <alpha-value>)',
+            'accent-ink':'rgb(var(--accent-ink)  / <alpha-value>)',
+          },
+          fontFamily: {
+            heading: ['Manrope', 'system-ui', 'sans-serif'],
+            body:    ['Manrope', 'system-ui', 'sans-serif'],
+            mono:    ['JetBrains Mono', 'ui-monospace', 'monospace'],
+          },
+          borderRadius: { proto: 'var(--radius)' },
+        },
       },
-      fontFamily: {
-        heading: ['Bricolage Grotesque','system-ui','sans-serif'],
-        body:    ['Instrument Sans','system-ui','sans-serif'],
-        mono:    ['Chivo Mono','ui-monospace','monospace'],
-      },
-      borderRadius: { proto: 'var(--radius)' },
-    }}};
+    };
   </script>
+
   <link rel="stylesheet" href="css/styles.css" />
   <link rel="stylesheet" href="css/feedback.css" />
+  <link rel="stylesheet" href="css/designs.css" />
 </head>
-<body class="bg-surface text-ink font-body antialiased min-h-screen flex flex-col items-center justify-center p-6">
+<body class="bg-surface text-ink font-body antialiased">
 
-  <main class="text-center max-w-md">
-    <p class="font-mono text-sm tracking-[.16em] text-ink2 uppercase mb-4">404</p>
-    <h1 class="font-heading text-4xl md:text-5xl font-extrabold tracking-tight mb-3">Nothing here.</h1>
-    <p class="text-ink2 mb-8 text-lg">The page you're looking for doesn't exist — or never did. Could be a dead link in the prototype.</p>
-    <div class="flex flex-wrap gap-2 justify-center">
-      <a href="index.html" class="rounded-proto bg-ink text-surface px-4 py-2 text-sm font-semibold">Back home</a>
-      <a href="javascript:history.back()" class="rounded-proto border border-hairline px-4 py-2 text-sm">Go back</a>
+  <header class="masthead" style="view-transition-name: app-header">
+    <div class="wrap">
+      <nav class="site-nav" aria-label="Primary">
+        <a class="wordmark" href="index.html">claude-prototype<span class="dot">/</span></a>
+        <div class="nav-links">
+          <a href="designs.html">Design files</a>
+          <a href="https://github.com/kurenn/claude-prototype">GitHub&nbsp;↗</a>
+        </div>
+      </nav>
+    </div>
+  </header>
+
+  <main class="wrap nf">
+    <h1 class="hero-title">Nothing here.</h1>
+    <p class="hero-lead">Error 404: the page you're looking for doesn't exist, or never did. It could be a dead link.</p>
+    <div class="hero-cta">
+      <a href="index.html" class="btn btn-primary">Back home</a>
+      <a href="designs.html" class="btn btn-ghost">Browse the design files</a>
     </div>
   </main>
+
+  <!-- ============================ FOOTER ============================ -->
+  <footer class="site-foot">
+    <div class="wrap">
+      <div class="foot-row">
+        <span class="wordmark">claude-prototype<span class="dot">/</span></span>
+        <nav class="foot-links" aria-label="Footer">
+          <a href="designs.html">Design files</a>
+          <a href="https://github.com/kurenn/claude-prototype">GitHub</a>
+          <a href="https://github.com/kurenn/claude-prototype#readme">README</a>
+          <a href="https://github.com/kurenn/claude-prototype/blob/main/CHANGELOG.md">Changelog</a>
+          <a href="https://impeccable.style/">impeccable</a>
+          <a href="https://github.com/VoltAgent/awesome-design-md">awesome-design-md</a>
+          <a href="https://github.com/kurenn/claude-prototype/blob/main/LICENSE">MIT license</a>
+        </nav>
+        <span class="foot-made">MIT · v0.9.0 · built with claude-prototype</span>
+      </div>
+    </div>
+  </footer>
+
+  <!-- ============================ VISIBLE CONTROL BAR ============================ -->
+  <div id="proto-controls" style="view-transition-name: app-controls">
+    <div class="proto-bar">
+      <div class="proto-bar-section">
+        <span class="proto-bar-label">Theme</span>
+        <div class="proto-seg-group">
+          <button class="proto-seg" data-theme-option="mint" aria-pressed="true">Mint</button>
+          <button class="proto-seg" data-theme-option="linen" aria-pressed="false">Linen</button>
+          <button class="proto-seg" data-theme-option="void" aria-pressed="false">Void</button>
+        </div>
+      </div>
+      <div class="proto-bar-section">
+        <span class="proto-bar-label">Layout</span>
+        <div class="proto-seg-group">
+          <button class="proto-seg" data-layout-option="editorial" aria-pressed="true">Editorial</button>
+          <button class="proto-seg" data-layout-option="index"     aria-pressed="false">Index</button>
+        </div>
+      </div>
+      <div class="proto-bar-section">
+        <span class="proto-bar-label">Persona</span>
+        <div class="proto-seg-group">
+          <button class="proto-seg" data-persona-option="default" aria-pressed="true">Live</button>
+          <button class="proto-seg" data-persona-option="empty"   aria-pressed="false">New</button>
+        </div>
+      </div>
+      <div class="proto-bar-section">
+        <span class="proto-bar-label">Motion</span>
+        <div class="proto-seg-group">
+          <button class="proto-seg" data-motion-option="calm"       aria-pressed="true">Calm</button>
+          <button class="proto-seg" data-motion-option="standard"   aria-pressed="false">Std</button>
+          <button class="proto-seg" data-motion-option="expressive" aria-pressed="false">Exp</button>
+        </div>
+      </div>
+      <div class="proto-bar-section">
+        <span class="proto-bar-label">Loading</span>
+        <button class="proto-seg" data-loading-replay title="Replay the loading animation">⟳ Replay</button>
+        <div class="proto-seg-group">
+          <button class="proto-seg" data-speed-option="instant" aria-pressed="false">Instant</button>
+          <button class="proto-seg" data-speed-option="real"    aria-pressed="true">Real</button>
+          <button class="proto-seg" data-speed-option="slow"    aria-pressed="false">Slow</button>
+        </div>
+      </div>
+      <div class="proto-bar-section">
+        <button class="proto-seg" data-share title="Copy shareable URL">🔗 Share</button>
+        <button class="proto-seg" data-feedback-toggle title="Toggle feedback mode">💬 Feedback</button>
+      </div>
+    </div>
+    <p class="proto-hint">Shift + ? · recent screens</p>
+  </div>
 
   <script src="js/state.js"></script>
   <script src="js/theme.js"></script>
   <script src="js/motion.js"></script>
+  <script src="js/layout.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/persona.js"></script>
+  <script src="js/ui.js"></script>
+  <script src="js/loading.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/site.js"></script>
+  <script src="js/feedback.js"></script>
 </body>
 </html>

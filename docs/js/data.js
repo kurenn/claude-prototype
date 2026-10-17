@@ -1,40 +1,16 @@
 /*
- * Data layer — centralized content + personas.
+ * Data layer — personas.
  *
- * This landing page uses personas to demonstrate one of the skill's own selling
- * points live: the embedded demo device swaps between its POPULATED state and its
- * FIRST-RUN (empty) state when the control bar's Persona toggle flips — real
- * content swapping, not just chrome. The demo regions carry data-persona-show /
- * data-persona-hide; Data.apply() (below) walks the DOM and toggles them.
+ * The library and design-file pages use the Persona toggle for a first-run state:
+ * "New" reveals the "what is a DESIGN.md" explainers (data-persona-show="empty").
+ * Data.apply() (below) walks the DOM and toggles them. Page content itself comes
+ * from docs/designs/*.json, not from here.
  */
 (function () {
   const DATA = {
     personas: {
-      'default': {
-        // "Live" — the demo shows a running dashboard with real activity.
-        stateLabel: 'Live',
-        demoCaption: 'Cardinal Coffee · roastery dashboard, running on demo data',
-      },
-      'empty': {
-        // First-run — the demo shows its designed empty state, not a blank grid.
-        stateLabel: 'First run',
-        demoCaption: 'Cardinal Coffee · brand-new workspace, first-run state',
-      },
-    },
-
-    // Shared (not persona-specific) content the demo renders.
-    demo: {
-      // Recent subscription activity — realistic names + amounts, recent dates.
-      recent: [
-        { who: 'Marisol Vega',    init: 'MV', plan: 'Monthly · Ethiopia Guji', amt: '$24.00', live: true },
-        { who: 'Dev Ramchandani', init: 'DR', plan: 'Bi-weekly · House blend', amt: '$18.00', live: false },
-        { who: 'Priya Nair',      init: 'PN', plan: 'Monthly · Decaf Colombia', amt: '$22.00', live: false },
-      ],
-      // Shipments per weekday (last week) — the mini bar chart.
-      shipments: [
-        { d: 'M', v: 38 }, { d: 'T', v: 52 }, { d: 'W', v: 44 },
-        { d: 'T', v: 61 }, { d: 'F', v: 73 }, { d: 'S', v: 29 }, { d: 'S', v: 17 },
-      ],
+      'default': {},  // "Live" — the pages as a returning visitor sees them
+      'empty': {},    // "New" — first-run explainers shown
     },
   };
 

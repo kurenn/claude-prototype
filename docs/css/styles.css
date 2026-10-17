@@ -11,73 +11,72 @@
  */
 
 /* ==========================================================================
- * PALETTE — "Ember on cream". One accent (ember) + a single reserved SIGNAL
- * hue (lime) used NOWHERE except the live demo's alive/active states.
- * Ember is a FILL / large-display / stroke color, never small body text
- * (orange-on-cream computes ~3.7:1 — fine for display, fails for body). Body
- * text stays --ink / --ink2. No gradients anywhere. Three page themes:
- *   daylight — the cream light (default)
- *   ember    — warm dark variant (prefers-color-scheme: dark picks this)
- *   paper    — flat, monochrome newsprint (accent collapses into ink)
+ * PALETTE — two themes, each taken from a vendored design file (reference/designs/):
+ *   mint — Mintlify's light system: white canvas, near-black ink, neutral greys, one
+ *          mint accent. Mint is a FILL with ink on it, never text on white (~1.9:1).
+ *   linen — Oura's warm paper: cream canvas, white cards, near-black ink, one blue accent.
+ *   void — Resend's dark system: true-black canvas, cool-white ink, and a white pill
+ *          as the "accent" (a monochrome inversion, no hue).
+ * Type comes from a third file (Cal.com → Manrope, its named free substitute).
+ * The demo's "alive" signal reuses the accent: one accent per page, no second hue.
  * ========================================================================== */
 
-html[data-theme="daylight"] {
-  --surface:  250 246 238;
-  --elevated: 255 252 246;
-  --elevated-2: 243 236 224;
-  --ink:       26  21  17;
-  --ink2:      82  72  62;
-  --ink3:     130 118 104;
-  --hairline: 230 222 208;
-  --muted:    165 154 138;
-  --accent:   230  79  38;   /* ember — fills / display / stroke only, never body text */
-  --accent-ink: 255 251 245;
-  --signal:   190 236  80;   /* reserved: demo alive/active states ONLY */
-  --signal-ink: 26  32  10;
-  --status-error: 190 60 60;
-  --radius: 14px;
-  /* warm, low shadow */
-  --shadow-sm: 0 1px 2px rgb(60 34 18 / .05);
-  --shadow-md: 0 2px 4px rgb(60 34 18 / .06), 0 6px 16px rgb(60 34 18 / .06);
-  --shadow-lg: 0 4px 10px rgb(60 34 18 / .07), 0 18px 40px rgb(60 34 18 / .10);
+html[data-theme="mint"] {
+  --surface:  255 255 255;   /* canvas #ffffff */
+  --elevated: 250 250 250;   /* surface-soft #fafafa */
+  --elevated-2: 247 247 247; /* surface #f7f7f7 */
+  --ink:       10  10  10;   /* ink #0a0a0a */
+  --ink2:      58  58  60;   /* slate #3a3a3c */
+  --ink3:      90  90  92;   /* steel #5a5a5c — 6.9:1 on white */
+  --hairline: 229 229 229;   /* hairline #e5e5e5 */
+  --muted:    136 136 136;   /* stone #888888 */
+  --accent:     0 212 164;   /* brand-green #00d4a4 — fills only */
+  --accent-ink: 10  10  10;
+  --signal:     0 212 164;
+  --signal-ink: 10  10  10;
+  --status-error: 212 86 86; /* brand-error #d45656 */
+  --radius: 8px;             /* rounded.md */
+  --shadow-sm: none;         /* Mintlify separates with hairlines, not shadow */
+  --shadow-md: 0 1px 2px rgb(10 10 10 / .04);
+  --shadow-lg: 0 8px 24px rgb(10 10 10 / .06);
 }
 
-html[data-theme="ember"] {
-  --surface:   22  19  17;
-  --elevated:  30  26  23;
-  --elevated-2: 40  35  31;
-  --ink:      245 240 232;
-  --ink2:     190 182 170;
-  --ink3:     140 132 120;
-  --hairline:  52  46  41;
-  --muted:    112 104  94;
-  --accent:   240  96  52;   /* ember, lifted for the dark surface */
-  --accent-ink: 22  19  17;
-  --signal:   198 244  96;
-  --signal-ink: 20  24  10;
-  --status-error: 248 113 113;
-  --radius: 14px;
+html[data-theme="linen"] {
+  --surface:  247 241 232;   /* canvas #f7f1e8 — Oura's warm paper */
+  --elevated: 255 255 255;   /* surface #ffffff — white cards on paper */
+  --elevated-2: 236 236 236; /* surface-grey #ececec */
+  --ink:       28  27  26;   /* ink #1c1b1a */
+  --ink2:      74  71  65;   /* stone #4a4741 */
+  --ink3:     107  68  61;   /* clay #6b443d — Oura's ash #838280 is ~3.5:1 on paper, too faint for small text */
+  --hairline: 225 220 211;   /* hairline #e1dcd3 */
+  --muted:    204 202 199;   /* silver #cccac7 */
+  --accent:    42 114 222;   /* primary #2a72de — a blue, not the cream+amber reflex */
+  --accent-ink: 255 255 255; /* on-primary — 4.6:1 */
+  --signal:    42 114 222;
+  --signal-ink: 255 255 255;
+  --status-error: 227 58 34; /* error #e33a22 */
+  --radius: 12px;            /* rounded.md */
+  --shadow-sm: 0 1px 2px rgb(57 34 30 / .04);
+  --shadow-md: 0 1px 3px rgb(57 34 30 / .05), 0 6px 16px rgb(57 34 30 / .05);
+  --shadow-lg: 0 8px 28px rgb(57 34 30 / .08);
+}
+
+html[data-theme="void"] {
+  --surface:    0   0   0;   /* canvas #000000 — true black, by design */
+  --elevated:  10  10  12;   /* surface-card #0a0a0c */
+  --elevated-2: 16 16  18;   /* surface-elevated #101012 */
+  --ink:      252 253 255;   /* ink #fcfdff */
+  --ink2:     161 164 165;   /* mute #a1a4a5 */
+  --ink3:     136 142 144;   /* ash #888e90 */
+  --hairline:  36  36  36;   /* hairline-strong rgba(255,255,255,.14) on black */
+  --muted:     70  74  77;   /* stone #464a4d */
+  --accent:   252 253 255;   /* primary — the white pill */
+  --accent-ink:  0   0   0;
+  --signal:   252 253 255;
+  --signal-ink:  0   0   0;
+  --status-error: 255 32 71; /* accent-red #ff2047 */
+  --radius: 8px;
   --shadow-sm: none; --shadow-md: none; --shadow-lg: none;  /* dark elevates via surface */
-}
-
-html[data-theme="paper"] {
-  --surface:  247 244 237;   /* warm bone / newsprint */
-  --elevated: 252 250 245;
-  --elevated-2: 240 236 227;
-  --ink:       26  24  21;
-  --ink2:      84  78  70;
-  --ink3:     128 120 110;
-  --hairline: 224 218 207;
-  --muted:    166 158 145;
-  --accent:    26  24  21;   /* monochrome — the accent collapses into ink */
-  --accent-ink: 250 247 240;
-  --signal:   190 236  80;
-  --signal-ink: 26  32  10;
-  --status-error: 176 54 54;
-  --radius: 4px;            /* flatter than the ember themes */
-  --shadow-sm: 0 1px 1px rgb(30 26 20 / .04);
-  --shadow-md: 0 1px 2px rgb(30 26 20 / .05), 0 4px 10px rgb(30 26 20 / .04);
-  --shadow-lg: 0 2px 6px rgb(30 26 20 / .05), 0 12px 28px rgb(30 26 20 / .06);
 }
 
 /* Anti-FOUC: paint the base background/text from these render-blocking tokens
@@ -303,7 +302,7 @@ body       { font-optical-sizing: auto; }
    micro-interaction. Keep custom :hover styles behind @media (hover:hover) so they don't
    stick on touch. :where() keeps specificity 0 so product styles win. */
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: 2px solid rgb(var(--accent));
+  outline: 2px solid rgb(var(--ink));
   outline-offset: 2px;
 }
 :where(button:not([disabled])):active { transform: translateY(1px); }
@@ -968,482 +967,174 @@ body { padding-bottom: calc(4.75rem + env(safe-area-inset-bottom, 0px)); }
 
 
 /* ==========================================================================
- * LANDING PAGE — claude-prototype
- * Typography roles (loaded in <head>): Bricolage Grotesque (display),
- * Instrument Sans (body), Chivo Mono (eyebrows / numbers / code / badges),
- * Fraunces (ONE oversized editorial wordmark moment only).
+ * SITE — claude-prototype. Minimal: white space, hairlines, one family.
+ * Type: Manrope in weights only (Cal.com's DESIGN.md names it as the free
+ * substitute for Cal Sans) + JetBrains Mono for code, labels and numbers.
+ * Signature: margin notes (.mnote) — the page footnotes its own design decisions.
  * ========================================================================== */
 
-.font-editorial { font-family: 'Fraunces', Georgia, serif; font-optical-sizing: auto; }
+html[data-theme="mint"] { --btn-radius: 9999px; }  /* Mintlify: pill buttons */
+html[data-theme="linen"] { --btn-radius: 9999px; } /* Oura: pill buttons */
+html[data-theme="void"] { --btn-radius: 8px; }     /* Resend: 8px buttons */
 
-/* Eyebrows are NEUTRAL mono — never ember-colored (orange text ~3.7:1 fails as
-   small copy). Ember is reserved for fills / large display / strokes. */
 .eyebrow {
-  font-family: 'Chivo Mono', ui-monospace, monospace;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
   text-transform: uppercase;
-  letter-spacing: .16em;
+  letter-spacing: .14em;
   font-size: var(--text-xs);
-  color: rgb(var(--ink2));
+  color: rgb(var(--ink3));
 }
+h1, h2, h3, .display { font-family: 'Manrope', system-ui, sans-serif; }
 
-h1, h2, h3, .display { font-family: 'Bricolage Grotesque', system-ui, sans-serif; }
-
-/* Section rhythm */
-.section { padding: var(--space-9) 0; }
+/* Section rhythm: generous space, a hairline between sections, nothing else. */
+.section { padding: var(--space-9) 0; border-top: 1px solid rgb(var(--hairline)); }
 .wrap { width: 100%; max-width: 72rem; margin: 0 auto; padding: 0 var(--space-5); }
 @media (min-width: 640px) { .wrap { padding: 0 var(--space-6); } }
-
-.section-head { max-width: 46rem; }
+.section-head { max-width: 44rem; }
 .section-title {
-  font-weight: 800;
-  letter-spacing: -.02em;
-  line-height: 1.02;
-  font-size: clamp(1.95rem, 1.3rem + 3vw, 3rem);
+  margin-top: var(--space-3);
+  font-weight: 700;
+  letter-spacing: -.035em;
+  line-height: 1.05;
+  font-size: clamp(1.75rem, 1.2rem + 2.2vw, 2.6rem);
   color: rgb(var(--ink));
   text-wrap: balance;
 }
-.section-lead { margin-top: var(--space-4); font-size: var(--text-lg); color: rgb(var(--ink2)); line-height: 1.5; max-width: 40rem; }
+.section-lead { margin-top: var(--space-4); font-size: var(--text-lg); color: rgb(var(--ink2)); line-height: 1.55; max-width: 40rem; }
 
-/* Ember stroke accent under a heading (large / decorative use of the accent). */
-.rule-accent { height: 3px; width: 3.5rem; background: rgb(var(--accent)); border-radius: 2px; margin-top: var(--space-4); }
-
-/* ---------- EMBER FLOOD (hero + closing) ---------- */
-.ember-flood {
-  position: relative;
-  background: rgb(var(--accent));
-  color: rgb(var(--accent-ink));
-  overflow: clip;
-}
-/* Subtle matte grain — overlay blend keeps it a luminance texture, no gradient,
-   no color shift. Cheap tiled SVG turbulence. */
-.ember-flood::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  opacity: .10;
-  mix-blend-mode: overlay;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='120'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 120px 120px;
-}
-
-/* Nav — minimal brand nav: wordmark + single solid CTA, no inline link list
-   (deliberate anti-reflex choice; see DESIGN.md). Sits over the ember flood. */
-.site-nav {
-  position: relative;
-  z-index: 2;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-4);
-  padding-top: var(--space-5);
-}
+/* ---------- MASTHEAD (nav) ---------- */
+.masthead { border-bottom: 1px solid rgb(var(--hairline)); }
+.site-nav { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: .75rem var(--space-4); padding: 1.1rem 0; }
+.site-nav a { white-space: nowrap; }
 .wordmark {
-  font-family: 'Chivo Mono', ui-monospace, monospace;
-  font-weight: 700;
-  font-size: 1.25rem;        /* ≥18.66px bold → passes AA-large on ember */
-  letter-spacing: -.01em;
-  color: rgb(var(--accent-ink));
-  line-height: 1;
-  text-decoration: none;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-weight: 700; font-size: 1rem; letter-spacing: -.01em; line-height: 1;
+  color: rgb(var(--ink)); text-decoration: none;
 }
-.wordmark .dot { color: rgb(var(--accent-ink)); opacity: .55; }
+.wordmark .dot { color: rgb(var(--ink3)); }
+.nav-links { display: flex; align-items: center; gap: 1.25rem; font-size: .92rem; }
+.nav-links a:not(.btn) { color: rgb(var(--ink2)); text-decoration: none; }
+.nav-links a[aria-current="page"] { color: rgb(var(--ink)); font-weight: 600; }
+@media (hover: hover) { .nav-links a:not(.btn):hover { color: rgb(var(--ink)); } }
 
-/* Solid buttons — labels never sit on the ember fill (that would fail at small
-   sizes). Primary = ink fill; on the ember hero this reads as a bold near-black
-   chip; on cream sections it's the standard dark CTA. */
+/* ---------- BUTTONS ---------- */
 .btn {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  line-height: 1;
-  font-weight: 600;
-  font-size: 1rem;
-  padding: .85rem 1.2rem;
-  border-radius: var(--radius);
+  display: inline-flex; align-items: center; gap: .5rem;
+  line-height: 1; font-weight: 600; font-size: .95rem;
+  padding: .8rem 1.2rem;
+  border-radius: var(--btn-radius, var(--radius));
   border: 1px solid transparent;
-  cursor: pointer;
-  text-decoration: none;
+  cursor: pointer; text-decoration: none;
   transition: transform var(--dur-press) var(--ease-out-quart), background-color var(--dur-fast) var(--ease-out-quart), color var(--dur-fast) var(--ease-out-quart), border-color var(--dur-fast) var(--ease-out-quart);
 }
+.btn:active { transform: scale(.98); }
 .btn-primary { background: rgb(var(--ink)); color: rgb(var(--surface)); }
-.btn-surface { background: rgb(var(--surface)); color: rgb(var(--ink)); border-color: rgb(var(--hairline)); }
+.btn-accent  { background: rgb(var(--accent)); color: rgb(var(--accent-ink)); }  /* the one accent CTA */
 .btn-ghost   { background: transparent; color: rgb(var(--ink)); border-color: rgb(var(--hairline)); }
-/* Flood-safe CTA: sits ON the ember flood. Filled with --accent-ink (contrasts
-   with the --accent flood in every theme, incl. paper where accent→ink), text in
-   --ink — so the LABEL never rides the low-contrast ember surface directly. */
-.btn-flood { background: rgb(var(--accent-ink)); color: rgb(var(--ink)); box-shadow: var(--shadow-md); }
+.btn-surface { background: rgb(var(--surface)); color: rgb(var(--ink)); border-color: rgb(var(--hairline)); }
 @media (hover: hover) {
   .btn-primary:hover { background: rgb(var(--ink2)); }
-  .btn-surface:hover { border-color: rgb(var(--ink3)); }
-  .btn-ghost:hover   { border-color: rgb(var(--ink3)); background: rgb(var(--elevated)); }
-  .btn-flood:hover   { background: rgb(var(--elevated)); }
+  .btn-accent:hover  { filter: brightness(.94); }
+  .btn-ghost:hover, .btn-surface:hover { border-color: rgb(var(--ink3)); }
 }
-.btn-lg { font-size: 1.05rem; padding: 1rem 1.4rem; }
+.btn-lg { font-size: 1rem; padding: .95rem 1.4rem; }
+html[data-theme="void"] .btn-primary { background: rgb(var(--elevated-2)); color: rgb(var(--ink)); border-color: rgb(var(--hairline)); }
+@media (hover: hover) { html[data-theme="void"] .btn-primary:hover { background: rgb(var(--elevated)); border-color: rgb(var(--ink3)); } }
+.btn:disabled, .btn[aria-disabled="true"] { opacity: .45; cursor: not-allowed; transform: none; }
+.btn-sm { font-size: .85rem; padding: .55rem .9rem; }
 
 /* ---------- HERO ---------- */
-.hero { padding-bottom: var(--space-9); }
-.hero-inner { position: relative; z-index: 2; padding-top: var(--space-8); }
+.hero { padding: var(--space-9) 0 var(--space-8); }
 .hero-eyebrow {
-  display: inline-flex;
-  align-items: center;
-  gap: .5rem;
-  font-family: 'Chivo Mono', ui-monospace, monospace;
-  font-size: .72rem;
-  letter-spacing: .14em;
-  text-transform: uppercase;
-  /* dark chip on ember — legible at any size, in every theme */
-  background: rgb(var(--ink));
-  color: rgb(var(--surface));
-  padding: .4rem .7rem;
-  border-radius: 999px;
-  line-height: 1;
+  display: inline-flex; align-items: center; gap: .55rem;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: .75rem; letter-spacing: .04em; color: rgb(var(--ink2));
 }
-.hero-eyebrow .tick { width: 6px; height: 6px; border-radius: 999px; background: rgb(var(--surface)); }
-
+.hero-eyebrow .tick { width: 7px; height: 7px; border-radius: 999px; background: rgb(var(--ink)); }
 .hero-title {
   margin-top: var(--space-5);
-  font-weight: 800;
-  letter-spacing: -.025em;
-  line-height: .98;
-  /* Sized so each authored line ("Prototypes that" is the longest) fits one line
-     at 390px — the per-line mask below clips vertically, so a line that's too wide
-     to fit would be clipped horizontally, not wrapped. */
-  font-size: clamp(1.95rem, 0.7rem + 6.1vw, 6rem);
+  font-weight: 700;
+  letter-spacing: -.045em;   /* Cal.com's tracking signature, carried by Manrope */
+  line-height: 1;
+  font-size: clamp(2.3rem, .9rem + 6vw, 5.25rem);
+  color: rgb(var(--ink));
+  max-width: 13ch;
+  text-wrap: balance;
 }
-/* .ln masks each line so its inner span can rise from below (the build-in "snap").
-   overflow-wrap:normal keeps whole words on the line (no mid-word break inside the
-   mask); the authored line breaks control the shape. */
-.hero-title .ln { display: block; overflow: hidden; padding-bottom: .04em; }
-.hero-title .ln > span { display: block; transform: translateY(0); will-change: transform; white-space: nowrap; overflow-wrap: normal; }
-/* Build-in flourish: each line rises from a mask (the "snap"); a thin scan bar
-   sweeps once (the "scan"). Resting state is fully visible — reduced motion or an
-   old engine simply shows the resolved headline, never a hidden one. */
-@media (prefers-reduced-motion: no-preference) {
-  .hero-title .ln > span { animation: hero-rise .72s var(--ease-out-expo) both; animation-delay: calc(var(--l, 0) * .12s + .12s); }
-  .hero-scan {
-    position: absolute; top: 0; bottom: 0; left: 0; width: 3px;
-    background: rgb(var(--accent-ink)); opacity: 0; pointer-events: none;
-    animation: hero-scan 1s var(--ease-in-out-strong) both; animation-delay: .05s;
-  }
-}
-@keyframes hero-rise { from { transform: translateY(108%); } to { transform: translateY(0); } }
-@keyframes hero-scan {
-  0% { left: 0; opacity: 0; }
-  8% { opacity: .8; }
-  92% { opacity: .8; }
-  100% { left: 100%; opacity: 0; }
-}
-.hero-title-wrap { position: relative; }
-
-.hero-lead {
-  margin-top: var(--space-5);
-  /* ≥24px min → qualifies as AA-large, so ember→cream (~3.7:1) is compliant */
-  font-size: clamp(1.5rem, 1.2rem + 1.1vw, 1.85rem);
-  font-weight: 400;
-  line-height: 1.32;
-  color: rgb(var(--accent-ink));
-  max-width: 34ch;
-  opacity: .96;
-}
+.hero-lead { margin-top: var(--space-5); font-size: clamp(1.1rem, 1rem + .4vw, 1.3rem); line-height: 1.55; color: rgb(var(--ink2)); max-width: 46ch; }
 .hero-cta { margin-top: var(--space-6); display: flex; flex-wrap: wrap; gap: .75rem; }
 
-/* Command card — sits on its own elevated surface so the mono copy keeps full
-   contrast in every theme (never small cream-on-ember). */
+/* Command card */
 .code-card {
-  margin-top: var(--space-6);
-  max-width: 38rem;
+  margin-top: var(--space-7); max-width: 38rem;
   background: rgb(var(--elevated));
   border: 1px solid rgb(var(--hairline));
   border-radius: var(--radius);
-  box-shadow: var(--shadow-md);
   overflow: hidden;
 }
 .code-card-head {
   display: flex; align-items: center; justify-content: space-between;
-  gap: 1rem; padding: .6rem .8rem .6rem 1rem;
+  gap: 1rem; padding: .55rem .8rem .55rem 1rem;
   border-bottom: 1px solid rgb(var(--hairline));
-  background: rgb(var(--elevated-2));
 }
-.code-card-head .lbl {
-  font-family: 'Chivo Mono', ui-monospace, monospace;
-  font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--ink2));
-}
+.code-card-head .lbl { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: .75rem; color: rgb(var(--ink3)); }
 .code-copy {
-  font-family: 'Chivo Mono', ui-monospace, monospace;
-  font-size: .72rem; padding: .3rem .6rem; border-radius: 999px;
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: .75rem; padding: .35rem .7rem; border-radius: var(--btn-radius, 999px);
   border: 1px solid rgb(var(--hairline)); background: rgb(var(--surface)); color: rgb(var(--ink));
   cursor: pointer; line-height: 1;
 }
 @media (hover: hover) { .code-copy:hover { border-color: rgb(var(--ink3)); } }
 .code-body {
   margin: 0; padding: 1rem;
-  font-family: 'Chivo Mono', ui-monospace, monospace;
-  font-size: .82rem; line-height: 1.7; color: rgb(var(--ink));
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: .82rem; line-height: 1.75; color: rgb(var(--ink));
   overflow-x: auto; white-space: pre;
 }
-.code-body .c-comment { color: rgb(var(--ink2)); }               /* ink2 → clears AA on the elevated surface */
-.code-body .c-prompt  { color: rgb(var(--ink)); font-weight: 700; } /* emphasis via weight, not low-contrast ember */
-.code-body .c-cmd     { color: rgb(var(--ink)); }
+.code-body .c-comment { color: rgb(var(--ink3)); }
+.code-body .c-prompt  { color: rgb(var(--ink)); font-weight: 700; }
 
-/* ---------- STATS STRIP (trust row, real facts only) ---------- */
-.factbar {
-  display: grid; gap: var(--space-4);
-  grid-template-columns: repeat(2, minmax(0, 1fr));
-  margin-top: var(--space-7);
+/* ---------- LANDING: one screen — points + links, no cards ---------- */
+.points { margin-top: var(--space-7); display: grid; gap: .7rem; max-width: 46ch; }
+.points li { position: relative; padding-left: 1.4rem; font-size: 1.05rem; line-height: 1.5; color: rgb(var(--ink2)); }
+.points li::before { content: "–"; position: absolute; left: 0; color: rgb(var(--ink3)); }
+.points b { color: rgb(var(--ink)); font-weight: 600; }
+.links { margin-top: var(--space-7); display: flex; flex-wrap: wrap; gap: .6rem 1.75rem; font-weight: 600; }
+.links a { color: rgb(var(--ink)); text-decoration: none; border-bottom: 1px solid rgb(var(--hairline)); padding-bottom: .15rem; }
+@media (hover: hover) { .links a:hover { border-color: rgb(var(--ink)); } }
+.hero.is-solo { min-height: calc(100vh - 12rem); padding-bottom: var(--space-9); }
+.is-solo .code-card { max-width: 48rem; }
+@media (max-width: 760px) { .is-solo .code-body { white-space: pre-wrap; font-size: .76rem; } }  /* breaks at the <wbr> hints, not mid-word */
+
+/* ---------- MARGIN NOTES (the signature) ----------
+   Wide screens: a right-hand column of always-open notes beside the section.
+   Narrow screens: the same <details> collapse behind "why" (js/site.js). */
+.has-notes { display: grid; grid-template-columns: minmax(0, 1fr); gap: var(--space-6); }
+.has-notes > * { min-width: 0; }
+@media (min-width: 1100px) {
+  .has-notes { grid-template-columns: minmax(0, 1fr) 14rem; gap: var(--space-8); align-items: start; }
+  .has-notes > .mnote { position: sticky; top: var(--space-6); }
+  .mnote > summary { display: none; }
 }
-@media (min-width: 720px) { .factbar { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.fact { border-top: 2px solid rgb(var(--accent)); padding-top: var(--space-3); }
-.fact-num {
-  font-family: 'Bricolage Grotesque', system-ui, sans-serif;
-  font-weight: 800; font-size: clamp(1.8rem, 1.2rem + 2vw, 2.5rem);
-  line-height: 1; letter-spacing: -.02em; color: rgb(var(--ink));
-  font-variant-numeric: tabular-nums;
+.mnote {
+  font-family: 'JetBrains Mono', ui-monospace, monospace;
+  font-size: .8rem; line-height: 1.6; color: rgb(var(--ink3));
+  border-left: 1px solid rgb(var(--hairline));
+  padding-left: .9rem;
 }
-.fact-lbl { margin-top: .4rem; font-size: var(--text-sm); color: rgb(var(--ink2)); line-height: 1.35; }
-
-/* ==========================================================================
- * LIVE RE-SKINNABLE DEMO  (THE SIGNATURE)
- * The device carries its OWN token block, scoped to .demo-stage[data-demo-theme].
- * Flipping data-demo-theme re-skins every child live via a token cross-fade
- * (each demo element transitions its resolved color). The reserved SIGNAL hue
- * (lime) appears ONLY inside .demo-* rules — on this page, lime literally means
- * "this is alive."
- * ========================================================================== */
-
-.demo-stage[data-demo-theme="dawn"] {
-  --surface: 255 251 244; --elevated: 250 244 234; --elevated-2: 244 236 223;
-  --ink: 28 22 17; --ink2: 92 82 71; --ink3: 138 126 112;
-  --hairline: 228 219 205; --muted: 168 156 140;
-  --accent: 230 79 38; --accent-ink: 255 251 245;
-  --signal: 190 236 80; --signal-ink: 26 32 10;
-}
-.demo-stage[data-demo-theme="dusk"] {
-  --surface: 26 22 20; --elevated: 34 29 26; --elevated-2: 44 38 34;
-  --ink: 244 238 230; --ink2: 188 178 166; --ink3: 138 128 116;
-  --hairline: 56 49 44; --muted: 110 100 90;
-  --accent: 240 96 52; --accent-ink: 26 22 20;
-  --signal: 198 244 96; --signal-ink: 20 24 10;
-}
-.demo-stage[data-demo-theme="steel"] {
-  --surface: 236 238 241; --elevated: 244 246 249; --elevated-2: 226 229 234;
-  --ink: 26 30 36; --ink2: 78 85 94; --ink3: 122 130 140;
-  --hairline: 210 214 220; --muted: 150 158 168;
-  --accent: 230 79 38; --accent-ink: 246 248 250;   /* ember holds as the one accent, even on cool steel */
-  --signal: 190 236 80; --signal-ink: 26 32 10;
-}
-
-.demo-device {
-  background: rgb(var(--surface));
-  border: 1px solid rgb(var(--hairline));
-  border-radius: calc(var(--radius) + 6px);
-  box-shadow: var(--shadow-lg);
-  overflow: hidden;
-}
-/* Token cross-fade: every child eases its resolved colors when data-demo-theme
-   flips. Reduced motion clamps this globally. */
-.demo-device, .demo-device * {
-  transition: background-color .45s var(--ease-out-quart),
-              border-color .45s var(--ease-out-quart),
-              color .45s var(--ease-out-quart),
-              fill .45s var(--ease-out-quart),
-              box-shadow .45s var(--ease-out-quart);
-}
-/* App-bar of the device — a genuine product header (brand + live state +
-   controls), deliberately NOT a decorative window frame. */
-.demo-topbar {
-  display: flex; align-items: center; gap: .75rem;
-  padding: .75rem 1rem; border-bottom: 1px solid rgb(var(--hairline));
-  background: rgb(var(--elevated));
-  flex-wrap: wrap;
-}
-.demo-brand { display: inline-flex; align-items: center; gap: .5rem; line-height: 1; }
-.demo-brand .mark {
-  width: 1.6rem; height: 1.6rem; border-radius: 7px; flex: none;
-  background: rgb(var(--accent)); color: rgb(var(--accent-ink));
-  display: inline-flex; align-items: center; justify-content: center;
-  font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: .9rem;
-}
-.demo-brand .name { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: .95rem; color: rgb(var(--ink)); }
-/* LIVE pill — the signal hue announcing "this is a live, running UI". */
-.demo-live {
-  display: inline-flex; align-items: center; gap: .4rem;
-  font-family: 'Chivo Mono', monospace; font-size: .62rem; letter-spacing: .12em; text-transform: uppercase;
-  color: rgb(var(--signal-ink)); background: rgb(var(--signal));
-  padding: .25rem .5rem; border-radius: 999px; line-height: 1;
-}
-.demo-live .beat { width: 6px; height: 6px; border-radius: 999px; background: rgb(var(--signal-ink)); }
-@media (prefers-reduced-motion: no-preference) {
-  .demo-live .beat { animation: demo-beat 1.6s ease-in-out infinite; }
-}
-@keyframes demo-beat { 0%,100% { opacity: 1; transform: scale(1); } 50% { opacity: .35; transform: scale(.7); } }
-
-.demo-controls { margin-left: auto; display: flex; align-items: center; gap: .75rem; flex-wrap: wrap; }
-.demo-ctl { display: inline-flex; align-items: center; gap: .4rem; }
-.demo-ctl-lbl { font-family: 'Chivo Mono', monospace; font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--ink3)); }
-.demo-seg { display: inline-flex; background: rgb(var(--elevated-2)); border: 1px solid rgb(var(--hairline)); border-radius: 999px; padding: 2px; gap: 2px; }
-.demo-seg button {
-  font-family: 'Chivo Mono', monospace; font-size: .64rem; letter-spacing: .02em;
-  padding: .28rem .55rem; border-radius: 999px; border: 0; background: transparent;
-  color: rgb(var(--ink2)); cursor: pointer; line-height: 1;
-}
-@media (hover: hover) { .demo-seg button:hover { color: rgb(var(--ink)); } }
-/* ACTIVE demo control = the signal hue → "this is what's live right now". */
-.demo-seg button[aria-pressed="true"] { background: rgb(var(--signal)); color: rgb(var(--signal-ink)); font-weight: 600; }
-
-.demo-body { padding: 1.1rem; display: grid; gap: 1rem; }
-
-/* stat tiles */
-.demo-tiles { display: grid; gap: .75rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.demo-tile { background: rgb(var(--elevated)); border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); padding: .8rem .85rem; }
-.demo-tile .k { font-family: 'Chivo Mono', monospace; font-size: .58rem; letter-spacing: .08em; text-transform: uppercase; color: rgb(var(--ink3)); }
-.demo-tile .v { margin-top: .3rem; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 1.5rem; line-height: 1; color: rgb(var(--ink)); font-variant-numeric: tabular-nums; }
-.demo-tile .d { margin-top: .3rem; font-size: .68rem; color: rgb(var(--ink2)); }
-.demo-tile .d.up { color: rgb(var(--signal-ink)); background: rgb(var(--signal)); display: inline-block; padding: .05rem .35rem; border-radius: 999px; }
-
-/* mini chart */
-.demo-panel { background: rgb(var(--elevated)); border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); padding: .9rem; }
-.demo-panel-head { display: flex; align-items: baseline; justify-content: space-between; gap: .5rem; margin-bottom: .7rem; }
-.demo-panel-head .t { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: .9rem; color: rgb(var(--ink)); }
-.demo-panel-head .s { font-family: 'Chivo Mono', monospace; font-size: .62rem; color: rgb(var(--ink3)); }
-.demo-chart { display: flex; align-items: flex-end; gap: .45rem; height: 92px; }
-/* .col needs its OWN definite height (100%, resolving against .demo-chart's
-   92px) — without it, the column sizes to its content (bar+label) rather
-   than stretching, so .demo-bar's `height: NN%` below has nothing definite
-   to resolve against and collapses to its min-height sliver. justify-content:
-   flex-end then anchors the bar+label group to the bottom of that 92px box
-   (a shared baseline), so the bars grow upward from the bottom like a real chart. */
-.demo-chart .col { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: .35rem; height: 100%; }
-.demo-bar { width: 100%; border-radius: 4px 4px 0 0; background: rgb(var(--ink) / .18); min-height: 4px; }
-.demo-bar.f { background: rgb(var(--accent)); }              /* filled = ember (large fill) */
-.demo-bar.live { background: rgb(var(--signal)); }           /* latest / live = signal */
-.demo-chart .col .xl { font-family: 'Chivo Mono', monospace; font-size: .54rem; color: rgb(var(--ink3)); }
-
-/* recent list */
-.demo-list { display: grid; gap: .1rem; }
-.demo-row { display: flex; align-items: center; gap: .7rem; padding: .55rem .2rem; border-bottom: 1px solid rgb(var(--hairline)); }
-.demo-row:last-child { border-bottom: 0; }
-.demo-av { width: 1.9rem; height: 1.9rem; border-radius: 999px; flex: none; display: inline-flex; align-items: center; justify-content: center; background: rgb(var(--elevated-2)); color: rgb(var(--ink2)); font-family: 'Chivo Mono', monospace; font-size: .62rem; font-weight: 600; }
-.demo-row .who { min-width: 0; flex: 1; display: flex; flex-direction: column; gap: .1rem; }
-.demo-row .who .n { display: block; font-size: .82rem; color: rgb(var(--ink)); font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.demo-row .who .m { display: block; font-size: .66rem; color: rgb(var(--ink2)); font-family: 'Chivo Mono', monospace; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.demo-row .amt { font-family: 'Chivo Mono', monospace; font-size: .8rem; color: rgb(var(--ink)); font-variant-numeric: tabular-nums; }
-.demo-status { font-family: 'Chivo Mono', monospace; font-size: .58rem; letter-spacing: .06em; text-transform: uppercase; padding: .18rem .45rem; border-radius: 999px; border: 1px solid rgb(var(--hairline)); color: rgb(var(--ink2)); }
-.demo-status.live { color: rgb(var(--signal-ink)); background: rgb(var(--signal)); border-color: transparent; }
-
-.demo-toolbar { display: flex; align-items: center; gap: .6rem; flex-wrap: wrap; }
-.demo-btn {
-  display: inline-flex; align-items: center; gap: .4rem; line-height: 1;
-  font-size: .78rem; font-weight: 600; padding: .5rem .8rem; border-radius: var(--radius);
-  border: 1px solid transparent; cursor: pointer;
-  background: rgb(var(--ink)); color: rgb(var(--surface));   /* ink-filled → passes any size */
-}
-.demo-btn.ghost { background: transparent; color: rgb(var(--ink)); border-color: rgb(var(--hairline)); }
-.demo-note { font-family: 'Chivo Mono', monospace; font-size: .62rem; color: rgb(var(--ink3)); margin-left: auto; }
-
-/* demo layout toggle: focus mode drops the list, spotlights the chart */
-.demo-stage[data-demo-layout="focus"] .demo-list-panel { display: none; }
-.demo-stage[data-demo-layout="focus"] .demo-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.demo-stage[data-demo-layout="compact"] .demo-tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-@media (max-width: 560px) {
-  .demo-tiles { grid-template-columns: repeat(1, minmax(0, 1fr)); }
-  .demo-controls { width: 100%; margin-left: 0; }
-}
-
-/* Empty (first-run) + error faces for the demo's primary collection. Shown/hidden
-   via data-persona-show / data-persona-hide (js/data.js) — the control bar's
-   Persona toggle flips the demo between its populated and first-run states. */
-.demo-state .state { min-height: 9rem; }
-
-/* ---------- FEATURE GRID (01–07) ---------- */
-.feature { position: relative; }
-.feature-num {
-  font-family: 'Chivo Mono', monospace;
-  font-weight: 500; font-size: 1.15rem; letter-spacing: .02em;
-  color: rgb(var(--accent));            /* accent as a LARGE mono glyph */
-}
-.feature-title { margin-top: .5rem; font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 1.3rem; letter-spacing: -.01em; line-height: 1.12; color: rgb(var(--ink)); }
-.feature-body { margin-top: .5rem; font-size: var(--text-base); line-height: 1.55; color: rgb(var(--ink2)); }
-.feature-top { border-top: 1px solid rgb(var(--hairline)); padding-top: var(--space-4); }
-
-/* ---------- BEFORE / AFTER ---------- */
-.ba-grid { display: grid; gap: var(--space-5); grid-template-columns: 1fr; }
-@media (min-width: 820px) { .ba-grid { grid-template-columns: 1fr 1fr; } }
-.ba-card { border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); overflow: hidden; background: rgb(var(--elevated)); display: flex; flex-direction: column; }
-.ba-head { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .7rem 1rem; border-bottom: 1px solid rgb(var(--hairline)); background: rgb(var(--elevated-2)); }
-.ba-head .lbl { font-family: 'Chivo Mono', monospace; font-size: .68rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--ink2)); }
-.ba-tag { font-family: 'Chivo Mono', monospace; font-size: .6rem; letter-spacing: .04em; padding: .18rem .45rem; border-radius: 999px; border: 1px solid rgb(var(--hairline)); color: rgb(var(--ink3)); }
-.ba-tag.good { color: rgb(var(--accent-ink)); background: rgb(var(--accent)); border-color: transparent; }
-.ba-body { padding: var(--space-5); flex: 1; }
-
-/* "slop" mock — deliberately generic: centered, flat, muted, low hierarchy.
-   Evokes the tell WITHOUT shipping a real gradient / lorem / flagged name. */
-.slop { text-align: center; color: rgb(var(--ink3)); }
-.slop .mm { width: 2.5rem; height: 2.5rem; border-radius: 999px; background: rgb(var(--muted) / .3); margin: 0 auto .8rem; }
-.slop .h { font-family: system-ui, 'Segoe UI', Roboto, sans-serif; font-weight: 600; font-size: 1.25rem; color: rgb(var(--ink2)); letter-spacing: -.01em; }
-.slop .p { font-family: system-ui, sans-serif; font-size: .9rem; margin-top: .5rem; color: rgb(var(--ink3)); max-width: 22rem; margin-left: auto; margin-right: auto; }
-.slop .pill { margin-top: 1rem; display: inline-block; font-family: system-ui, sans-serif; font-size: .8rem; padding: .5rem 1.1rem; border-radius: 999px; background: rgb(var(--muted) / .25); color: rgb(var(--ink3)); }
-.slop-tells { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; justify-content: center; }
-
-/* considered side */
-.after .k { font-family: 'Chivo Mono', monospace; font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; color: rgb(var(--ink2)); }
-.after .h { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 1.7rem; line-height: 1.05; letter-spacing: -.02em; color: rgb(var(--ink)); margin-top: .5rem; max-width: 16ch; }
-.after .p { font-size: .95rem; color: rgb(var(--ink2)); margin-top: .7rem; line-height: 1.5; max-width: 30ch; }
-.after-tells { margin-top: 1.25rem; display: flex; flex-wrap: wrap; gap: .35rem; }
-
-/* ---------- VARIANT WALL ---------- */
-.variant-grid { display: grid; gap: var(--space-4); grid-template-columns: repeat(1, minmax(0, 1fr)); }
-@media (min-width: 560px) { .variant-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
-@media (min-width: 900px) { .variant-grid { grid-template-columns: repeat(4, minmax(0, 1fr)); } }
-.variant { border: 1px solid rgb(var(--hairline)); border-radius: var(--radius); overflow: hidden; background: rgb(var(--elevated)); }
-.variant .canvas { aspect-ratio: 4 / 3; padding: 1rem; display: flex; flex-direction: column; justify-content: flex-end; gap: .35rem; background: rgb(var(--surface)); border-bottom: 1px solid rgb(var(--hairline)); }
-.variant .foot { display: flex; align-items: center; justify-content: space-between; gap: .5rem; padding: .6rem .8rem; }
-.variant .foot .name { font-family: 'Chivo Mono', monospace; font-size: .68rem; letter-spacing: .04em; color: rgb(var(--ink)); }
-.variant .foot .tone { font-family: 'Chivo Mono', monospace; font-size: .58rem; color: rgb(var(--ink3)); text-transform: uppercase; letter-spacing: .08em; }
-.v-mono .kicker { font-family: 'Chivo Mono', monospace; font-size: .58rem; letter-spacing: .1em; text-transform: uppercase; color: rgb(var(--ink3)); }
-.v-mono .big { font-family: 'Chivo Mono', monospace; font-weight: 600; font-size: 1.15rem; color: rgb(var(--ink)); letter-spacing: -.02em; }
-.v-edit .kicker { font-family: 'Chivo Mono', monospace; font-size: .56rem; letter-spacing: .12em; text-transform: uppercase; color: rgb(var(--ink3)); }
-.v-edit .big { font-family: 'Fraunces', serif; font-weight: 600; font-size: 1.5rem; line-height: .98; color: rgb(var(--ink)); }
-.v-play .big { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 800; font-size: 1.55rem; line-height: .95; letter-spacing: -.03em; color: rgb(var(--accent)); }
-.v-play .kicker { font-family: 'Chivo Mono', monospace; font-size: .58rem; color: rgb(var(--ink3)); text-transform: uppercase; letter-spacing: .08em; }
-.v-min .kicker { font-family: 'Instrument Sans', sans-serif; font-size: .6rem; color: rgb(var(--ink3)); }
-.v-min .big { font-family: 'Instrument Sans', sans-serif; font-weight: 500; font-size: 1.2rem; color: rgb(var(--ink)); letter-spacing: -.01em; }
-.v-swatch { display: flex; gap: .3rem; margin-top: .2rem; }
-.v-swatch i { width: .8rem; height: .8rem; border-radius: 3px; display: block; }
-.v-swatch i.a { background: rgb(var(--accent)); }
-.v-swatch i.k { background: rgb(var(--ink)); }
-.v-swatch i.m { background: rgb(var(--muted)); }
-.v-swatch i.h { background: rgb(var(--hairline)); }
-
-/* ---------- CLOSING / INSTALL ---------- */
-.closing { position: relative; }
-/* the ONE oversized editorial wordmark moment (Fraunces, opsz) */
-.editorial-mark {
-  font-family: 'Fraunces', Georgia, serif;
-  font-optical-sizing: auto;
-  font-weight: 600;
-  font-size: clamp(3.5rem, 1rem + 16vw, 11rem);
-  /* .88 (up from a too-tight .82): still a tight display line-height for the
-     oversized-impact look, but the line box no longer clips the Fraunces
-     descenders (p, y) shorter than the glyph ink. padding-bottom below adds
-     the remaining clearance so the descenders + trailing period fully clear
-     the paragraph underneath — em-based, so it scales with the clamp(). */
-  line-height: .88;
-  letter-spacing: -.03em;
-  color: rgb(var(--accent-ink));
-  margin: 0;
-  padding-bottom: .22em;
-}
-/* The wordmark stays roman — emphasis comes from the opsz/size, not italic
-   (italic display headers/wordmarks are a lint-31 tell). .it just dims the
-   second half so "proto·type" reads as one considered mark. */
-.editorial-mark .it { opacity: .62; }
+.mnote > summary { cursor: pointer; list-style: none; color: rgb(var(--ink2)); width: max-content; }
+.mnote > summary::-webkit-details-marker { display: none; }
+.mnote > summary::before { content: "+ "; }
+.mnote[open] > summary::before { content: "− "; }
+.mnote p { margin-top: .5rem; }
+.mnote b { color: rgb(var(--ink2)); font-weight: 500; }
+.mnote a { color: rgb(var(--ink2)); text-underline-offset: 2px; }
 
 /* Footer */
 .site-foot { border-top: 1px solid rgb(var(--hairline)); }
 .foot-row { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-4); padding: var(--space-6) 0; }
 .foot-row a { color: rgb(var(--ink)); }
-.foot-links { display: flex; flex-wrap: wrap; gap: 1.1rem; font-family: 'Chivo Mono', monospace; font-size: .72rem; }
+.foot-links { display: flex; flex-wrap: wrap; gap: 1.1rem; font-family: 'JetBrains Mono', monospace; font-size: .8rem; }
 .foot-links a { color: rgb(var(--ink2)); text-decoration: none; }
 @media (hover: hover) { .foot-links a:hover { color: rgb(var(--ink)); } }
 
