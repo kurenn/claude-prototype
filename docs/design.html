@@ -30,6 +30,11 @@
         // A reading site defaults to the calm tier (fades only).
         var m = localStorage.getItem(window.PROTO_NS + 'motion');
         document.documentElement.setAttribute('data-motion', (m === 'standard' || m === 'expressive') ? m : 'calm');
+        // Control bar tucked away by this viewer earlier (js/ui.js)? Apply before paint so
+        // navigating doesn't flash it open. A viewer preference: never in the share URL.
+        if (localStorage.getItem(window.PROTO_NS + 'controls') === 'hidden') {
+          document.documentElement.setAttribute('data-controls', 'hidden');
+        }
       } catch (e) {}
     })();
   </script>

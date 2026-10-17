@@ -1,5 +1,22 @@
 # Changelog
 
+## v0.11.0 — 2026-10-17
+
+**The control bar can be tucked away.** A chevron at the bar's left end collapses it into a
+44px chevron in the bottom-left corner; clicking that brings it back, and focus follows. The
+bar still **loads open**, so a first-time reviewer sees every option.
+
+### How it works
+- `js/ui.js` injects both buttons into `#proto-controls`, so every screen gets them with no
+  markup changes.
+- The choice is remembered per prototype in namespaced `localStorage`, and applied before first
+  paint by a new line in the `<head>` script (`html[data-controls="hidden"]`), so the bar doesn't
+  flash on navigation. Screens whose head predates that line still honour the choice, with a flash.
+- It's never written to the share URL: a viewer preference, not part of the screen's state.
+- `SKILL.md` and `reference/build.md` now say "loads open" instead of "always visible". A build
+  never ships the bar collapsed and never removes the chevron.
+- The project site (`docs/`) has it too.
+
 ## v0.10.1 — 2026-10-17
 
 **Focus rings use ink, not the accent.** The scaffold drew every `:focus-visible` ring in

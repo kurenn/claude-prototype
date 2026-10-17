@@ -885,6 +885,46 @@ body { padding-bottom: var(--proto-controls-safe); }
   #proto-controls .proto-hint { display: none; }
 }
 
+/* Control-bar collapse (js/ui.js). The bar loads open; a viewer can tuck it into a corner
+   chevron. State lives on <html data-controls="hidden">, set before first paint, never in the URL. */
+#proto-controls .proto-collapse,
+#proto-controls .proto-reveal {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  color: rgb(var(--ink2));
+  cursor: pointer;
+}
+#proto-controls .proto-collapse {
+  width: 1.75rem;
+  height: 1.75rem;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+}
+#proto-controls .proto-reveal {
+  display: none;
+  pointer-events: auto;
+  width: 2.75rem;                 /* 44px touch target */
+  height: 2.75rem;
+  border-radius: 999px;
+  background: rgb(var(--elevated) / .95);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgb(var(--muted) / .3);
+  box-shadow: var(--shadow-lg);
+}
+@media (hover: hover) {
+  #proto-controls .proto-collapse:hover,
+  #proto-controls .proto-reveal:hover { color: rgb(var(--ink)); }
+  #proto-controls .proto-collapse:hover { background: rgb(var(--muted) / .2); }
+}
+html[data-controls="hidden"] #proto-controls { left: .9rem; transform: none; align-items: flex-start; }
+html[data-controls="hidden"] #proto-controls > .proto-bar,
+html[data-controls="hidden"] #proto-controls .proto-hint { display: none; }
+html[data-controls="hidden"] #proto-controls .proto-reveal { display: inline-flex; }
+
 /* Segmented control: group + options */
 .proto-seg-group {
   display: inline-flex;

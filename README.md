@@ -80,7 +80,7 @@ The skill triggers automatically on **"prototype", "mockup", "demo", "pitch page
 
 ## The signature: an always-visible control bar
 
-Every prototype ships a single, always-visible bar at the bottom — not a hidden settings pill. Reviewers judge the options they can *see*:
+Every prototype ships a single bar at the bottom that loads open — not a hidden settings pill. Reviewers judge the options they can *see*. Once they've seen them, its chevron tucks the bar into a small button in the bottom-left corner, remembered per prototype:
 
 ```
 ┌─────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────────┐

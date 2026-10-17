@@ -638,3 +638,52 @@
     setSpeed, getSpeed, replayLoading, registerLoader, announce,
   };
 })();
+
+/*
+ * Control-bar collapse. The bar loads open, so a reviewer sees every option, unless this
+ * viewer tucked it away earlier. Then it's a chevron in the bottom-left corner. The choice is
+ * remembered per prototype (localStorage, namespaced) and applied before first paint by the
+ * <head> script as html[data-controls="hidden"], so navigating doesn't flash the bar.
+ * Injected here so every screen gets it with no markup changes. Never written to the share
+ * URL: it's a viewer preference, not part of the screen's state.
+ */
+(function () {
+  const root = document.getElementById('proto-controls');
+  const bar = root && root.querySelector('.proto-bar');
+  if (!bar || bar.querySelector('.proto-collapse')) return;
+  const KEY = (window.PROTO_NS || 'proto-') + 'controls';
+  const html = document.documentElement;
+  const chevron = d => '<svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" ' +
+    'stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + d + '"/></svg>';
+  if (!bar.id) bar.id = 'proto-bar';
+
+  function button(cls, label, path) {
+    const b = document.createElement('button');
+    b.type = 'button';
+    b.className = cls;
+    b.title = label;
+    b.setAttribute('aria-label', label);
+    b.setAttribute('aria-controls', bar.id);
+    b.innerHTML = chevron(path);
+    return b;
+  }
+  const hide = button('proto-collapse', 'Hide controls', 'M4 6l4 4 4-4');  // chevron down
+  const show = button('proto-reveal', 'Show controls', 'M4 10l4-4 4 4');   // chevron up
+  bar.insertBefore(hide, bar.firstChild);
+  root.appendChild(show);
+
+  function set(hidden, focus) {
+    if (hidden) html.setAttribute('data-controls', 'hidden');
+    else html.removeAttribute('data-controls');
+    hide.setAttribute('aria-expanded', String(!hidden));
+    show.setAttribute('aria-expanded', String(!hidden));
+    try { hidden ? localStorage.setItem(KEY, 'hidden') : localStorage.removeItem(KEY); } catch (e) {}
+    if (focus) (hidden ? show : hide).focus();
+  }
+  let stored = null;
+  try { stored = localStorage.getItem(KEY); } catch (e) {}
+  // A screen whose <head> predates the pre-paint check still honours the choice, with a flash.
+  set(html.getAttribute('data-controls') === 'hidden' || stored === 'hidden', false);
+  hide.addEventListener('click', () => set(true, true));
+  show.addEventListener('click', () => set(false, true));
+})();
