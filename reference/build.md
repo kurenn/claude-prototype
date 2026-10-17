@@ -113,6 +113,13 @@ The bar is bottom-**center** (not bottom-right) so it's discoverable and doesn't
 right-side content sidebars. Reviewers see every theme and layout option at a glance
 instead of cycling a button to discover them.
 
+**Collapse is the viewer's call, not the build's.** `js/ui.js` injects a chevron at the bar's left
+end. It tucks the bar into a 44px chevron in the bottom-left corner, and clicking that brings it back
+(focus follows). The choice is remembered per prototype (`localStorage`, `PROTO_NS`-namespaced) and
+applied before first paint by the `<head>` script as `html[data-controls="hidden"]`. Copy that line
+with the rest of the head. It's never written to the share URL. A build never ships the bar
+collapsed and never removes the chevron: the bar always loads open for a first-time viewer.
+
 **Unbreakable constraints** (these CSS rules ship in the scaffold — do not remove or weaken):
 - `flex-wrap: nowrap` on `.proto-bar` — the bar NEVER wraps to a second line. A wrapped bar reads as broken and the reviewer stops trusting the rest of the prototype.
 - `overflow-x: auto` + hidden scrollbar — at very narrow widths the bar scrolls sideways instead of breaking.

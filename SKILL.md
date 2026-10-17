@@ -107,7 +107,7 @@ Subcommands (`variant`, `apply-feedback`, `intake`) → `reference/subcommands.m
 These are load-bearing — they're what separates this from generic AI output.
 
 - **Always interactive.** Every button, link, modal, tab, composer, filter works. No dead buttons. A "static mockup" is not a valid output — if that's genuinely what the user wants, say so before building rather than shipping dead buttons.
-- **Always-visible control bar.** A bottom-center segmented control showing every theme + layout + persona + motion + loading option at once, plus share + feedback — never a click-to-reveal pill. Reviewers judge options they can see.
+- **Visible control bar.** A bottom-center segmented control showing every theme + layout + persona + motion + loading option at once, plus share + feedback — loads open, never a click-to-reveal pill (the viewer may tuck it into a corner chevron; the scaffold ships that). Reviewers judge options they can see.
 - **The control bar never wraps.** `flex-wrap: nowrap` + `overflow-x: auto` is load-bearing: a two-line bar reads as broken, and once one thing looks broken the reviewer doubts everything else.
 - **Feedback is always on.** The 💬 button ships enabled on every screen — no URL flags, no hidden modes.
 - **Ask before building — a hard gate.** Never write a screen until the user gives a real yes (or tweak) to the committed **design direction**. This holds in *every* mode — a rich brief or Quick mode does not waive it. Don't self-approve or infer consent from a detailed brief: a brief says *what*, the confirm settles *how it looks*. Discovery prevents generic output.

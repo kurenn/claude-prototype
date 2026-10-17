@@ -56,3 +56,6 @@ dense; design pages stacked vs palette-and-type side by side) · Persona Live / 
 first-run explainers) · Motion · Loading · Share · Feedback. The landing page shows only Theme,
 Motion, Share and Feedback: a one-screen page has no layout, persona or loading state to change,
 and a control that changes nothing is a dead button.
+
+The bar loads open on every page; its chevron tucks it into a bottom-left corner button,
+remembered per visitor (`js/ui.js`).
