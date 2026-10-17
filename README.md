@@ -46,7 +46,7 @@ Most AI-generated prototypes look like every other one: purple gradients, gradie
 
 | Generic AI output | What this skill ships |
 |---|---|
-| "Modern SaaS" with no questions asked | A short **discovery Q&A** (tone, inspiration, audience, scope) drives real, domain-matched content |
+| "Modern SaaS" with no questions asked | A short **discovery Q&A** (tone, inspiration, audience, scope) drives real, domain-matched content, cross-checked against 84 real-brand DESIGN.md files matched by domain |
 | Lorem ipsum, "John Doe", `Example Corp` | Realistic copy and data, persona-driven from `js/data.js` |
 | Dead `href="#"` buttons | Every button, modal, tab, and filter actually works |
 | One static screen | **Theme · Layout · Persona** switchers + interaction states (loading, toast, empty, skeleton, 404) |
@@ -202,7 +202,10 @@ claude-prototype/
 │   ├── discovery.md      #   1: mode · Q&A · spec · PRODUCT.md + DESIGN.md
 │   ├── build.md          #   2: scaffold · control bar · data · screens
 │   ├── assess.md         #   3: impeccable audit/critique · browser QA
-│   └── subcommands.md    #   variant + apply-feedback
+│   ├── inspiration.md    #   living corpus of studied sites
+│   ├── design-index.md   #   index of the vendored DESIGN.md files (grep it)
+│   ├── designs/          #   84 real-brand DESIGN.md files (VoltAgent, MIT)
+│   └── subcommands.md    #   variant + apply-feedback + intake
 ├── templates/            # scaffold-base · feedback-overlay · demo-docs
 ├── checks/builtin-lint.md# fallback assessment when impeccable is absent
 ├── benchmark/            # output · overflow · design · context-cost guards
@@ -233,5 +236,12 @@ Issues and PRs welcome — see [CONTRIBUTING.md](CONTRIBUTING.md). CI runs the s
 ## Credits & license
 
 Built on [impeccable](https://impeccable.style/) (design assessment). Vanilla JS, Tailwind CDN, Google Fonts — nothing else.
+
+The real-brand design files in `reference/designs/` come from
+[VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) by
+[VoltAgent](https://github.com/VoltAgent), vendored at a pinned commit under its MIT license
+(kept in [`reference/designs/LICENSE`](reference/designs/LICENSE)). Thank you to them and its
+contributors. The brands' names, marks and visual identities belong to their owners; the skill reads
+the files for design DNA and never reproduces a brand.
 
 MIT — see [LICENSE](LICENSE).

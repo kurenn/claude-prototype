@@ -1,5 +1,44 @@
 # Changelog
 
+## v0.9.0 — 2026-10-16
+
+**Vendored real-brand design files.** Discovery can now match a brief against 84 real-brand
+DESIGN.md files kept in the repo and read the closest 1–3, with no network call.
+
+### Why
+The inspiration corpus is 11 entries in three families (indie dev-tool, AI-native, editorial). A
+fintech, retail, or travel brief matched nothing in Tier 1 and fell back to the generic menus.
+In a blind A/B (`benchmark/results/design-ab-2026-10-13.md`), real-brand design files won the
+retail brief 2–0, where the corpus has nothing, and lost the banking × dev-tool brief 0–2, where
+it's already strong.
+
+### What ships
+- `reference/designs/<slug>.md`: 84 DESIGN.md files from
+  [VoltAgent/awesome-design-md](https://github.com/VoltAgent/awesome-design-md) at `3b60532`,
+  with its MIT `LICENSE` beside them. Credited in the README.
+- `reference/design-index.md`: `slug · name · category · summary` per file, plus the categories.
+- `reference/design-index.py`: stdlib re-vendor script (one tarball download of a pinned commit).
+- `reference/discovery.md` → "The design-file index": grep the index (named brand first, else
+  domain), read ≤3 matches locally, take their DNA into the menus. Brand names in the
+  Inspiration answer route here first, and the Step 4 corpus checkpoint now names it. With no
+  domain hit, it greps the summaries for the brief's feel, so most builds land a file.
+- **Fonts come from the matched file.** The primary file's own Google Fonts, or the free
+  substitutes it names (69 of 84 do), are the pairing; `type-pairings.md` is the fallback. The
+  coffee rerun showed why: two builds read Oura (a light editorial serif) and both still shipped
+  the menu's first playful face.
+- `type-pairings.md`: Quick mode's "vary the display" is now a rule (product-name letter count
+  mod 3), since independent runs all took the first option. Two-tone briefs take the display from
+  the dominant tone and the body from the other.
+
+### Why vendored, and why this collection
+Builds shouldn't depend on a website being up. The A/B ran against shadcn.io/design's 500 files
+fetched live, but its terms forbid scraping and redistribution, so they can't live in a public MIT
+repo. VoltAgent's collection is MIT and can. It's smaller (84) and thinner on food, travel and
+health, so those briefs still lean on the corpus and the menus.
+
+### Not changed
+SKILL.md (trigger cost stays at 2544 tokens): discovery.md already routes the inspiration step.
+
 ## v0.8.0 — 2026-09-02
 
 **Drops the prompt-refiner companion.** `/prototype` now writes the build spec itself.
