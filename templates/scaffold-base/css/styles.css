@@ -279,9 +279,11 @@ body       { font-optical-sizing: auto; }
 
 /* Interaction floor — Tailwind's reset drops focus rings; ship one globally, plus a press
    micro-interaction. Keep custom :hover styles behind @media (hover:hover) so they don't
-   stick on touch. :where() keeps specificity 0 so product styles win. */
+   stick on touch. :where() keeps specificity 0 so product styles win.
+   The ring is ink, not accent: a light accent (mint, lime, pale gold) on a light surface
+   falls under WCAG's 3:1 for focus indicators, and ink clears it in every theme. */
 :where(a, button, input, select, textarea, summary, [tabindex]):focus-visible {
-  outline: 2px solid rgb(var(--accent));
+  outline: 2px solid rgb(var(--ink));
   outline-offset: 2px;
 }
 :where(button:not([disabled])):active { transform: translateY(1px); }

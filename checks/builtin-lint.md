@@ -63,7 +63,7 @@ For each screen:
 Modals must have `role="dialog"`, `aria-modal="true"`, and `aria-hidden` that flips with open state. Focus must trap inside. Escape must close.
 
 ### 7. Focus visible
-`:focus-visible` ring must be defined for all interactive elements. Quick check: add `<button>Tab here</button>` anywhere, tab into it, verify a visible outline appears.
+`:focus-visible` ring must be defined for all interactive elements, at ≥3:1 against the surface it sits on in every theme (WCAG 1.4.11). Quick check: add `<button>Tab here</button>` anywhere, tab into it, verify a visible outline appears. A ring coloured with a light accent (mint, lime, pale yellow) on a light surface fails; the scaffold uses `--ink` for this reason.
 
 ---
 

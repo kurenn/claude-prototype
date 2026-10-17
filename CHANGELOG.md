@@ -1,5 +1,14 @@
 # Changelog
 
+## v0.10.1 — 2026-10-17
+
+**Focus rings use ink, not the accent.** The scaffold drew every `:focus-visible` ring in
+`--accent`. With a light accent on a light surface, keyboard users could barely see where they
+were: the site's mint on white was about 1.9:1, against WCAG's 3:1 for focus indicators. The ring is
+now `--ink`, which clears 3:1 in every theme (`templates/scaffold-base/css/styles.css`). The
+built-in lint's "Focus visible" check now asks for ≥3:1 in every theme, not just a visible outline.
+Found by the site redesign's impeccable critique.
+
 ## v0.10.0 — 2026-10-16
 
 **The site, rebuilt with the skill, plus a design-file library.** kurenn.github.io/claude-prototype
