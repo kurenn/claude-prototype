@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.12.0 — 2026-10-22
+
+**Copy that doesn't narrate.** Builds wrote like a narrator, not a product: sentences describing
+the controls ("The price updates as you go" in four of eleven A/B builds), the same reassurance
+under every heading ("No guilt trip" in four), paired rhetorical questions in six, and lines
+about the prototype itself. New `reference/copy.md` sets the rules (label, don't describe; no
+subtitle that restates its heading; a reassurance once, where the worry happens; never mention
+the prototype in product copy), says where explaining *is* right (errors, empty states,
+irreversible actions, constraints), and lists voice tells to cut. Sources: GOV.UK, NN/g,
+Microsoft, Apple HIG, Material, Mailchimp and Wikipedia's "Signs of AI writing".
+- Read before the first screen (`build.md` Step 6); the pre-emit **Restraint** axis now counts
+  narrating sentences.
+- **Copy sweep** at the end of Step 7, whichever assessor ran: a grep for the tells plus one
+  read-through. On the eleven A/B builds it hits every one; on the scaffold, none.
+- The scaffold 404 drops its own narration.
+
 ## v0.11.0 — 2026-10-17
 
 **The control bar can be tucked away.** A chevron at the bar's left end collapses it into a

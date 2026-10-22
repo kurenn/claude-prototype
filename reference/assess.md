@@ -22,7 +22,7 @@ judge in `benchmark/design-judge.md`: this is pre-emit, scored alone against the
 | **B** | **Hierarchy** | In 2 seconds, can you tell what's primary vs. supporting — the one action or number that matters? A flat wall of equal-weight cards, or data viz you have to hunt for, caps this at **2**. |
 | **C** | **Execution** | Score against what Step 7 will *mechanically* catch: real contrast **including on data viz** (faint funnel/bar/chart fills are the classic self-critique miss), focus/empty/loading/error states, no dead buttons, no 390px overflow, no control clipped at 768. A sub-4.5:1 chart, a detached panel leaving a dead zone, or a clipped tab caps Execution at **2** — even if the layout is otherwise right. |
 | **D** | **Specificity** | Does this look like *this product's* screen — real domain data, terms, and workflows — or a generic admin/dashboard template that could belong to anyone? |
-| **E** | **Restraint** | Have you removed everything not earning its place — decorative cards, redundant labels, padding-for-padding's-sake? |
+| **E** | **Restraint** | Have you removed everything not earning its place — decorative cards, redundant labels, padding-for-padding's-sake, and every sentence that narrates the UI or restates its heading (`reference/copy.md`)? |
 | **F** | **Variety** | Shared nav / footer / control bar is required cohesion, not a fingerprint — score F on the content region: a dashboard, a detail view, and a settings screen must not be the same card-grid template with relabeled data. The first screen passes F trivially (nothing to compare yet). |
 
 **Gate:** any axis below 3 → revise before writing the next screen; all screens pass before
@@ -66,6 +66,9 @@ PRODUCT.md/DESIGN.md — don't pass them manually:
 - `critique .` — UX design review with heuristic scoring across dimensions.
 
 Collect findings, fix them, re-run until clean. Commit each fix batch atomically.
+
+**Copy sweep (always, whichever assessor ran):** neither checks wording. Run the sweep at the end
+of `reference/copy.md`, cut what it finds, and log the count in `LINT.md`.
 
 If `impeccable` is genuinely absent (auto-install failed — no npx/Node/network), run the
 built-in checker in `checks/builtin-lint.md` (purple gradients, gradient text,
