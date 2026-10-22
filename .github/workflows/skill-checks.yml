@@ -41,6 +41,15 @@ jobs:
       - name: Syntax-check serve.py
         run: python3 -m py_compile templates/scaffold-base/serve.py
 
+      - name: serve.py answers while a client holds an idle connection
+        run: |
+          cd templates/scaffold-base
+          python3 serve.py 8765 & pid=$!; sleep 1
+          exec 3<>/dev/tcp/127.0.0.1/8765
+          code=$(curl -s -o /dev/null -w '%{http_code}' --max-time 3 http://127.0.0.1:8765/index.html)
+          exec 3>&-; kill $pid
+          echo "status $code"; [ "$code" = 200 ]
+
       - name: Repo consistency (cited paths, benchmark coverage, docs/ parity)
         run: bash checks/consistency.sh
 

@@ -15,7 +15,6 @@ Usage:
   python3 serve.py 9000         # custom port
 """
 import http.server
-import socketserver
 import sys
 
 
@@ -29,10 +28,11 @@ class NoCacheHandler(http.server.SimpleHTTPRequestHandler):
 
 def main():
     port = int(sys.argv[1]) if len(sys.argv) > 1 else 8000
-    socketserver.TCPServer.allow_reuse_address = True
     # Loopback only: a prototype is a local review tool, not something to publish
     # to the LAN by starting a dev server on an untrusted network.
-    with socketserver.TCPServer(("127.0.0.1", port), NoCacheHandler) as httpd:
+    # Threaded: a browser keeps idle keep-alive sockets open, and a one-at-a-time
+    # server stalls every other request behind them.
+    with http.server.ThreadingHTTPServer(("127.0.0.1", port), NoCacheHandler) as httpd:
         print(f"Serving with no-cache headers at http://localhost:{port}")
         print("Ctrl+C to stop.")
         try:
