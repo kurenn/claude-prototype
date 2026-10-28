@@ -1,5 +1,33 @@
 # Changelog
 
+## v0.12.0 — 2026-10-22
+
+**Copy that doesn't narrate.** Builds wrote like a narrator, not a product: sentences describing
+the controls ("The price updates as you go" in four of eleven A/B builds), the same reassurance
+under every heading ("No guilt trip" in four), paired rhetorical questions in six, and lines
+about the prototype itself. New `reference/copy.md` sets the rules (label, don't describe; no
+subtitle that restates its heading; a reassurance once, where the worry happens; never mention
+the prototype in product copy), says where explaining *is* right (errors, empty states,
+irreversible actions, constraints), and lists voice tells to cut. Sources: GOV.UK, NN/g,
+Microsoft, Apple HIG, Material, Mailchimp and Wikipedia's "Signs of AI writing".
+- Read before the first screen (`build.md` Step 6); the pre-emit **Restraint** axis now counts
+  narrating sentences.
+- **Copy sweep** at the end of Step 7, whichever assessor ran: a grep for the tells plus one
+  read-through. On the eleven A/B builds it hits every one; on the scaffold, none.
+- The scaffold 404 drops its own narration.
+- **Persuasion surfaces.** Heroes, landing sections, pricing pitches and about pages must sell
+  as well as stay restrained: talk to "you" about the outcome and the feeling, lead with a
+  point of difference rather than parity, never frame against failure, proof the reader cares
+  about, one worldview per build, a four-question hero self-test. Sources:
+  StoryBrand (Miller) https://bigredjelly.com/blog/what-is-storybrand-and-how-do-you-build-a-brand-story-for-your-business/
+  · Made to Stick (Heath) https://readingraphics.com/book-summary-made-to-stick-part1/
+  · Harry Dry https://www.upgrow.io/harry-dry-copywriting-3-rules/
+  · Keller, parity vs difference https://www.northbeam.io/blog/points-of-parity-vs-points-of-difference-finding-your-brands-competitive-sweet-spot
+  · Dunford, Obviously Awesome https://www.wudpecker.io/blog/obviously-awesome-the-guide-to-perfecting-your-product-positioning
+  · Sinek, Start with Why https://www.plantemoran.com/explore-our-thinking/insight/2011/04/people-dont-buy-what-you-dothey-buy-why-you-do-it
+  · Copyhackers, voice of customer https://microcopyexamples.substack.com/p/use-the-voice-of-the-customer
+  · Schwartz, awareness levels https://www.shortform.com/blog/customer-awareness/
+
 ## v0.11.1 — 2026-10-22
 
 **`serve.py` no longer freezes.** It served one connection at a time, so a browser's idle

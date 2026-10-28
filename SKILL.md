@@ -111,7 +111,7 @@ These are load-bearing — they're what separates this from generic AI output.
 - **The control bar never wraps.** `flex-wrap: nowrap` + `overflow-x: auto` is load-bearing: a two-line bar reads as broken, and once one thing looks broken the reviewer doubts everything else.
 - **Feedback is always on.** The 💬 button ships enabled on every screen — no URL flags, no hidden modes.
 - **Ask before building — a hard gate.** Never write a screen until the user gives a real yes (or tweak) to the committed **design direction**. This holds in *every* mode — a rich brief or Quick mode does not waive it. Don't self-approve or infer consent from a detailed brief: a brief says *what*, the confirm settles *how it looks*. Discovery prevents generic output.
-- **Never lorem ipsum.** Realistic, domain-matched content only — fake-looking content reads as "this isn't real."
+- **Never lorem ipsum, never narrate the UI.** Realistic, domain-matched content only; copy labels, it doesn't describe the controls or repeat itself (`reference/copy.md`).
 - **No build tools** (webpack, vite, npm). Tailwind CDN + vanilla JS only — load-bearing for "anyone can clone and run it."
 - **Respect scope.** 4 screens asked → 4 screens shipped. Extra screens are scope creep.
 - **Don't shortcut an available skill.** If `impeccable` / `claude-in-chrome` is in the session, using it is required, not optional — and never ship without the assess artifacts (LINT.md + self-critique stamps).
