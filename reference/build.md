@@ -575,7 +575,7 @@ One HTML file per screen. Each screen:
 
 - **Duplicate nav + footer** across pages. Do NOT add a build step to DRY this up — prototypes die when they get a build step.
 - **Realistic content only**, matched to the product domain. Fintech → real merchants and amounts. HR → real roles and org structures. Every name, number, and label should feel plausible. Never lorem ipsum.
-- **Copy that doesn't narrate.** Read `reference/copy.md` before the first screen: label, don't describe the controls; no subtitle that restates its heading; a reassurance once, where the worry happens; never mention the prototype in product copy.
+- **Copy that doesn't narrate, and heroes that sell.** Read `reference/copy.md` before the first screen: label, don't describe the controls; no subtitle that restates its heading; a reassurance once, where the worry happens; never mention the prototype in product copy; every hero, landing section and plan pitch passes its "Persuasion surfaces" self-test.
 - **Every link goes somewhere.** Run a dead-end sweep: enumerate every `<a href>` and `<button>`; each must navigate, open a modal, or fire a visible toast. A dead button kills the pitch.
 - **Responsive by default.** Design at 1440, verify at 768 and 390. Never horizontal scroll at 390.
 - **URL state for interactive bits.** Modals, tabs, accordions wired through `State.set()`. Opening `?modal=signup` lands with the modal open; the Share button copies a URL reproducing the exact screen.
