@@ -28,6 +28,14 @@ Microsoft, Apple HIG, Material, Mailchimp and Wikipedia's "Signs of AI writing".
   · Copyhackers, voice of customer https://microcopyexamples.substack.com/p/use-the-voice-of-the-customer
   · Schwartz, awareness levels https://www.shortform.com/blog/customer-awareness/
 
+## v0.11.1 — 2026-10-22
+
+**`serve.py` no longer freezes.** It served one connection at a time, so a browser's idle
+keep-alive or preconnect socket stalled every other request: pages hung with no error until
+the server was restarted. Seen on two of eight A/B builds served over Tailscale. It now uses
+`http.server.ThreadingHTTPServer` (still loopback-only, still no-cache), and CI starts it, holds
+an idle connection open and checks that a page still answers.
+
 ## v0.11.0 — 2026-10-17
 
 **The control bar can be tucked away.** A chevron at the bar's left end collapses it into a
